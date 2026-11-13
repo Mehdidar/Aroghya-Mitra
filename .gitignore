@@ -48,3 +48,4 @@ Thumbs.db
 
 # Server dev data (ASHA sync store, uploaded photos)
 server/.data/
+supabase/.temp/
