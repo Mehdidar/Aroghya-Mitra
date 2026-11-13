@@ -1,0 +1,25 @@
+# What the inference service needs, and nothing else.
+#
+# requirements.txt is the development set: it also carries the training
+# loop, the near-duplicate detection, and the report/document generators.
+# Installing that into the API container cost roughly 2.5 GB of image for
+# code no request ever reaches.
+#
+# torch and torchvision are installed separately from the CPU index (see
+# the Dockerfile); the default wheels carry the CUDA runtime.
+
+numpy>=1.26                    # BSD-3-Clause
+Pillow>=10.0                   # HPND (permissive)
+# Pinned, not >=. The probes are pickled sklearn estimators; the container
+# picked up 1.9.1, unpickled models fitted on 1.9.0 and warned that this
+# "might lead to breaking code or invalid results". For a dietary verdict
+# that is not a warning to serve through. Re-fit the probes
+# (tools/clip_probe.py --save) when raising this.
+scikit-learn==1.9.0            # BSD-3-Clause  (unpickles the CLIP probes)
+joblib>=1.3                    # BSD-3-Clause
+opencv-python-headless>=4.9    # Apache-2.0    (GrabCut, no GUI libs)
+open-clip-torch>=2.24          # MIT           (open-set gate + probe features)
+
+fastapi>=0.110                 # MIT
+uvicorn[standard]>=0.29        # BSD-3-Clause
+python-multipart>=0.0.9        # Apache-2.0
