@@ -1,6 +1,8 @@
 /**
- * Renders a PatientHistory (server/records/history.ts): the same component
- * for the patient's own History screen and for a doctor who scanned a QR.
+ * Renders a PatientHistory (server/records/history.ts) on the patient's own
+ * screens. Blood pressure, heart rate and SpO₂ are left out here: they stay in
+ * the record and on the doctor's and ASHA worker's screens, where a clinician
+ * reads them.
  */
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
@@ -29,6 +31,10 @@ const STAT_ICON: Record<StatCardData['key'], IconName> = {
   spo2: 'leaf-outline',
 };
 
+/** Readings shown to the patient: blood group and weight only. */
+const PATIENT_STATS = new Set<StatCardData['key']>(['blood_group', 'weight']);
+const PATIENT_SERIES = new Set<string>(['weightKg', 'bloodSugarMgDl']);
+
 export function statTone(status: StatCardData['status']): PillTone {
   return status === 'attention' ? 'warning' : status === 'normal' ? 'success' : 'neutral';
 }
@@ -46,7 +52,7 @@ export function StatCards({ cards, testID }: { cards: StatCardData[]; testID?: s
   const theme = useTheme();
   return (
     <View testID={testID} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[3] }}>
-      {cards.map((c) => (
+      {cards.filter((c) => PATIENT_STATS.has(c.key)).map((c) => (
         <StatCard
           key={c.key}
           label={t(`stat.${c.key}`)}
@@ -54,7 +60,7 @@ export function StatCards({ cards, testID }: { cards: StatCardData[]; testID?: s
           unit={c.unit ?? undefined}
           caption={c.status === 'attention' ? t('stat.attention') : c.status === 'normal' ? t('stat.normal') : t('stat.unknown')}
           icon={STAT_ICON[c.key]}
-          chart={c.key === 'heart_rate' ? 'ecg' : 'none'}
+          chart="none"
           style={{ width: '47%', flexGrow: 1 }}
           testID={`stat-${c.key}`}
         />
@@ -66,7 +72,8 @@ export function StatCards({ cards, testID }: { cards: StatCardData[]; testID?: s
 export function HistoryView({ history, showPatientHeader = true, testID }: { history: PatientHistory; showPatientHeader?: boolean; testID?: string }) {
   const { t, i18n } = useTranslation('health');
   const theme = useTheme();
-  const { patient, alerts, statCards, timeline, vitals, adherence } = history;
+  const { patient, alerts, statCards, timeline, adherence } = history;
+  const vitals = history.vitals.filter((s) => PATIENT_SERIES.has(s.metric));
   const pct = adherence.rate === null ? null : Math.round(adherence.rate * 100);
 
   return (

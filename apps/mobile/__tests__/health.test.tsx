@@ -28,7 +28,9 @@ describe('Health features', () => {
     await render(wrap(<PatientHealth />));
     expect(screen.getByText('My health')).toBeTruthy();
     expect(screen.getByTestId('stat-blood_group')).toBeTruthy();
-    expect(screen.getByTestId('stat-blood_pressure')).toBeTruthy();
+    expect(screen.getByTestId('stat-weight')).toBeTruthy();
+    // BP, heart rate and SpO2 are for the doctor and ASHA screens, not the patient's hub.
+    for (const k of ['blood_pressure', 'heart_rate', 'spo2']) expect(screen.queryByTestId(`stat-${k}`)).toBeNull();
     expect(screen.getByText(/B\+/)).toBeTruthy();
     expect(screen.getAllByText(/150\/100/).length).toBeGreaterThan(0);
     expect(screen.getByText('Open alert from your ASHA worker')).toBeTruthy();
