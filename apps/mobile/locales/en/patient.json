@@ -4,7 +4,13 @@
     "subtitle": "How are you feeling today?",
     "searchPlaceholder": "Search medicines, reports, hospitals",
     "services": "Services",
-    "reminders": "Upcoming reminders"
+    "reminders": "Upcoming reminders",
+    "call108": "Call 108",
+    "call108Hint": "Calls the ambulance helpline",
+    "appointments": "Upcoming appointments",
+    "viewAll": "View all",
+    "analytics": "Analytics",
+    "viewAnalytics": "View analytics"
   },
   "services": {
     "chat": "Chat",

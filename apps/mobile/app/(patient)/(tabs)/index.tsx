@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Linking, Pressable, ScrollView, View } from 'react-native';
 
 import { useCurrentUser } from '@/features/shared/state/session';
 import { demoPatientHome } from '@/features/shared/seed/patientHome';
@@ -11,6 +11,7 @@ import {
   GlowOrb,
   Icon,
   IconButton,
+  ReadAloud,
   Screen,
   SearchBar,
   SectionHeader,
@@ -37,8 +38,17 @@ function openService(id: ServiceId) {
   if (id === 'nutrition') router.push('/nutrition');
   else if (id === 'reports') router.push('/health');
   else if (id === 'voice') router.push('/voice');
-  else if (id === 'chat') router.push('/chat');
+  else if (id === 'chat') router.push('/assistant');
+  else if (id === 'prescription') router.push('/prescription');
+  else if (id === 'hospitalMap') router.push('/hospital');
+  else if (id === 'qrCard') router.push('/qr-card');
+  else if (id === 'bloodBanks') router.push('/blood-banks');
   else router.push({ pathname: '/service/[id]', params: { id } });
+}
+
+/** Emergency ambulance: one tap, no confirmation screen in between. */
+function call108() {
+  void Linking.openURL('tel:108');
 }
 
 /**
@@ -50,7 +60,7 @@ export default function PatientHome() {
   const { t } = useTranslation('patient');
   const theme = useTheme();
   const user = useCurrentUser();
-  const name = user?.name ?? 'Lakshmi Gowda';
+  const name = user?.name ?? 'Rekha Kumari';
   const firstName = name.split(' ')[0];
   const { reminders } = demoPatientHome;
 
@@ -84,6 +94,30 @@ export default function PatientHome() {
 
       {/* Services Grid (Image 1 left) */}
       <View style={{ gap: theme.space[3] }}>
+        <View style={{ flexDirection: 'row', gap: theme.space[2], flexWrap: 'wrap', marginBottom: theme.space[2] }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('home.call108')}
+            accessibilityHint={t('home.call108Hint')}
+            onPress={call108}
+            testID="call-108"
+            style={({ pressed }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: theme.space[2],
+              minHeight: theme.sizes.touchMin,
+              paddingHorizontal: theme.space[4],
+              borderRadius: theme.radii.full,
+              backgroundColor: theme.colors.status.danger.solid,
+              opacity: pressed ? 0.85 : 1,
+            })}>
+            <Icon name="call" size={theme.sizes.icon.sm} color={theme.colors.textOnDark} />
+            <Text weight="semibold" color={theme.colors.textOnDark}>
+              {t('home.call108')}
+            </Text>
+          </Pressable>
+          <ReadAloud text={`${t('home.greeting', { name: firstName })}. ${t('home.subtitle')}. ${t('home.services')}: ${SERVICES.map((s) => t(`services.${s.id}`)).join(', ')}.`} />
+        </View>
         <SectionHeader title={t('home.services')} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: theme.space[4] }}>
           {SERVICES.map((s) => (
@@ -149,10 +183,10 @@ export default function PatientHome() {
       {/* Upcoming Appointments (Image 1 left & Image 3 right) */}
       <View style={{ gap: theme.space[3] }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <SectionHeader title="Upcoming Appointments" />
+          <SectionHeader title={t('home.appointments')} />
           <Pressable onPress={() => router.push('/appointments')}>
             <Text variant="caption" weight="semibold" tone="secondary">
-              View all
+              {t('home.viewAll')}
             </Text>
           </Pressable>
         </View>
@@ -238,10 +272,10 @@ export default function PatientHome() {
       {/* Analytics Preview: Steps & Oxygen level (Image 3 middle) */}
       <View style={{ gap: theme.space[2] }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <SectionHeader title="Analytics" />
+          <SectionHeader title={t('home.analytics')} />
           <Pressable onPress={() => router.push('/insights')}>
             <Text variant="caption" weight="semibold" tone="secondary">
-              View analytics
+              {t('home.viewAnalytics')}
             </Text>
           </Pressable>
         </View>
