@@ -102,7 +102,7 @@ export default function NewPatient() {
   };
 
   return (
-    <Screen footer={<Button title={t('form.save')} onPress={save} loading={saving} />}>
+    <Screen testID="screen-asha-new-patient" footer={<Button title={t('form.save')} icon="checkmark-circle-outline" onPress={save} loading={saving} testID="save-patient" />}>
       <Stack.Screen options={{ title: t('form.newPatient') }} />
       <Card>
         <Field label={t('form.name')} value={name} onChangeText={setName} autoCapitalize="words" />
@@ -117,7 +117,7 @@ export default function NewPatient() {
             <Chip key={c} label={t(`cat.${c}`)} selected={cats.includes(c)} onPress={() => setCats(toggle(cats, c))} />
           ))}
         </ChipRow>
-        <Row style={{ flexWrap: 'wrap' }}>
+        <Row style={{ flexWrap: 'wrap', alignItems: 'flex-end' }}>
           {isNewborn ? (
             <Field label={t('form.ageDays')} value={ageD} onChangeText={setAgeD} keyboardType="number-pad" />
           ) : (
@@ -130,7 +130,7 @@ export default function NewPatient() {
       {isPregnant ? (
         <Card>
           <H>{t('cat.pregnant')}</H>
-          <Row style={{ flexWrap: 'wrap' }}>
+          <Row style={{ flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <Field label={t('form.weeksPregnant')} value={weeks} onChangeText={setWeeks} keyboardType="number-pad" />
             <Field label={t('form.lmp')} value={lmp} onChangeText={setLmp} placeholder="DD/MM/YYYY" />
           </Row>

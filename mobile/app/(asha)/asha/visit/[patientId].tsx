@@ -2,9 +2,9 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Image, Pressable, Text, View } from 'react-native';
+import { Alert, Image, Pressable, View } from 'react-native';
 import { AlertCard } from '../../../../features/asha/components/AlertCard';
-import { Button, Card, Chip, ChipRow, colors, Field, H, Muted, Row, Screen } from '../../../../features/asha/components/ui';
+import { Button, Card, Chip, ChipRow, Field, H, Muted, Row, Screen, useAshaColors } from '../../../../features/asha/components/ui';
 import { addDays, isNewborn, isPregnant } from '../../../../features/asha/logic/clinical';
 import { evaluateVisit, SEVERITY_RANK, urgencyFor } from '../../../../features/asha/logic/rules';
 import { mergeParsed, parseTranscript, type ParsedVitals } from '../../../../features/asha/logic/transcript';
@@ -13,6 +13,8 @@ import { newId } from '../../../../features/asha/store/store';
 import type { GeoPoint, Patient, Symptom, Visit, VisitStatus, Vitals } from '../../../../features/asha/types';
 import { sttConfigured } from '../../../../features/asha/voice/sarvam';
 import { useVoiceReport } from '../../../../features/asha/voice/useVoiceReport';
+import { useTheme } from '../../../../features/shared/theme';
+import { GlowOrb, Icon, Text } from '../../../../features/shared/ui';
 
 type NumField = Exclude<keyof Vitals, 'recordedAt' | 'symptoms' | 'fetalMovement'>;
 
@@ -52,6 +54,8 @@ const toText = (v: ParsedVitals): Partial<Record<NumField, string>> =>
 export default function NewVisit() {
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   const { db, store, user, lang, t } = useAsha();
+  const theme = useTheme();
+  const colors = useAshaColors();
   const patient = db.patients[patientId];
   const visitId = useRef(newId('visit')).current;
   const startedAt = useRef(new Date().toISOString()).current;
@@ -200,44 +204,71 @@ export default function NewVisit() {
   const toggleSymptom = (s: Symptom) => setSymptoms((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s]));
 
   return (
-    <Screen footer={<Button title={t('visit.save')} onPress={save} loading={saving} disabled={voice.state === 'recording' || voice.state === 'transcribing'} />}>
+    <Screen
+      testID="screen-asha-visit"
+      footer={<Button title={t('visit.save')} icon="checkmark-circle-outline" onPress={save} loading={saving} disabled={voice.state === 'recording' || voice.state === 'transcribing'} testID="save-visit" />}
+    >
       <Stack.Screen options={{ title: `${t('visit.title')} · ${patient.name}` }} />
 
       <Card>
-        <Row style={{ justifyContent: 'space-between' }}>
+        <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <H>{t('visit.voice')}</H>
-          <Text style={{ color: colors.muted, fontSize: 12 }}>
+          <Text variant="caption" tone="tertiary" style={{ flexShrink: 1 }} align="end">
             {gps === 'pending' ? t('visit.gpsPending') : gps === 'off' ? t('visit.gpsOff') : t('visit.gps', { m: Math.round(gps.accuracyM ?? 0) })}
           </Text>
         </Row>
         <Muted>{t('visit.voiceHint')}</Muted>
         {sttConfigured() ? (
-          <Button
-            title={
-              voice.state === 'recording'
-                ? `${t('visit.stop')}  ${voice.seconds}s / ${voice.maxSeconds}s`
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ busy: voice.state === 'transcribing', disabled: voice.state === 'transcribing' }}
+            accessibilityLabel={voice.state === 'recording' ? t('visit.stop') : voice.state === 'transcribing' ? t('visit.transcribing') : t('visit.record')}
+            disabled={voice.state === 'transcribing'}
+            onPress={onRecord}
+            testID="voice-record"
+            style={({ pressed }) => ({
+              alignSelf: 'center',
+              alignItems: 'center',
+              gap: theme.space[3],
+              paddingVertical: theme.space[3],
+              transform: [{ scale: pressed ? theme.motion.pressScale : 1 }],
+            })}
+          >
+            <GlowOrb size={theme.sizes.orb.mini + 32}>
+              <Icon
+                name={voice.state === 'recording' ? 'stop' : voice.state === 'transcribing' ? 'hourglass-outline' : 'mic'}
+                size={theme.sizes.icon.xl}
+                color={voice.state === 'recording' ? theme.colors.status.danger.solid : theme.accent.accentSoftText}
+              />
+            </GlowOrb>
+            <Text variant="label" align="center" color={voice.state === 'recording' ? theme.colors.status.danger.fg : theme.colors.textPrimary}>
+              {voice.state === 'recording'
+                ? t('visit.stopCta', { s: voice.seconds, max: voice.maxSeconds })
                 : voice.state === 'transcribing'
                   ? t('visit.transcribing')
-                  : t('visit.record')
-            }
-            variant={voice.state === 'recording' ? 'danger' : 'secondary'}
-            loading={voice.state === 'transcribing'}
-            onPress={onRecord}
-          />
+                  : t('visit.recordCta')}
+            </Text>
+          </Pressable>
         ) : null}
         {voice.error ? (
-          <Text style={{ color: colors.danger }}>{voice.error.kind === 'permission' ? t('visit.micDenied') : t('visit.sttUnavailable')}</Text>
+          <Text variant="bodySmall" tone="danger">
+            {voice.error.kind === 'permission' ? t('visit.micDenied') : t('visit.sttUnavailable')}
+          </Text>
         ) : !sttConfigured() ? (
           <Muted>{t('visit.sttUnavailable')}</Muted>
         ) : null}
         <Field label={t('visit.transcript')} value={transcript} onChangeText={setTranscript} multiline />
-        {transcript.trim() ? <Button title={t('visit.applyTranscript')} variant="secondary" onPress={() => applyTranscript(transcript)} /> : null}
-        {applied ? <Text style={{ color: colors.primary, fontWeight: '600' }}>{applied}</Text> : null}
+        {transcript.trim() ? <Button title={t('visit.applyTranscript')} icon="sparkles-outline" variant="secondary" onPress={() => applyTranscript(transcript)} /> : null}
+        {applied ? (
+          <Text variant="bodySmall" weight="semibold" tone="accent">
+            {applied}
+          </Text>
+        ) : null}
       </Card>
 
       <Card>
         <H>{t('visit.vitals')}</H>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[3] }}>
           {fields.map((f) => (
             <Field
               key={f}
@@ -246,7 +277,7 @@ export default function NewVisit() {
               onChangeText={(s) => setValues((v) => ({ ...v, [f]: s }))}
               keyboardType="decimal-pad"
               error={numeric.bad.includes(f)}
-              style={{ flexBasis: '45%' }}
+              style={{ flexBasis: '45%', flexGrow: 1 }}
             />
           ))}
         </View>
@@ -276,9 +307,9 @@ export default function NewVisit() {
         </ChipRow>
       </Card>
 
-      <Card style={{ borderColor: preview.length ? colors.risk[preview[0].severity].fg : colors.border, borderWidth: preview.length ? 2 : 1 }}>
+      <Card style={{ borderColor: preview.length ? colors.risk[preview[0].severity].bar : colors.border, borderWidth: preview.length ? 2 : 1 }}>
         <H>{t('visit.riskPreview')}</H>
-        {preview.length ? preview.map((a) => <AlertCard key={a.id} alert={a} lang={lang} />) : <Muted>{t('visit.noRisk')}</Muted>}
+        {preview.length ? preview.map((a) => <AlertCard key={a.id} alert={a} lang={lang} compact />) : <Muted>{t('visit.noRisk')}</Muted>}
       </Card>
 
       <Card>
@@ -297,13 +328,36 @@ export default function NewVisit() {
         </ChipRow>
         <Field label={t('visit.notes')} value={notes} onChangeText={setNotes} multiline />
         <H>{t('visit.photos')}</H>
-        <Row style={{ flexWrap: 'wrap' }}>
+        <Row style={{ flexWrap: 'wrap', gap: theme.space[3] }}>
           {photos.map((uri) => (
             <Pressable key={uri} onLongPress={() => setPhotos((p) => p.filter((x) => x !== uri))}>
-              <Image source={{ uri }} style={{ width: 72, height: 72, borderRadius: 8 }} />
+              <Image source={{ uri }} style={{ width: 88, height: 88, borderRadius: theme.radii.sm }} />
             </Pressable>
           ))}
-          <Button title={t('visit.addPhoto')} variant="secondary" onPress={addPhoto} style={{ minHeight: 72, width: 96 }} />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('visit.addPhotoCta')}
+            onPress={addPhoto}
+            testID="add-photo"
+            style={({ pressed }) => ({
+              width: 88,
+              height: 88,
+              borderRadius: theme.radii.sm,
+              borderWidth: 1.5,
+              borderStyle: 'dashed',
+              borderColor: theme.colors.borderDashed,
+              backgroundColor: pressed ? theme.colors.surfaceSunken : theme.colors.surfaceMuted,
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: theme.space[1],
+              padding: theme.space[1],
+            })}
+          >
+            <Icon name="camera-outline" size={theme.sizes.icon.md} color={theme.accent.accentIcon} />
+            <Text variant="caption" weight="semibold" align="center" numberOfLines={2}>
+              {t('visit.addPhotoCta')}
+            </Text>
+          </Pressable>
         </Row>
       </Card>
     </Screen>

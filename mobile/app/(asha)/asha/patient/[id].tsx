@@ -1,17 +1,21 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useMemo } from 'react';
-import { Alert, Linking, Text, View } from 'react-native';
+import { Alert, Linking, View } from 'react-native';
 import { AlertCard } from '../../../../features/asha/components/AlertCard';
 import { patientAgeLabel } from '../../../../features/asha/components/PatientRow';
-import { Button, Card, colors, H, Muted, RiskBadge, Row, Screen } from '../../../../features/asha/components/ui';
+import { Button, Card, Muted, RiskBadge, Row, Screen, useAshaColors } from '../../../../features/asha/components/ui';
 import { eddFromLmp, formatDate, gestationWeeks, isPregnant } from '../../../../features/asha/logic/clinical';
 import { urgencyFor } from '../../../../features/asha/logic/rules';
 import { useAsha } from '../../../../features/asha/store/AshaContext';
 import type { Visit, Vitals } from '../../../../features/asha/types';
+import { useTheme } from '../../../../features/shared/theme';
+import { Avatar, Icon, Pill, SectionHeader, Text } from '../../../../features/shared/ui';
 
 export default function PatientDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { db, store, lang, t, user } = useAsha();
+  const theme = useTheme();
+  const colors = useAshaColors();
   const patient = db.patients[id];
   const visits = useMemo(() => (patient ? store.visitsFor(patient.id) : []), [db.visits, patient, store]);
   const alerts = useMemo(() => (patient ? store.currentAlerts(patient.id) : []), [db.alerts, db.visits, patient, store]);
@@ -44,21 +48,31 @@ export default function PatientDetail() {
 
   return (
     <Screen
-      footer={<Button title={t('patient.newVisit')} onPress={() => router.push(`/asha/visit/${patient.id}`)} />}
+      testID="screen-asha-patient"
+      footer={<Button title={t('patient.newVisit')} icon="add-circle-outline" onPress={() => router.push(`/asha/visit/${patient.id}`)} testID="new-visit" />}
     >
       <Stack.Screen options={{ title: patient.name }} />
-      <Card>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <H>{patient.name}</H>
-          <RiskBadge level={risk} label={t(`risk.${risk}`)} />
+      <Card style={{ borderStartWidth: 4, borderStartColor: colors.risk[risk].bar }}>
+        <Row style={{ gap: theme.space[3] }}>
+          <Avatar name={patient.name} size="lg" />
+          <View style={{ flex: 1, gap: theme.space[1] }}>
+            <Text variant="h3" accessibilityRole="header" numberOfLines={2}>
+              {patient.name}
+            </Text>
+            <RiskBadge level={risk} label={t(`risk.${risk}`)} />
+          </View>
         </Row>
         <Muted>
           {patient.sex} · {patientAgeLabel(patient, lang)} · {patient.village}
           {patient.address ? ` · ${patient.address}` : ''}
         </Muted>
-        <Muted>{patient.categories.map((c) => t(`cat.${c}`)).join(' · ')}</Muted>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2] }}>
+          {patient.categories.map((c) => (
+            <Pill key={c} label={t(`cat.${c}`)} tone="accent" />
+          ))}
+        </View>
         {isPregnant(patient) ? (
-          <Text style={{ color: colors.primary, fontWeight: '700' }}>
+          <Text variant="bodySmall" weight="semibold" tone="accent">
             {t('patient.ga', { n: gestationWeeks(patient.pregnancy!.lmp) })} · {t('patient.edd', { date: formatDate(eddFromLmp(patient.pregnancy!.lmp)) })}
             {patient.pregnancy?.gravida ? ` · G${patient.pregnancy.gravida}` : ''}
           </Text>
@@ -70,25 +84,33 @@ export default function PatientDetail() {
           </Muted>
         ) : null}
         {patient.phone ? (
-          <Button title={`📞 ${t('patient.call')} ${patient.phone}`} variant="secondary" onPress={() => Linking.openURL(`tel:${patient.phone}`)} />
+          <Button title={`${t('patient.call')} ${patient.phone}`} icon="call-outline" variant="secondary" onPress={() => Linking.openURL(`tel:${patient.phone}`)} />
         ) : null}
       </Card>
 
-      <Card>
-        <H>{t('patient.currentAlerts')}</H>
-        {alerts.length ? alerts.map((a) => <AlertCard key={a.id} alert={a} lang={lang} onAck={a.acknowledged ? undefined : () => store.acknowledgeAlert(a.id)} />) : <Muted>{t('patient.noAlerts')}</Muted>}
-        {alerts.length && !openReferral ? <Button title={t('patient.refer')} variant="danger" onPress={refer} /> : null}
+      <View style={{ gap: theme.space[3] }}>
+        <SectionHeader title={t('patient.currentAlerts')} />
+        {alerts.length ? (
+          alerts.map((a) => <AlertCard key={a.id} alert={a} lang={lang} onAck={a.acknowledged ? undefined : () => store.acknowledgeAlert(a.id)} />)
+        ) : (
+          <Card>
+            <Muted>{t('patient.noAlerts')}</Muted>
+          </Card>
+        )}
+        {alerts.length && !openReferral ? <Button title={t('patient.refer')} icon="paper-plane" variant="danger" onPress={refer} /> : null}
         {openReferral ? (
-          <Muted>
-            {t('referrals.title')}: {t(`urgency.${openReferral.urgency}`)} · {t(`refstatus.${openReferral.status}`)}
-          </Muted>
+          <Pill
+            icon="paper-plane-outline"
+            tone="info"
+            label={`${t('referrals.title')}: ${t(`urgency.${openReferral.urgency}`)} · ${t(`refstatus.${openReferral.status}`)}`}
+          />
         ) : null}
-      </Card>
+      </View>
 
-      <Card>
-        <H>{t('patient.history')}</H>
-        {visits.length ? visits.map((v) => <VisitRow key={v.id} visit={v} t={t} />) : <Muted>{t('patient.noVisits')}</Muted>}
-      </Card>
+      <View style={{ gap: theme.space[3] }}>
+        <SectionHeader title={t('patient.history')} />
+        <Card>{visits.length ? visits.map((v, i) => <VisitRow key={v.id} visit={v} t={t} first={i === 0} />) : <Muted>{t('patient.noVisits')}</Muted>}</Card>
+      </View>
     </Screen>
   );
 }
@@ -107,20 +129,28 @@ function vitalsSummary(v?: Vitals): string {
   return parts.join(' · ');
 }
 
-function VisitRow({ visit, t }: { visit: Visit; t: (k: string, p?: Record<string, string | number>) => string }) {
-  const syncColor = visit.syncState === 'failed' ? colors.danger : visit.syncState === 'pending' ? colors.risk.medium.fg : colors.muted;
+function VisitRow({ visit, t, first }: { visit: Visit; t: (k: string, p?: Record<string, string | number>) => string; first?: boolean }) {
+  const theme = useTheme();
+  const syncColor =
+    visit.syncState === 'failed' ? theme.colors.status.danger.fg : visit.syncState === 'pending' ? theme.colors.status.warning.fg : theme.colors.textTertiary;
   return (
-    <View style={{ borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 8, gap: 2 }}>
+    <View style={{ borderTopWidth: first ? 0 : 1, borderTopColor: theme.colors.divider, paddingTop: first ? 0 : theme.space[3], gap: 2 }}>
       <Row style={{ justifyContent: 'space-between' }}>
-        <Text style={{ fontWeight: '700', color: colors.text }}>
-          {formatDate(visit.visitedAt)} · {t(`status.${visit.status}`)}
-          {visit.source === 'voice' ? ' 🎙' : ''}
-        </Text>
-        {visit.syncState ? <Text style={{ fontSize: 12, color: syncColor }}>{t(`sync.${visit.syncState}`)}</Text> : null}
+        <Row style={{ flexShrink: 1, gap: theme.space[1] }}>
+          <Text variant="bodyStrong" style={{ flexShrink: 1 }}>
+            {formatDate(visit.visitedAt)} · {t(`status.${visit.status}`)}
+          </Text>
+          {visit.source === 'voice' ? <Icon name="mic" size={theme.sizes.icon.xs} color={theme.accent.accentIcon} /> : null}
+        </Row>
+        {visit.syncState ? (
+          <Text variant="caption" color={syncColor}>
+            {t(`sync.${visit.syncState}`)}
+          </Text>
+        ) : null}
       </Row>
       {visit.vitals ? <Muted>{vitalsSummary(visit.vitals)}</Muted> : null}
       {visit.vitals?.symptoms?.length ? <Muted>{visit.vitals.symptoms.map((s) => t(`sym.${s}`)).join(', ')}</Muted> : null}
-      {visit.notes ? <Text style={{ color: colors.text }}>{visit.notes}</Text> : null}
+      {visit.notes ? <Text variant="bodySmall">{visit.notes}</Text> : null}
       {visit.followUpOn ? <Muted>{t('patient.followUp', { date: formatDate(visit.followUpOn) })}</Muted> : null}
     </View>
   );

@@ -1,14 +1,16 @@
 import { router, Stack } from 'expo-router';
 import React, { useMemo } from 'react';
-import { Alert, FlatList, Text } from 'react-native';
+import { Alert, FlatList } from 'react-native';
 import { AlertCard } from '../../../features/asha/components/AlertCard';
-import { colors } from '../../../features/asha/components/ui';
 import { SEVERITY_RANK, urgencyFor } from '../../../features/asha/logic/rules';
 import { useAsha } from '../../../features/asha/store/AshaContext';
 import type { RiskAlert } from '../../../features/asha/types';
+import { useTheme } from '../../../features/shared/theme';
+import { EmptyState } from '../../../features/shared/ui';
 
 export default function AlertsScreen() {
   const { db, store, lang, t, user } = useAsha();
+  const theme = useTheme();
 
   const alerts = useMemo(
     () =>
@@ -49,7 +51,9 @@ export default function AlertsScreen() {
       <FlatList
         data={alerts}
         keyExtractor={(a) => a.id}
-        contentContainerStyle={{ padding: 16, gap: 10 }}
+        testID="screen-asha-alerts"
+        style={{ backgroundColor: theme.colors.page }}
+        contentContainerStyle={{ paddingHorizontal: theme.layout.screenPaddingX, paddingVertical: theme.space[4], gap: theme.space[3] }}
         renderItem={({ item }) => (
           <AlertCard
             alert={item}
@@ -60,7 +64,7 @@ export default function AlertsScreen() {
             onRefer={SEVERITY_RANK[item.severity] >= SEVERITY_RANK.high && !referredAlertIds.has(item.id) ? () => refer(item) : undefined}
           />
         )}
-        ListEmptyComponent={<Text style={{ color: colors.muted, textAlign: 'center', marginTop: 24 }}>{t('alerts.empty')}</Text>}
+        ListEmptyComponent={<EmptyState icon="checkmark-done-circle-outline" title={t('alerts.empty')} />}
       />
     </>
   );

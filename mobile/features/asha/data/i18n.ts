@@ -309,6 +309,10 @@ export const STRINGS: Dict = {
   'referrals.created': { en: 'Referral sent ({urgency}).', hi: 'रेफरल भेजा गया ({urgency})।' },
   'common.cancel': { en: 'Cancel', hi: 'रद्द करें' },
   'common.ok': { en: 'OK', hi: 'ठीक' },
+  // ---- P1 restyle (shared design system): home hero, profile menu, visit controls ----
+  'visit.recordCta': { en: 'Tap to record', hi: 'रिकॉर्ड करने के लिए दबाएं' },
+  'visit.stopCta': { en: 'Tap to stop · {s}s / {max}s', hi: 'रोकने के लिए दबाएं · {s}s / {max}s' },
+  'visit.addPhotoCta': { en: 'Add photo', hi: 'फोटो जोड़ें' },
 };
 
 export function t(key: string, lang: Lang = 'en', params: Record<string, string | number> = {}): string {
