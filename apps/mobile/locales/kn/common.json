@@ -8,7 +8,11 @@
     "profile": "ಪ್ರೊಫೈಲ್",
     "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
     "patients": "ರೋಗಿಗಳು",
-    "inbox": "ಇನ್‌ಬಾಕ್ಸ್"
+    "inbox": "ಇನ್‌ಬಾಕ್ಸ್",
+    "health": "ಆರೋಗ್ಯ",
+    "reminders": "ನೆನಪೋಲೆಗಳು",
+    "referrals": "ರೆಫರಲ್‌ಗಳು",
+    "admin": "ಆಡಳಿತ"
   },
   "roles": {
     "patient": "ರೋಗಿ",

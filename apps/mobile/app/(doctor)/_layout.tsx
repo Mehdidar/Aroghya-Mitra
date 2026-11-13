@@ -3,15 +3,15 @@ import { useTranslation } from 'react-i18next';
 
 import { TabBar, tabIcon } from '@/features/shared/ui';
 
-/** Doctor / Admin shell (P1 placeholder, indigo accent). P4 replaces the screen contents. */
+/** Doctor / Admin tabs: Dashboard · Patients · Referrals · Admin (profile opens from the Admin tab header). */
 export default function DoctorTabsLayout() {
   const { t } = useTranslation();
   return (
-    <Tabs screenOptions={{ headerShown: false }} tabBar={(props) => <TabBar {...props} />}>
+    <Tabs tabBar={(props) => <TabBar {...props} />} screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="index" options={{ title: t('tabs.dashboard'), tabBarIcon: tabIcon('grid-outline', 'grid') }} />
       <Tabs.Screen name="patients" options={{ title: t('tabs.patients'), tabBarIcon: tabIcon('people-outline', 'people') }} />
-      <Tabs.Screen name="inbox" options={{ title: t('tabs.inbox'), tabBarIcon: tabIcon('mail-outline', 'mail') }} />
-      <Tabs.Screen name="doctor-profile" options={{ title: t('tabs.profile'), tabBarIcon: tabIcon('person-outline', 'person') }} />
+      <Tabs.Screen name="referrals" options={{ title: t('tabs.referrals'), tabBarIcon: tabIcon('mail-outline', 'mail') }} />
+      <Tabs.Screen name="admin" options={{ title: t('tabs.admin'), tabBarIcon: tabIcon('settings-outline', 'settings') }} />
     </Tabs>
   );
 }

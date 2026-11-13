@@ -5,8 +5,8 @@ import AppointmentsScreen from '@/app/(patient)/appointments';
 import HealthInsightsScreen from '@/app/(patient)/insights';
 import UploadHealthReport from '@/app/(patient)/upload-report';
 import VoiceConsultation from '@/app/(patient)/voice';
-import PatientAssistant from '@/app/(patient)/(tabs)/assistant';
-import PatientRecords from '@/app/(patient)/(tabs)/records';
+import PatientAssistant from '@/app/(patient)/assistant';
+import PatientRecords from '@/app/(patient)/(tabs)/health';
 import i18n from '@/features/shared/i18n';
 import { useSession } from '@/features/shared/state/session';
 

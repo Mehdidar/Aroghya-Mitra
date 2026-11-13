@@ -8,7 +8,11 @@
     "profile": "प्रोफ़ाइल",
     "dashboard": "डैशबोर्ड",
     "patients": "मरीज़",
-    "inbox": "इनबॉक्स"
+    "inbox": "इनबॉक्स",
+    "health": "स्वास्थ्य",
+    "reminders": "रिमाइंडर",
+    "referrals": "रेफ़रल",
+    "admin": "एडमिन"
   },
   "roles": {
     "patient": "मरीज़",

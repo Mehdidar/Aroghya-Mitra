@@ -35,7 +35,7 @@ const SERVICES: { id: ServiceId; icon: IconName; tint: TileTint }[] = [
 
 function openService(id: ServiceId) {
   if (id === 'nutrition') router.push('/nutrition');
-  else if (id === 'reports') router.push('/records');
+  else if (id === 'reports') router.push('/health');
   else if (id === 'voice') router.push('/voice');
   else if (id === 'chat') router.push('/chat');
   else router.push({ pathname: '/service/[id]', params: { id } });

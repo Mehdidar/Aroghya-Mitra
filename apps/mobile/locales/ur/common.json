@@ -8,7 +8,11 @@
     "profile": "پروفائل",
     "dashboard": "ڈیش بورڈ",
     "patients": "مریض",
-    "inbox": "ان باکس"
+    "inbox": "ان باکس",
+    "health": "صحت",
+    "reminders": "یاد دہانیاں",
+    "referrals": "حوالہ جات",
+    "admin": "ایڈمن"
   },
   "roles": {
     "patient": "مریض",

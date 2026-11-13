@@ -1,7 +1,26 @@
 {
   "appName": "ஆரோக்ய மித்ரா",
-  "tabs": { "home": "முகப்பு", "records": "பதிவுகள்", "assistant": "உதவியாளர்", "profile": "சுயவிவரம்" },
-  "roles": { "patient": "நோயாளி", "asha": "ஆஷா பணியாளர்", "doctor": "மருத்துவர்", "admin": "நிர்வாகி" },
-  "actions": { "signOut": "வெளியேறு", "continue": "தொடரவும்" },
-  "language": { "label": "மொழி" }
+  "tabs": {
+    "home": "முகப்பு",
+    "records": "பதிவுகள்",
+    "assistant": "உதவியாளர்",
+    "profile": "சுயவிவரம்",
+    "health": "உடல்நலம்",
+    "reminders": "நினைவூட்டல்கள்",
+    "referrals": "பரிந்துரைகள்",
+    "admin": "நிர்வாகம்"
+  },
+  "roles": {
+    "patient": "நோயாளி",
+    "asha": "ஆஷா பணியாளர்",
+    "doctor": "மருத்துவர்",
+    "admin": "நிர்வாகி"
+  },
+  "actions": {
+    "signOut": "வெளியேறு",
+    "continue": "தொடரவும்"
+  },
+  "language": {
+    "label": "மொழி"
+  }
 }

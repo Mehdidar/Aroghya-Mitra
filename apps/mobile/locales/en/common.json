@@ -8,7 +8,11 @@
     "profile": "Profile",
     "dashboard": "Dashboard",
     "patients": "Patients",
-    "inbox": "Inbox"
+    "inbox": "Inbox",
+    "health": "Health",
+    "reminders": "Reminders",
+    "referrals": "Referrals",
+    "admin": "Admin"
   },
   "roles": {
     "patient": "Patient",

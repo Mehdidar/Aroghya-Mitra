@@ -222,9 +222,11 @@ alter table public.access_logs   enable row level security;
 -- facilities: any signed-in user can read the list
 create policy p1_facilities_select on public.facilities for select to authenticated using (true);
 
--- profiles: own row (read + edit name/phone/language), ASHA workers of my facility readable by doctors
+-- profiles: own row (edit name/phone/language; admins are managed by another admin, never by themselves),
+-- ASHA workers and doctors of my facility readable by facility staff
 create policy p1_profiles_self_update on public.profiles for update to authenticated
-  using (id = auth.uid()) with check (id = auth.uid() and role = public.p1_my_role());
+  using (id = auth.uid() and role <> 'admin')
+  with check (id = auth.uid() and role = public.p1_my_role() and facility_id is not distinct from public.p1_my_facility());
 create policy p1_profiles_staff_select on public.profiles for select to authenticated
   using (public.p1_my_role() in ('doctor', 'asha') and facility_id is not null and facility_id = public.p1_my_facility());
 

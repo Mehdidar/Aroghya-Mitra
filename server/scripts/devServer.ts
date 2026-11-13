@@ -1,19 +1,46 @@
 /**
- * Local dev server for the P2 endpoints, so the Expo app on a phone can use them:
+ * Local server for the app on a phone or the web build:
  *
- *   SARVAM_API_KEY=... node server/speech/scripts/devServer.ts        (port 8787, or PORT)
+ *   npm run dev:server                 (port 8787, or PORT)
  *
- * Then in mobile/.env: EXPO_PUBLIC_SARVAM_STT_URL=http://<your-laptop-LAN-IP>:8787/speech/stt
- * In production the same handler runs as a Supabase Edge Function: Deno.serve(createSpeechHandler(...)).
+ * Reads the repo-root .env (SARVAM_API_KEY, GEMINI_API_KEY, DISHDETECT_URL,
+ * QR_TOKEN_SECRET, SUPABASE_URL / SUPABASE_JWT_SECRET for real auth). With no
+ * Supabase settings the server runs in demo auth mode (x-demo-role header).
+ * In production the same handler runs as a Supabase Edge Function.
  */
 import { createServer } from 'node:http';
-import { createSarvamClientFromEnv, readEnv } from '../speech/config.ts';
-import { createSpeechHandler } from '../speech/http.ts';
-import { sarvamChatDeps } from '../ai/chat/sarvamChatDeps.ts';
+import { readFileSync } from 'node:fs';
+import { networkInterfaces } from 'node:os';
+import { resolve } from 'node:path';
 
-const sarvam = createSarvamClientFromEnv();
-const handler = createSpeechHandler({ sarvam, chat: sarvamChatDeps(sarvam), appToken: readEnv('P2_PROXY_TOKEN') });
+import { createAppHandler } from '../app.ts';
+import { authMode } from '../http/auth.ts';
+import { readEnv } from '../speech/config.ts';
+import { extraRoutes } from './routes.ts';
+
+// Minimal .env loader (no dependency): KEY=value lines, quotes stripped, never overrides a set variable.
+for (const file of [resolve(import.meta.dirname, '../../.env'), resolve(import.meta.dirname, '../speech/.env')]) {
+  try {
+    for (const line of readFileSync(file, 'utf8').split('\n')) {
+      const m = /^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/.exec(line);
+      if (!m || line.trim().startsWith('#')) continue;
+      const v = m[2].replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
+      if (process.env[m[1]] === undefined) process.env[m[1]] = v;
+    }
+  } catch {
+    /* no file */
+  }
+}
+
+const handler = createAppHandler({ routes: extraRoutes() });
 const port = Number(readEnv('PORT') ?? 8787);
+
+export function lanIp(): string | null {
+  for (const list of Object.values(networkInterfaces())) {
+    for (const n of list ?? []) if (n.family === 'IPv4' && !n.internal) return n.address;
+  }
+  return null;
+}
 
 createServer(async (req, res) => {
   try {
@@ -22,7 +49,7 @@ createServer(async (req, res) => {
     const body = chunks.length ? Buffer.concat(chunks) : undefined;
     const headers = new Headers();
     for (const [k, v] of Object.entries(req.headers)) if (typeof v === 'string') headers.set(k, v);
-    const request = new Request(`http://localhost:${port}${req.url}`, { method: req.method, headers, body: req.method === 'GET' ? undefined : body });
+    const request = new Request(`http://localhost:${port}${req.url}`, { method: req.method, headers, body: req.method === 'GET' || req.method === 'HEAD' ? undefined : body });
     const response = await handler(request);
     res.writeHead(response.status, Object.fromEntries(response.headers));
     if (response.body) for await (const chunk of response.body) res.write(chunk);
@@ -31,7 +58,9 @@ createServer(async (req, res) => {
     res.writeHead(500, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ error: String(e) }));
   }
-}).listen(port, () => {
-  console.log(`P2 speech/chat server on http://localhost:${port}  (POST /speech/stt, /speech/tts, /ai/chat)`);
-  if (!readEnv('P2_PROXY_TOKEN')) console.log('Warning: P2_PROXY_TOKEN not set, so the endpoints are open. Fine on a laptop, not on the internet.');
+}).listen(port, '0.0.0.0', () => {
+  const ip = lanIp();
+  console.log(`Aroghya Mitra server on http://localhost:${port}${ip ? `  (phones: http://${ip}:${port})` : ''}`);
+  console.log(`auth: ${authMode()}  speech: ${readEnv('SARVAM_API_KEY') ? 'sarvam' : 'not configured (device fallback)'}  vision: ${readEnv('GEMINI_API_KEY') ? 'gemini' : 'not configured (demo extraction)'}  dishdetect: ${readEnv('DISHDETECT_URL') ?? 'http://localhost:8000'}`);
+  if (authMode() === 'demo') console.log('Demo auth: requests are trusted by x-demo-role. Set SUPABASE_URL (+ SUPABASE_JWT_SECRET for HS256) for real JWT checks.');
 });

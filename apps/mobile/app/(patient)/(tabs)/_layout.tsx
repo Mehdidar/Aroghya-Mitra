@@ -3,14 +3,14 @@ import { useTranslation } from 'react-i18next';
 
 import { TabBar, tabIcon } from '@/features/shared/ui';
 
-/** Patient tabs (P1 owns this file: ask P1 to add a tab). */
+/** Patient tabs: Home · Health · Reminders · Profile. The AI chat, voice, prescription scanner and nutrition open from Home. */
 export default function PatientTabsLayout() {
   const { t } = useTranslation();
   return (
-    <Tabs screenOptions={{ headerShown: false }} tabBar={(props) => <TabBar {...props} />}>
+    <Tabs tabBar={(props) => <TabBar {...props} />} screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="index" options={{ title: t('tabs.home'), tabBarIcon: tabIcon('home-outline', 'home') }} />
-      <Tabs.Screen name="records" options={{ title: t('tabs.records'), tabBarIcon: tabIcon('document-text-outline', 'document-text') }} />
-      <Tabs.Screen name="assistant" options={{ title: t('tabs.assistant'), tabBarIcon: tabIcon('sparkles-outline', 'sparkles') }} />
+      <Tabs.Screen name="health" options={{ title: t('tabs.health'), tabBarIcon: tabIcon('heart-outline', 'heart') }} />
+      <Tabs.Screen name="reminders" options={{ title: t('tabs.reminders'), tabBarIcon: tabIcon('alarm-outline', 'alarm') }} />
       <Tabs.Screen name="profile" options={{ title: t('tabs.profile'), tabBarIcon: tabIcon('person-outline', 'person') }} />
     </Tabs>
   );

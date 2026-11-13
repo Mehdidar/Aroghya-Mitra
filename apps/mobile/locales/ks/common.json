@@ -1,1 +1,8 @@
-{}
+{
+  "tabs": {
+    "health": "صحت",
+    "reminders": "یاد دہانی",
+    "referrals": "حوالہ",
+    "admin": "ایڈمن"
+  }
+}

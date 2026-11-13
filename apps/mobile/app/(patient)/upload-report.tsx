@@ -102,7 +102,7 @@ export default function UploadHealthReport() {
         <IconButton
           icon="arrow-back"
           accessibilityLabel="Back"
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/records'))}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/health'))}
           flipInRTL
         />
         <Text variant="h2" weight="bold" style={{ color: '#0F172A' }}>
@@ -394,7 +394,7 @@ export default function UploadHealthReport() {
               icon="checkmark"
               onPress={() => {
                 setShowAnalysisResult(false);
-                router.replace('/records');
+                router.replace('/health');
               }}
             />
           </View>
