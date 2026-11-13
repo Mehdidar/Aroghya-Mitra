@@ -100,8 +100,15 @@
     },
     "extra": {
       "eas": {
-        "projectId": "00000000-0000-0000-0000-000000000000"
+        "projectId": "edf74594-5371-49bf-8322-aeb4ee0b7138"
       }
+    },
+    "owner": "mehdi_dar",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/edf74594-5371-49bf-8322-aeb4ee0b7138"
     }
   }
 }
