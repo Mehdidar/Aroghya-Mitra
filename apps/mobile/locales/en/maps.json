@@ -37,5 +37,6 @@
   "demo": "Demo",
   "indoorTitle": "Indoor guide: PHC Hebbal (demo)",
   "indoorBody": "Step-by-step directions inside a sample health centre.",
-  "indoorA11y": "Open the indoor guide for PHC Hebbal, a demo health centre"
+  "indoorA11y": "Open the indoor guide for PHC Hebbal, a demo health centre",
+  "mapUnavailable": "The map needs the newest version of the app. The places are listed below."
 }

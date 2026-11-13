@@ -4,6 +4,7 @@ import { Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import NearbyScreen from '@/app/(patient)/nearby';
+import { MapBoundary } from '@/features/maps/MapBoundary';
 import { buildLeafletHtml, directionsUrlFor, nearbyPath, parseMapMessage, setDataScript } from '@/features/maps';
 import i18n from '@/features/shared/i18n';
 import { useSession } from '@/features/shared/state/session';
@@ -161,6 +162,18 @@ describe('Nearby care', () => {
     await render(wrap(<NearbyScreen />));
     expect(await screen.findByText('Direct Hospital')).toBeTruthy();
     expect(mockApiJson.mock.calls.some((c) => String(c[0]).startsWith('/places/nearby'))).toBe(false);
+  });
+
+  it('a map that cannot be drawn shows a notice instead of breaking the screen', async () => {
+    const Broken = () => {
+      throw new Error("requireNativeComponent: 'RNCWebView' was not found in the UIManager");
+    };
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const err = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    await render(wrap(<MapBoundary><Broken /></MapBoundary>));
+    expect(screen.getByText('The map needs the newest version of the app. The places are listed below.')).toBeTruthy();
+    warn.mockRestore();
+    err.mockRestore();
   });
 });
 

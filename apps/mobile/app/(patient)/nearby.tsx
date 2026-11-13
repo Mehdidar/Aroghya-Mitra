@@ -10,6 +10,7 @@ import { useTheme } from '@/features/shared/theme';
 import { Card, EmptyState, ErrorState, Heading, Icon, IconButton, Pill, Screen, Skeleton, Text, type IconName } from '@/features/shared/ui';
 import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 import { useFabInset } from '@/features/shared/ui';
+import { MapBoundary } from '@/features/maps/MapBoundary';
 
 type Filter = 'all' | MapPlaceKind;
 const FILTERS: Filter[] = ['all', 'hospital', 'clinic', 'pharmacy', 'bloodbank'];
@@ -124,15 +125,19 @@ export default function NearbyScreen() {
         {!location ? t('locating') : located ? t('nearYou') : t('fallbackNote')}
       </Text>
 
-      <LeafletMap
-        places={visible}
-        user={location}
-        selectedId={selectedId}
-        onSelect={onMarker}
-        accessibilityLabel={t('mapA11y')}
-        style={{ height: mapHeight, borderRadius: theme.radii.xl, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceSunken }}
-        testID="nearby-map"
-      />
+      <View style={{ height: mapHeight }}>
+        <MapBoundary>
+          <LeafletMap
+            places={visible}
+            user={location}
+            selectedId={selectedId}
+            onSelect={onMarker}
+            accessibilityLabel={t('mapA11y')}
+            style={{ height: mapHeight, borderRadius: theme.radii.xl, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceSunken }}
+            testID="nearby-map"
+          />
+        </MapBoundary>
+      </View>
 
       <ScrollView ref={listRef} style={{ flex: 1 }} contentContainerStyle={{ gap: theme.space[3], paddingBottom: theme.space[4] + fabInset }} testID="nearby-scroll">
         {nearby.status === 'error' ? (
