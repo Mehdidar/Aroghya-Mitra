@@ -73,6 +73,17 @@ returns 404). It needs the secret key and the database password in the root
 `.env`, then `npm run db:migrate && npm run db:seed`. Keep `AUTH_MODE=demo`
 until phone sign-in is switched on, or every call is refused.
 
+## Release checklist progress (2026-11-13)
+
+| Item | Done here | Still needs |
+|---|---|---|
+| Real login | Server decides the role (`app_metadata` only; a self-set role is ignored); `/me` registers a new patient with an empty record; app keeps the Supabase session and sends its token; each patient sees only their own records. Verified on the live project with a real token. | Switch on phone sign-in (an SMS provider such as Twilio, MSG91 or Vonage) in Supabase → Authentication → Providers → Phone, then set `AUTH_MODE=supabase`. Staff accounts: set `app_metadata.role` and a `profiles` row for each doctor, ASHA and admin. |
+| Medical review | `npm run review:clinical` writes `docs/CLINICAL_REVIEW.md` from the code: 35 ASHA rules in plain conditions, 9 chatbot summaries, emergency phrases in 15 languages, with tick boxes and a sign-off. | A doctor fills it in; native speakers check the emergency phrases (Odia, Assamese and Kashmiri first). |
+| Real phones | Android was missing the notification permission (reminders would not show on Android 13+): fixed, plus reminders after a restart. `docs/DEVICE_TEST.md` is a 13-step phone checklist. | Someone runs it on a phone. |
+| Fake data | `npm run data:blood-banks -- <file.csv>` imports the official Blood Bank Directory (National Health Portal / NIHFW, GODL licence) into Supabase; the app then lists real banks and says "call to check stock". | Download the CSV from the AIKosh page (a browser button; it cannot be fetched automatically) and run the import. Live stock needs e-RaktKosh, which has no public API. The hospital map needs the real floor plan of the facility. |
+| Translations | Tamil, Telugu and Kashmiri complete (581, 581 and 596 strings), Urdu gaps filled (198). | Native-speaker review, Kashmiri especially. The ASHA module itself is in English and Hindi only. |
+| Hosting | The server runs as a Supabase Edge Function (tested under Deno against the live project); ASHA data and photos move to the database and Storage; `npm run deploy:server`. | A Supabase access token in `.env`, and run `supabase/migrations/3002_asha_sync_store.sql` in the SQL Editor. The food model (Python) needs its own host. |
+
 ## Mocked or demo
 
 - **e-RaktKosh** is not connected. Blood banks are 15 fictional Bengaluru entries with mock stock; every phone number is labelled "Demo number".
@@ -94,9 +105,8 @@ until phone sign-in is switched on, or every call is refused.
 
 ## Known gaps
 
-- Translations: English, Hindi and Kannada are complete; Urdu covers the main labels; Tamil, Telugu and Kashmiri fall back to English on the newer screens.
+- Translations: all seven languages are complete in the main app; the ASHA module is English and Hindi only.
 - The ASHA phone keeps its own alert severity after sync; the server's verified severity reaches doctors (inbox and database) but is not yet merged back into the ASHA phone's store.
-- Dose logs and consent use the demo patient's record id; with real sign-in they need the signed-in patient's record id from the server.
 - `4003` (storage bucket) applies on Supabase cloud; the local Postgres image lacks the `public` column on `storage.buckets`.
 - The Supabase Edge Function entry (`supabase/functions/api`) is written but has not been deployed.
 - Expo SDK: the app is already on SDK 58, the version the brief's SDK 52 concern pointed towards. `eas.json` has development and preview (APK) profiles as the fallback path for a phone whose Expo Go does not match.
