@@ -16,3 +16,5 @@ export { tabIcon } from './tabIcon';
 export { GlassCross, GlowOrb } from './GlassCross';
 export { Avatar } from './Avatar';
 export { SectionHeader } from './SectionHeader';
+export { Slider } from './Slider';
+export { Skeleton } from './Skeleton';
