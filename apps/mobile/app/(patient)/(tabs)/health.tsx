@@ -1,438 +1,127 @@
-import { useState } from 'react';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Alert, Modal, Pressable, ScrollView, View } from 'react-native';
+import { Pressable, Switch, View } from 'react-native';
 
+import { REPORT_CATEGORIES } from '@am/records';
+
+import { StatCards, formatWhen } from '@/features/health/HistoryView';
+import { usePatientHistory } from '@/features/health/useHistory';
+import { useRecords } from '@/features/shared/data/recordsStore';
 import { useTheme } from '@/features/shared/theme';
-import {
-  EcgPulseChart,
-  Icon,
-  IconButton,
-  PrimaryButton,
-  Screen,
-  SectionHeader,
-  Text,
-  type IconName,
-} from '@/features/shared/ui';
+import { Card, EmptyState, Heading, Icon, Pill, Screen, SectionHeader, ServiceTile, Skeleton, Text, type IconName, type TileTint } from '@/features/shared/ui';
 
-type ReportCategory = {
-  id: string;
-  title: string;
-  filesCount: number;
-  icon: IconName;
-  color: string;
-  bgColor: string;
-  updatedAt: string;
-  files: { name: string; date: string; size: string }[];
-};
-
-const REPORT_CATEGORIES: ReportCategory[] = [
-  {
-    id: 'general',
-    title: 'General Health',
-    filesCount: 8,
-    icon: 'document-text',
-    color: '#0284C7',
-    bgColor: '#E0F2FE',
-    updatedAt: 'Yesterday',
-    files: [
-      { name: 'Annual Complete Health Checkup.pdf', date: '12 Nov 2026', size: '2.4 MB' },
-      { name: 'Routine Urine Analysis.pdf', date: '28 Oct 2026', size: '1.1 MB' },
-      { name: 'Complete Blood Count (CBC).pdf', date: '15 Sep 2026', size: '840 KB' },
-    ],
-  },
-  {
-    id: 'diabetes',
-    title: 'Diabetes',
-    filesCount: 4,
-    icon: 'document-text',
-    color: '#8B5CF6',
-    bgColor: '#EDE9FE',
-    updatedAt: '3 days ago',
-    files: [
-      { name: 'HbA1c Glycated Hemoglobin.pdf', date: '10 Nov 2026', size: '1.2 MB' },
-      { name: 'Fasting Blood Glucose Test.pdf', date: '22 Oct 2026', size: '920 KB' },
-      { name: 'Postprandial Blood Sugar.pdf', date: '22 Oct 2026', size: '890 KB' },
-    ],
-  },
-  {
-    id: 'cardiology',
-    title: 'Cardiology',
-    filesCount: 2,
-    icon: 'pulse',
-    color: '#EF4444',
-    bgColor: '#FEE2E2',
-    updatedAt: '12 Oct 2026',
-    files: [
-      { name: '12-Lead Electrocardiogram (ECG).pdf', date: '12 Oct 2026', size: '3.1 MB' },
-      { name: 'Echocardiography Report.pdf', date: '04 Jul 2026', size: '4.5 MB' },
-    ],
-  },
-  {
-    id: 'prescriptions',
-    title: 'Prescriptions',
-    filesCount: 5,
-    icon: 'receipt',
-    color: '#059669',
-    bgColor: '#D1FAE5',
-    updatedAt: '05 Nov 2026',
-    files: [
-      { name: 'Dr. Mim Akhter - Prescription.pdf', date: '05 Nov 2026', size: '650 KB' },
-      { name: 'Dr. Olivia Wilson - Skin Therapy.pdf', date: '18 Aug 2026', size: '540 KB' },
-    ],
-  },
+const LINKS: { id: 'qr' | 'history' | 'reports' | 'bloodBanks' | 'hospital'; icon: IconName; tint: TileTint; href: '/qr-card' | '/history' | '/upload-report' | '/blood-banks' | '/hospital' }[] = [
+  { id: 'qr', icon: 'qr-code', tint: 'blue', href: '/qr-card' },
+  { id: 'history', icon: 'time', tint: 'mint', href: '/history' },
+  { id: 'reports', icon: 'folder-open', tint: 'lavender', href: '/upload-report' },
+  { id: 'bloodBanks', icon: 'water', tint: 'pink', href: '/blood-banks' },
+  { id: 'hospital', icon: 'map', tint: 'butter', href: '/hospital' },
 ];
 
-/**
- * Health Report & Medical Records screen matching Image 1 (right screen).
- * Shows live heart rate with ECG pulse graph, Blood Group, Weight, and Latest Reports.
- */
-export default function PatientRecords() {
-  const { t } = useTranslation('patient');
-  const theme = useTheme();
-  const [selectedCategory, setSelectedCategory] = useState<ReportCategory | null>(null);
+const CATEGORY_ICON: Record<string, IconName> = { blood_test: 'water-outline', cardiology: 'heart-outline', prescription: 'receipt-outline', imaging: 'scan-outline', xray: 'bandage-outline' };
 
-  const handleCardMenu = (title: string) => {
-    Alert.alert(title, 'Choose an option', [
-      { text: 'View Details', onPress: () => {} },
-      { text: 'Download PDF', onPress: () => {} },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  };
+/** Health hub: vitals at a glance, the patient's records tools, recent reports and the Share history switch. */
+export default function PatientHealth() {
+  const { t, i18n } = useTranslation('health');
+  const theme = useTheme();
+  const history = usePatientHistory();
+  const reports = useRecords((s) => s.reports);
+  const shareHistory = useRecords((s) => s.shareHistory);
+  const setShareHistory = useRecords((s) => s.setShareHistory);
 
   return (
-    <Screen withTabBar testID="screen-patient-records" contentStyle={{ gap: theme.space[4] }}>
-      {/* Top Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Text variant="h1" weight="bold">
-          {t('records.title', { defaultValue: 'Report' })}
-        </Text>
-        <IconButton
-          icon="ellipsis-horizontal"
-          accessibilityLabel="Options"
-          onPress={() => handleCardMenu('Report Options')}
-        />
-      </View>
-
-      {/* Heart Rate Hero Card (Image 1 right) */}
-      <View
-        accessible
-        accessibilityLabel="Heart Rate: 96 bpm"
-        style={{
-          backgroundColor: '#E0F2FE',
-          borderRadius: 24,
-          padding: 20,
-          gap: 8,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.04,
-          shadowRadius: 12,
-          elevation: 2,
-        }}>
-        <Text variant="title" tone="secondary" style={{ color: '#0369A1' }}>
-          Heart Rate
-        </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6 }}>
-            <Text variant="display" weight="bold" style={{ color: '#0F172A', fontSize: 44, lineHeight: 48 }}>
-              96
-            </Text>
-            <Text variant="bodySmall" weight="medium" style={{ color: '#475569', paddingBottom: 6 }}>
-              bpm
-            </Text>
-          </View>
-          <View style={{ flex: 1, maxWidth: 180, alignSelf: 'center' }}>
-            <EcgPulseChart height={50} color="#0D9488" strokeWidth={2.8} />
-          </View>
+    <Screen withTabBar testID="screen-patient-health" contentStyle={{ gap: theme.space[5] }}>
+      <View style={{ gap: theme.space[1] }}>
+        <Heading variant="h1">{t('hub.title')}</Heading>
+        <View style={{ flexDirection: 'row', gap: theme.space[2], alignItems: 'center', flexWrap: 'wrap' }}>
+          <Text tone="secondary" style={{ flexShrink: 1 }}>
+            {t('hub.subtitle')}
+          </Text>
+          <Pill label={t('common:demo.badge')} tone="warning" icon="flask-outline" />
         </View>
       </View>
 
-      {/* Stat Cards Grid: Blood Group & Weight (Image 1 right) */}
-      <View style={{ flexDirection: 'row', gap: 14 }}>
-        {/* Blood Group Card */}
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: '#FFE4E6',
-            borderRadius: 22,
-            padding: 18,
-            gap: 12,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.03,
-            shadowRadius: 8,
-          }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <View
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: 12,
-                backgroundColor: 'rgba(244, 63, 94, 0.15)',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Icon name="water" size={20} color="#E11D48" />
-            </View>
-            <Pressable hitSlop={10} onPress={() => handleCardMenu('Blood Group')}>
-              <Icon name="ellipsis-horizontal" size={18} color="#94A3B8" />
-            </Pressable>
-          </View>
-          <View style={{ gap: 2 }}>
-            <Text variant="caption" tone="secondary" style={{ color: '#64748B' }}>
-              Blood Group
-            </Text>
-            <Text variant="h2" weight="bold" style={{ color: '#0F172A' }}>
-              A+
-            </Text>
-          </View>
+      {history ? (
+        <StatCards cards={history.statCards} testID="hub-stats" />
+      ) : (
+        <View style={{ gap: theme.space[3] }} testID="hub-loading">
+          <Skeleton height={96} radius={theme.radii.xl} />
+          <Skeleton height={96} radius={theme.radii.xl} />
         </View>
+      )}
 
-        {/* Weight Card */}
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: '#DCFCE7',
-            borderRadius: 22,
-            padding: 18,
-            gap: 12,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.03,
-            shadowRadius: 8,
-          }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <View
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: 12,
-                backgroundColor: 'rgba(22, 163, 74, 0.15)',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Icon name="body" size={20} color="#16A34A" />
-            </View>
-            <Pressable hitSlop={10} onPress={() => handleCardMenu('Weight')}>
-              <Icon name="ellipsis-horizontal" size={18} color="#94A3B8" />
-            </Pressable>
-          </View>
-          <View style={{ gap: 2 }}>
-            <Text variant="caption" tone="secondary" style={{ color: '#64748B' }}>
-              Weight
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
-              <Text variant="h2" weight="bold" style={{ color: '#0F172A' }}>
-                80
-              </Text>
-              <Text variant="caption" tone="secondary" style={{ color: '#475569' }}>
-                kg
+      {history?.alerts.openRiskAlerts.length ? (
+        <Card tone="muted" radius="xl" padding="lg" testID="hub-risk">
+          <View style={{ flexDirection: 'row', gap: theme.space[3], alignItems: 'flex-start' }}>
+            <Icon name="alert-circle" size={theme.sizes.icon.md} color={theme.colors.status.danger.icon} />
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text variant="bodyStrong">{t('hub.openAlert')}</Text>
+              <Text variant="bodySmall" tone="secondary">
+                {history.alerts.openRiskAlerts[0].reason}
               </Text>
             </View>
           </View>
+        </Card>
+      ) : null}
+
+      <View style={{ gap: theme.space[3] }}>
+        <SectionHeader title={t('hub.tools')} />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[3] }}>
+          {LINKS.map((l) => (
+            <ServiceTile key={l.id} label={t(`hub.links.${l.id}`)} icon={l.icon} tint={l.tint} onPress={() => router.push(l.href)} style={{ width: '47%', flexGrow: 1 }} testID={`hub-link-${l.id}`} />
+          ))}
         </View>
       </View>
 
-      {/* Latest Reports Section Header */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-        <SectionHeader title="Latest Report" />
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => router.push('/upload-report')}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 4,
-            paddingHorizontal: 12,
-            paddingVertical: 6,
-            borderRadius: 20,
-            backgroundColor: '#F1F5F9',
-          }}>
-          <Icon name="cloud-upload-outline" size={16} color="#0F172A" />
-          <Text variant="caption" weight="bold" style={{ color: '#0F172A' }}>
-            Upload
-          </Text>
-        </Pressable>
-      </View>
-
-      {/* Latest Reports List */}
-      <View style={{ gap: 12 }}>
-        {REPORT_CATEGORIES.map((cat) => (
-          <View
-            key={cat.id}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: 16,
-              borderRadius: 20,
-              backgroundColor: theme.colors.surface,
-              borderWidth: 1,
-              borderColor: '#F1F5F9',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.03,
-              shadowRadius: 8,
-            }}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`${cat.title}, ${cat.filesCount} files`}
-              onPress={() => setSelectedCategory(cat)}
-              style={({ pressed }) => ({
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 14,
-                opacity: pressed ? 0.8 : 1,
-              })}>
-              <View
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 14,
-                  backgroundColor: cat.bgColor,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Icon name={cat.icon} size={24} color={cat.color} />
-              </View>
-              <View style={{ gap: 2, flex: 1 }}>
-                <Text variant="bodyStrong" style={{ color: '#0F172A' }}>
-                  {cat.title}
-                </Text>
-                <Text variant="caption" tone="tertiary">
-                  {cat.filesCount} files · Updated {cat.updatedAt}
-                </Text>
-              </View>
-            </Pressable>
-
-            <IconButton
-              icon="ellipsis-horizontal"
-              accessibilityLabel={`${cat.title} options`}
-              onPress={() => handleCardMenu(cat.title)}
-            />
+      <Card radius="xl" padding="lg" testID="hub-share">
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[3] }}>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text variant="bodyStrong">{t('hub.share.title')}</Text>
+            <Text variant="bodySmall" tone="secondary">
+              {shareHistory ? t('hub.share.on') : t('hub.share.off')}
+            </Text>
           </View>
-        ))}
-      </View>
-
-      {/* Upload Health Report Banner */}
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => router.push('/upload-report')}
-        style={({ pressed }) => ({
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 16,
-          padding: 18,
-          borderRadius: 22,
-          backgroundColor: '#0F172A',
-          marginTop: 6,
-          opacity: pressed ? 0.92 : 1,
-        })}>
-        <View
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: 'rgba(255, 255, 255, 0.15)',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Icon name="arrow-up-circle" size={26} color="#FFFFFF" />
+          <Switch value={shareHistory} onValueChange={setShareHistory} accessibilityLabel={t('hub.share.title')} trackColor={{ true: theme.accent.accent, false: theme.colors.border }} testID="share-switch" />
         </View>
-        <View style={{ flex: 1, gap: 2 }}>
-          <Text variant="bodyStrong" style={{ color: '#FFFFFF' }}>
-            Upload health report
-          </Text>
-          <Text variant="caption" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>
-            AI analyzes your lab tests & vitals instantly
-          </Text>
-        </View>
-        <Icon name="chevron-forward" size={20} color="#FFFFFF" flipInRTL />
-      </Pressable>
+      </Card>
 
-      {/* Category Detail Modal */}
-      <Modal visible={!!selectedCategory} animationType="slide" transparent>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            justifyContent: 'flex-end',
-          }}>
-          <View
-            style={{
-              backgroundColor: theme.colors.surface,
-              borderTopLeftRadius: 32,
-              borderTopRightRadius: 32,
-              padding: 24,
-              maxHeight: '80%',
-              gap: 18,
-            }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                {selectedCategory && (
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 12,
-                      backgroundColor: selectedCategory.bgColor,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <Icon name={selectedCategory.icon} size={22} color={selectedCategory.color} />
-                  </View>
-                )}
-                <Text variant="h3">{selectedCategory?.title}</Text>
-              </View>
-              <IconButton icon="close" accessibilityLabel="Close" onPress={() => setSelectedCategory(null)} />
-            </View>
-
-            <ScrollView contentContainerStyle={{ gap: 12 }}>
-              {selectedCategory?.files.map((file, idx) => (
-                <View
-                  key={idx}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: 14,
-                    borderRadius: 16,
-                    backgroundColor: '#F8FAFC',
-                    borderWidth: 1,
-                    borderColor: '#E2E8F0',
-                  }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
-                    <Icon name="document-text" size={24} color="#64748B" />
-                    <View style={{ flex: 1 }}>
-                      <Text variant="bodySmall" weight="semibold" numberOfLines={1}>
-                        {file.name}
+      <View style={{ gap: theme.space[3] }}>
+        <SectionHeader title={t('hub.recentReports')} actionLabel={t('hub.upload')} onAction={() => router.push('/upload-report')} />
+        {reports.length === 0 ? (
+          <EmptyState icon="folder-open-outline" title={t('reports.emptyTitle')} body={t('reports.emptyBody')} testID="reports-empty" />
+        ) : (
+          <View style={{ gap: theme.space[2] }} testID="reports-list">
+            {reports.slice(0, 5).map((r) => (
+              <Pressable
+                key={r.id}
+                accessibilityRole="button"
+                accessibilityLabel={`${r.title}, ${t(`category.${r.category}`)}`}
+                onPress={() => router.push('/history')}
+                style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}>
+                <Card radius="lg" padding="md">
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[3] }}>
+                    <View style={{ width: 44, height: 44, borderRadius: theme.radii.md, backgroundColor: theme.accent.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon name={CATEGORY_ICON[r.category] ?? 'document-text-outline'} size={theme.sizes.icon.sm} color={theme.accent.accentIcon} />
+                    </View>
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <Text variant="bodyStrong" numberOfLines={1}>
+                        {r.title}
                       </Text>
                       <Text variant="caption" tone="tertiary">
-                        {file.date} · {file.size}
+                        {`${t(`category.${r.category}`)} · ${formatWhen(r.reportDate ?? r.createdAt, i18n.language)} · ${(r.sizeBytes / 1_048_576).toFixed(1)} MB`}
                       </Text>
                     </View>
+                    <Icon name="chevron-forward" size={theme.sizes.icon.sm} color={theme.colors.textTertiary} flipInRTL />
                   </View>
-                  <IconButton
-                    icon="download-outline"
-                    accessibilityLabel="Download file"
-                    onPress={() => Alert.alert('Downloading', `Downloading ${file.name}`)}
-                  />
-                </View>
-              ))}
-            </ScrollView>
-
-            <PrimaryButton
-              label="Upload new file in this category"
-              icon="cloud-upload-outline"
-              onPress={() => {
-                setSelectedCategory(null);
-                router.push('/upload-report');
-              }}
-            />
+                </Card>
+              </Pressable>
+            ))}
           </View>
-        </View>
-      </Modal>
+        )}
+        <Text variant="caption" tone="tertiary">
+          {t('reports.categoriesHint', { list: REPORT_CATEGORIES.map((c) => t(`category.${c.key}`)).join(', ') })}
+        </Text>
+      </View>
     </Screen>
   );
 }

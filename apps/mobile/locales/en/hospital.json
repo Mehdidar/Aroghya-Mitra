@@ -1,1 +1,70 @@
-{}
+{
+  "title": "Hospital map",
+  "hospitalName": "PHC Hebbal (demo hospital)",
+  "floors": {
+    "ground": "Ground floor",
+    "first": "First floor",
+    "second": "Second floor"
+  },
+  "places": {
+    "mainEntrance": "Main entrance",
+    "emergencyEntrance": "Emergency entrance",
+    "reception": "Reception",
+    "pharmacy": "Pharmacy",
+    "lab": "Lab",
+    "emergency": "Emergency",
+    "lift": "Lift",
+    "stairs": "Stairs",
+    "opd": "OPD",
+    "radiology": "Radiology",
+    "eyeClinic": "Eye clinic",
+    "maternity": "Maternity",
+    "ward": "Ward",
+    "vaccination": "Vaccination"
+  },
+  "start": {
+    "label": "Where are you?"
+  },
+  "dest": {
+    "label": "Where do you want to go?"
+  },
+  "scan": {
+    "button": "Scan the entrance QR",
+    "unavailable": "Camera not available here",
+    "pickInstead": "Choose your entrance above instead.",
+    "close": "Close",
+    "permissionTitle": "Camera permission",
+    "permissionBody": "The camera reads the QR code at the hospital entrance to set your starting point.",
+    "allow": "Allow camera",
+    "notEntrance": "That is not an entrance code. Look for the Aroghya Mitra sign at the door."
+  },
+  "empty": {
+    "title": "Pick a destination",
+    "body": "The route and spoken directions appear here."
+  },
+  "summary": {
+    "distance": "{{metres}} m",
+    "minutes": "about {{count}} min",
+    "floors": "{{count}} floor(s)"
+  },
+  "map": {
+    "a11y": "Floor map, {{floor}}"
+  },
+  "turns": {
+    "left": "left",
+    "right": "right",
+    "straight": "straight"
+  },
+  "steps": {
+    "title": "Directions",
+    "readAloud": "Read aloud",
+    "stop": "Stop",
+    "corridor": "the corridor",
+    "start": "Start at the {{place}}",
+    "walk": "Walk {{metres}} m to {{place}}",
+    "walkTurn": "Walk {{metres}} m, then turn {{turn}} at {{place}}",
+    "lift": "Take the lift to the {{floor}}",
+    "stairs": "Take the stairs to the {{floor}}",
+    "arrive": "Walk {{metres}} m. You have arrived at {{place}}"
+  }
+}

@@ -1,1 +1,70 @@
-{}
+{
+  "title": "ہسپتال کا نقشہ",
+  "hospitalName": "PHC ہیبل (ڈیمو ہسپتال)",
+  "floors": {
+    "ground": "گراؤنڈ فلور",
+    "first": "پہلی منزل",
+    "second": "دوسری منزل"
+  },
+  "places": {
+    "mainEntrance": "مرکزی داخلہ",
+    "emergencyEntrance": "ایمرجنسی داخلہ",
+    "reception": "استقبالیہ",
+    "pharmacy": "دواخانہ",
+    "lab": "لیب",
+    "emergency": "ایمرجنسی",
+    "lift": "لفٹ",
+    "stairs": "سیڑھیاں",
+    "opd": "OPD",
+    "radiology": "ریڈیالوجی",
+    "eyeClinic": "آنکھوں کا کلینک",
+    "maternity": "زچگی",
+    "ward": "وارڈ",
+    "vaccination": "ٹیکہ کاری"
+  },
+  "start": {
+    "label": "آپ کہاں ہیں؟"
+  },
+  "dest": {
+    "label": "آپ کہاں جانا چاہتے ہیں؟"
+  },
+  "scan": {
+    "button": "داخلے کا QR اسکین کریں",
+    "unavailable": "یہاں کیمرہ دستیاب نہیں",
+    "pickInstead": "اس کے بجائے اوپر اپنا داخلہ چنیں۔",
+    "close": "بند کریں",
+    "permissionTitle": "کیمرہ اجازت",
+    "permissionBody": "کیمرہ ہسپتال کے دروازے پر لگا QR کوڈ پڑھ کر آپ کا نقطہ آغاز طے کرتا ہے۔",
+    "allow": "کیمرہ کی اجازت دیں",
+    "notEntrance": "یہ داخلے کا کوڈ نہیں ہے۔ دروازے پر آروگیہ مترا کا نشان تلاش کریں۔"
+  },
+  "empty": {
+    "title": "منزل چنیں",
+    "body": "راستہ اور بولی گئی ہدایات یہاں دکھیں گی۔"
+  },
+  "summary": {
+    "distance": "{{metres}} میٹر",
+    "minutes": "تقریباً {{count}} منٹ",
+    "floors": "{{count}} منزل"
+  },
+  "map": {
+    "a11y": "منزل کا نقشہ، {{floor}}"
+  },
+  "turns": {
+    "left": "بائیں",
+    "right": "دائیں",
+    "straight": "سیدھے"
+  },
+  "steps": {
+    "title": "ہدایات",
+    "readAloud": "سنیں",
+    "stop": "روکیں",
+    "corridor": "راہداری",
+    "start": "{{place}} سے شروع کریں",
+    "walk": "{{metres}} میٹر چل کر {{place}} تک جائیں",
+    "walkTurn": "{{metres}} میٹر چلیں، پھر {{place}} پر {{turn}} مڑیں",
+    "lift": "لفٹ سے {{floor}} پر جائیں",
+    "stairs": "سیڑھیوں سے {{floor}} پر جائیں",
+    "arrive": "{{metres}} میٹر چلیں۔ آپ {{place}} پہنچ گئے"
+  }
+}

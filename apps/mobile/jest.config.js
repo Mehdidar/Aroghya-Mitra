@@ -13,5 +13,6 @@ module.exports = {
     '^@am/patient-ai$': '<rootDir>/../../packages/patient-ai/index.ts',
     '^@am/records$': '<rootDir>/../../packages/records/index.ts',
     '^@am/(shared|patient-ai|records)/(.*)$': '<rootDir>/../../packages/$1/$2',
+    '^@server/(.*)$': '<rootDir>/../../server/$1',
   },
 };

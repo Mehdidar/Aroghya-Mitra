@@ -1,1 +1,129 @@
-{}
+{
+  "hub": {
+    "title": "My health",
+    "subtitle": "Your records, in your hands.",
+    "tools": "Records tools",
+    "openAlert": "Open alert from your ASHA worker",
+    "links": {
+      "qr": "QR health card",
+      "history": "My history",
+      "reports": "Reports",
+      "bloodBanks": "Blood banks",
+      "hospital": "Hospital map"
+    },
+    "share": {
+      "title": "Share history",
+      "on": "Doctors who scan your QR card can see your history.",
+      "off": "Sharing is off: your QR card is paused."
+    },
+    "recentReports": "Recent reports",
+    "upload": "Upload"
+  },
+  "stat": {
+    "blood_group": "Blood group",
+    "weight": "Weight",
+    "heart_rate": "Heart rate",
+    "blood_pressure": "Blood pressure",
+    "spo2": "SpO₂",
+    "normal": "Normal",
+    "attention": "Needs attention",
+    "unknown": "No reading yet"
+  },
+  "category": {
+    "blood_test": "Blood test",
+    "cardiology": "Cardiology",
+    "prescription": "Prescription",
+    "imaging": "Imaging",
+    "xray": "X-ray"
+  },
+  "reports": {
+    "emptyTitle": "No reports yet",
+    "emptyBody": "Upload a lab report, scan or prescription to keep it here.",
+    "categoriesHint": "Categories: {{list}}"
+  },
+  "history": {
+    "title": "My history",
+    "age": "{{age}} yrs",
+    "sex": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "alerts": "Watch out for",
+    "allergy": "Allergy: {{name}}",
+    "vitals": "Vitals",
+    "trends": "Trends",
+    "adherence": "Medicine adherence",
+    "adherenceWindow": "Last {{days}} days",
+    "adherenceCounts": "{{taken}} taken · {{missed}} missed · {{skipped}} skipped",
+    "timeline": "Timeline"
+  },
+  "kind": {
+    "asha_visit": "ASHA visit",
+    "consultation": "Consultation",
+    "prescription": "Prescription",
+    "report": "Report",
+    "referral": "Referral",
+    "risk_alert": "Risk alert"
+  },
+  "qr": {
+    "title": "QR health card",
+    "howTo": "Show this to your doctor. It changes every few minutes and works only once.",
+    "refreshesIn": "Refreshes in {{time}}",
+    "live": "Live code",
+    "serverDemo": "Demo server code",
+    "offlineDemo": "Demo code (offline)",
+    "pausedTitle": "Sharing is paused",
+    "pausedBody": "Turn on Share history to show a QR code.",
+    "turnOn": "Turn on sharing",
+    "pause": "Pause sharing",
+    "errorTitle": "Could not get a code",
+    "privacyTitle": "Who can see my record?",
+    "privacyBody": "Only a doctor who scans this code while sharing is on, for 12 hours. Every view is logged."
+  },
+  "upload": {
+    "title": "Upload health report",
+    "pick": "Choose a file",
+    "pickHint": "A photo of a report, or a PDF (up to 20 MB).",
+    "name": "Report name",
+    "namePlaceholder": "e.g. Haemoglobin, November",
+    "category": "Category",
+    "save": "Save report",
+    "saving": "Saving…",
+    "done": "Back to Health",
+    "savedTitle": "Report saved",
+    "savedBody": "{{title}} is in your records.",
+    "demoStorage": "Demo storage: saved on this phone only",
+    "errors": {
+      "no_category": "Choose a report category.",
+      "unsupported_type": "Upload a PDF or a photo (JPG, PNG, HEIC, WebP).",
+      "empty_file": "This file is empty.",
+      "too_large": "Files must be 20 MB or smaller.",
+      "no_title": "Give the report a name."
+    }
+  },
+  "blood": {
+    "title": "Blood banks",
+    "mockBanner": "Stock levels and phone numbers are demo data. e-RaktKosh is not connected.",
+    "group": "Blood group",
+    "component": "Component",
+    "nearYou": "Sorted by distance from you",
+    "nearCentre": "Sorted by distance from Bengaluru centre",
+    "units": "{{count}} units",
+    "updated": "Updated {{ago}}",
+    "stale": "Old: {{ago}}",
+    "demoNumber": "Demo number",
+    "call": "Call",
+    "directions": "Directions",
+    "open24x7": "Open 24×7",
+    "errorTitle": "Could not load blood banks",
+    "emptyTitle": "No matching stock",
+    "emptyBody": "Try another blood group or component.",
+    "category": {
+      "government": "Government",
+      "charitable": "Charitable",
+      "private": "Private",
+      "red_cross": "Red Cross"
+    }
+  }
+}

@@ -1,1 +1,70 @@
-{}
+{
+  "title": "अस्पताल का नक्शा",
+  "hospitalName": "PHC हेब्बाल (डेमो अस्पताल)",
+  "floors": {
+    "ground": "भूतल",
+    "first": "पहली मंज़िल",
+    "second": "दूसरी मंज़िल"
+  },
+  "places": {
+    "mainEntrance": "मुख्य द्वार",
+    "emergencyEntrance": "आपातकालीन द्वार",
+    "reception": "रिसेप्शन",
+    "pharmacy": "दवाखाना",
+    "lab": "लैब",
+    "emergency": "आपातकाल",
+    "lift": "लिफ़्ट",
+    "stairs": "सीढ़ियाँ",
+    "opd": "OPD",
+    "radiology": "रेडियोलॉजी",
+    "eyeClinic": "नेत्र क्लिनिक",
+    "maternity": "प्रसूति",
+    "ward": "वार्ड",
+    "vaccination": "टीकाकरण"
+  },
+  "start": {
+    "label": "आप कहाँ हैं?"
+  },
+  "dest": {
+    "label": "आप कहाँ जाना चाहते हैं?"
+  },
+  "scan": {
+    "button": "द्वार का QR स्कैन करें",
+    "unavailable": "यहाँ कैमरा उपलब्ध नहीं",
+    "pickInstead": "इसके बजाय ऊपर अपना द्वार चुनें।",
+    "close": "बंद करें",
+    "permissionTitle": "कैमरा अनुमति",
+    "permissionBody": "कैमरा अस्पताल के द्वार पर लगे QR कोड को पढ़कर आपका शुरुआती बिंदु तय करता है।",
+    "allow": "कैमरा अनुमति दें",
+    "notEntrance": "यह द्वार का कोड नहीं है। दरवाज़े पर आरोग्य मित्र का चिह्न ढूँढें।"
+  },
+  "empty": {
+    "title": "गंतव्य चुनें",
+    "body": "रास्ता और बोले गए निर्देश यहाँ दिखेंगे।"
+  },
+  "summary": {
+    "distance": "{{metres}} मी",
+    "minutes": "लगभग {{count}} मिनट",
+    "floors": "{{count}} मंज़िल"
+  },
+  "map": {
+    "a11y": "मंज़िल का नक्शा, {{floor}}"
+  },
+  "turns": {
+    "left": "बाएँ",
+    "right": "दाएँ",
+    "straight": "सीधे"
+  },
+  "steps": {
+    "title": "निर्देश",
+    "readAloud": "सुनें",
+    "stop": "रोकें",
+    "corridor": "गलियारे",
+    "start": "{{place}} से शुरू करें",
+    "walk": "{{metres}} मी चलकर {{place}} तक जाएँ",
+    "walkTurn": "{{metres}} मी चलें, फिर {{place}} पर {{turn}} मुड़ें",
+    "lift": "लिफ़्ट से {{floor}} पर जाएँ",
+    "stairs": "सीढ़ियों से {{floor}} पर जाएँ",
+    "arrive": "{{metres}} मी चलें। आप {{place}} पहुँच गए"
+  }
+}

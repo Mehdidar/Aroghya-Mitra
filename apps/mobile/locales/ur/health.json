@@ -1,1 +1,129 @@
-{}
+{
+  "hub": {
+    "title": "میری صحت",
+    "subtitle": "آپ کے ریکارڈ، آپ کے ہاتھ میں۔",
+    "tools": "ریکارڈ کے اوزار",
+    "openAlert": "آپ کی آشا کارکن کی طرف سے الرٹ",
+    "links": {
+      "qr": "QR صحت کارڈ",
+      "history": "میری تاریخ",
+      "reports": "رپورٹس",
+      "bloodBanks": "بلڈ بینک",
+      "hospital": "ہسپتال کا نقشہ"
+    },
+    "share": {
+      "title": "تاریخ شیئر کریں",
+      "on": "آپ کا QR اسکین کرنے والے ڈاکٹر آپ کی تاریخ دیکھ سکتے ہیں۔",
+      "off": "شیئرنگ بند ہے: آپ کا QR کارڈ رکا ہوا ہے۔"
+    },
+    "recentReports": "حالیہ رپورٹس",
+    "upload": "اپ لوڈ"
+  },
+  "stat": {
+    "blood_group": "بلڈ گروپ",
+    "weight": "وزن",
+    "heart_rate": "دل کی دھڑکن",
+    "blood_pressure": "بلڈ پریشر",
+    "spo2": "SpO₂",
+    "normal": "نارمل",
+    "attention": "توجہ درکار",
+    "unknown": "ابھی کوئی ریڈنگ نہیں"
+  },
+  "category": {
+    "blood_test": "خون کا ٹیسٹ",
+    "cardiology": "دل",
+    "prescription": "نسخہ",
+    "imaging": "امیجنگ",
+    "xray": "ایکس رے"
+  },
+  "reports": {
+    "emptyTitle": "ابھی کوئی رپورٹ نہیں",
+    "emptyBody": "لیب رپورٹ، اسکین یا نسخہ یہاں رکھنے کے لیے اپ لوڈ کریں۔",
+    "categoriesHint": "زمرے: {{list}}"
+  },
+  "history": {
+    "title": "میری تاریخ",
+    "age": "{{age}} سال",
+    "sex": {
+      "male": "مرد",
+      "female": "عورت",
+      "other": "دیگر"
+    },
+    "alerts": "ان باتوں کا خیال رکھیں",
+    "allergy": "الرجی: {{name}}",
+    "vitals": "حیاتی علامات",
+    "trends": "رجحانات",
+    "adherence": "دوا کی پابندی",
+    "adherenceWindow": "پچھلے {{days}} دن",
+    "adherenceCounts": "{{taken}} لی · {{missed}} چھوٹی · {{skipped}} چھوڑی",
+    "timeline": "ٹائم لائن"
+  },
+  "kind": {
+    "asha_visit": "آشا دورہ",
+    "consultation": "مشاورت",
+    "prescription": "نسخہ",
+    "report": "رپورٹ",
+    "referral": "ریفرل",
+    "risk_alert": "خطرے کا الرٹ"
+  },
+  "qr": {
+    "title": "QR صحت کارڈ",
+    "howTo": "یہ اپنے ڈاکٹر کو دکھائیں۔ یہ ہر چند منٹ میں بدلتا ہے اور صرف ایک بار چلتا ہے۔",
+    "refreshesIn": "{{time}} میں بدلے گا",
+    "live": "لائیو کوڈ",
+    "serverDemo": "ڈیمو سرور کوڈ",
+    "offlineDemo": "ڈیمو کوڈ (آف لائن)",
+    "pausedTitle": "شیئرنگ رکی ہوئی ہے",
+    "pausedBody": "QR کوڈ دکھانے کے لیے تاریخ شیئرنگ آن کریں۔",
+    "turnOn": "شیئرنگ آن کریں",
+    "pause": "شیئرنگ روکیں",
+    "errorTitle": "کوڈ نہیں مل سکا",
+    "privacyTitle": "میرا ریکارڈ کون دیکھ سکتا ہے؟",
+    "privacyBody": "صرف وہ ڈاکٹر جو شیئرنگ آن ہوتے ہوئے یہ کوڈ اسکین کرے، 12 گھنٹے تک۔ ہر دیکھنا درج ہوتا ہے۔"
+  },
+  "upload": {
+    "title": "صحت رپورٹ اپ لوڈ کریں",
+    "pick": "فائل چنیں",
+    "pickHint": "رپورٹ کی تصویر یا PDF (20 MB تک)۔",
+    "name": "رپورٹ کا نام",
+    "namePlaceholder": "مثلاً ہیموگلوبن، نومبر",
+    "category": "زمرہ",
+    "save": "رپورٹ محفوظ کریں",
+    "saving": "محفوظ ہو رہی ہے…",
+    "done": "صحت پر واپس",
+    "savedTitle": "رپورٹ محفوظ ہو گئی",
+    "savedBody": "{{title}} آپ کے ریکارڈ میں ہے۔",
+    "demoStorage": "ڈیمو اسٹوریج: صرف اسی فون پر محفوظ",
+    "errors": {
+      "no_category": "رپورٹ کا زمرہ چنیں۔",
+      "unsupported_type": "PDF یا تصویر (JPG, PNG, HEIC, WebP) اپ لوڈ کریں۔",
+      "empty_file": "یہ فائل خالی ہے۔",
+      "too_large": "فائل 20 MB یا چھوٹی ہونی چاہیے۔",
+      "no_title": "رپورٹ کو نام دیں۔"
+    }
+  },
+  "blood": {
+    "title": "بلڈ بینک",
+    "mockBanner": "اسٹاک اور فون نمبر ڈیمو ڈیٹا ہیں۔ e-RaktKosh منسلک نہیں ہے۔",
+    "group": "بلڈ گروپ",
+    "component": "جز",
+    "nearYou": "آپ سے فاصلے کی ترتیب میں",
+    "nearCentre": "بنگلورو مرکز سے فاصلے کی ترتیب میں",
+    "units": "{{count}} یونٹ",
+    "updated": "{{ago}} اپ ڈیٹ",
+    "stale": "پرانا: {{ago}}",
+    "demoNumber": "ڈیمو نمبر",
+    "call": "کال کریں",
+    "directions": "راستہ",
+    "open24x7": "24×7 کھلا",
+    "errorTitle": "بلڈ بینک لوڈ نہیں ہو سکے",
+    "emptyTitle": "کوئی مماثل اسٹاک نہیں",
+    "emptyBody": "دوسرا بلڈ گروپ یا جز آزمائیں۔",
+    "category": {
+      "government": "سرکاری",
+      "charitable": "خیراتی",
+      "private": "نجی",
+      "red_cross": "ریڈ کراس"
+    }
+  }
+}
