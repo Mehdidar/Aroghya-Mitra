@@ -9,7 +9,5 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 const config = getDefaultConfig(projectRoot);
 config.watchFolders = [workspaceRoot];
 config.resolver.nodeModulesPaths = [path.resolve(projectRoot, 'node_modules'), path.resolve(workspaceRoot, 'node_modules')];
-// Only one copy of react / react-native may be loaded: always the app's.
-config.resolver.disableHierarchicalLookup = true;
 
 module.exports = config;

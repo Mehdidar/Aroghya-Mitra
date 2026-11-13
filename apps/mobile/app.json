@@ -82,11 +82,6 @@
       "reactCompiler": true
     },
     "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#F0FAFA"
-    },
     "ios": {
       "bundleIdentifier": "com.aroghyamitra.app",
       "supportsTablet": true,

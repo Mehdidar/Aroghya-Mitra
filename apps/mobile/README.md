@@ -1,5 +1,7 @@
 # Aroghya Mitra: mobile app (Expo SDK 58)
 
+This is `apps/mobile` in the npm workspace; run commands from the repo root (`npm run start`, `npm test`, `npm run demo`) or from this folder.
+
 One Expo app for all four roles. P1 owns the shell (`app/_layout.tsx`, `app/(auth)/`, the
 `app/(patient)/` layout, `features/shared/`, `locales/`); P3's ASHA module is described below.
 
@@ -13,8 +15,7 @@ when the phone is back online.
 ## Run
 
 ```bash
-cd mobile
-npm install
+cd apps/mobile          # or run from the repo root: npm install
 cp .env.example .env      # optional: all values are optional
 npx expo start            # press "a" for Android, or scan the QR with Expo Go
 npm test                  # P3's 46 unit tests + the shell and nutrition tests (jest-expo)
@@ -56,7 +57,7 @@ These rules are a screening aid for referral, not a diagnosis.
 
 The app records up to 29 s, which is the limit for Sarvam's synchronous REST API. The clip
 goes to `POST https://api.sarvam.ai/speech-to-text` (model `saarika:v2.5`, `hi-IN` or `en-IN`),
-or to your proxy at `EXPO_PUBLIC_SARVAM_STT_URL`.
+or to your proxy at `EXPO_PUBLIC_API_URL (server /speech/stt)`.
 
 The parser understands English, Hindi and Hinglish:
 
@@ -79,7 +80,7 @@ It only fills fields the ASHA has not typed, and the ASHA confirms everything be
 - `POST /asha/sync`: body `{ ashaId, since, patients[], visits[], alerts[], referrals[] }`. Returns `{ serverTime, patients?, visits?, referrals? }`.
 - `POST /asha/photos`: multipart `file`. Returns `{ url }`.
 - Schema: `server/migrations/001_asha.sql` (PostgreSQL).
-- `server/risk/index.ts` re-exports the same rule engine, so the server can re-verify alerts.
+- `server/risk/index.ts` (repo root) re-exports the same rule engine, so the server can re-verify alerts.
 
 ## Integration notes for the team
 
