@@ -51,14 +51,16 @@ describe('Patient Home', () => {
     await useLanguage('en');
   });
 
-  it('renders greeting, services, AI banner, stats and reminders in English', async () => {
+  it('renders greeting, services, AI banner and reminders in English', async () => {
     await render(wrap(<PatientHome />));
     expect(screen.getByText('Hello, Lakshmi')).toBeTruthy();
     expect(screen.getByText('Services')).toBeTruthy();
     for (const s of ['Chat', 'Voice', 'Prescription', 'Nutrition', 'Hospital map', 'QR card', 'Blood banks', 'Reports'])
       expect(screen.getByText(s)).toBeTruthy();
     expect(screen.getByText('AI Health Assistant')).toBeTruthy();
-    expect(screen.getByText('Heart rate')).toBeTruthy();
+    // Home must not show invented vitals: the app has no live source for them.
+    expect(screen.queryByText('Heart rate')).toBeNull();
+    expect(screen.queryByText('Weight')).toBeNull();
     expect(screen.getByText('Upcoming reminders')).toBeTruthy();
     expect(screen.getByText('Metformin 500 mg')).toBeTruthy();
   });

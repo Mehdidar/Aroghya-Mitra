@@ -15,7 +15,6 @@ import {
   SearchBar,
   SectionHeader,
   ServiceTile,
-  StatCard,
   Text,
   type IconName,
   type TileTint,
@@ -39,14 +38,18 @@ function openService(id: ServiceId) {
   else router.push({ pathname: '/service/[id]', params: { id } });
 }
 
-/** Patient Home (SPEC §7 phase 2): greeting, search, services, AI banner, stats, reminders. */
+/**
+ * Patient Home (SPEC §7 phase 2): greeting, search, services, AI banner, reminders.
+ * No vitals cards here: the app has no source for live vitals. Recorded vitals belong to the
+ * patient history view (P4), built from real Vitals records.
+ */
 export default function PatientHome() {
   const { t } = useTranslation('patient');
   const theme = useTheme();
   const user = useCurrentUser();
   const name = user?.name ?? 'Lakshmi Gowda';
   const firstName = name.split(' ')[0];
-  const { vitals, reminders } = demoPatientHome;
+  const { reminders } = demoPatientHome;
 
   return (
     <Screen withTabBar testID="screen-patient-home" contentStyle={{ gap: theme.layout.sectionGap - 4 }}>
@@ -110,31 +113,6 @@ export default function PatientHome() {
           </GlowOrb>
         </View>
       </Card>
-
-      {/* Stats */}
-      <View style={{ gap: theme.space[3] }}>
-        <SectionHeader title={t('home.today')} />
-        <View style={{ flexDirection: 'row', gap: theme.space[3], flexWrap: 'wrap' }}>
-          <StatCard
-            label={t('stats.heartRate')}
-            value={String(vitals.heartRateBpm)}
-            unit="bpm"
-            caption={t('stats.normal')}
-            icon="pulse"
-            chart="ecg"
-            testID="stat-heart"
-          />
-          <StatCard
-            label={t('stats.weight')}
-            value={String(vitals.weightKg)}
-            unit={t('stats.kg')}
-            caption={t('stats.lastWeek')}
-            icon="barbell-outline"
-            chart="bars"
-            testID="stat-weight"
-          />
-        </View>
-      </View>
 
       {/* Reminders */}
       <Card radius="xl" testID="reminders-card">

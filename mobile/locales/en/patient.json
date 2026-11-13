@@ -4,7 +4,6 @@
     "subtitle": "How are you feeling today?",
     "searchPlaceholder": "Search medicines, reports, hospitals",
     "services": "Services",
-    "today": "Today's health",
     "reminders": "Upcoming reminders"
   },
   "services": {
@@ -21,14 +20,6 @@
     "title": "AI Health Assistant",
     "body": "Ask about symptoms, medicines or diet in your language.",
     "cta": "Ask now"
-  },
-  "stats": {
-    "heartRate": "Heart rate",
-    "bpm": "bpm",
-    "normal": "Normal",
-    "weight": "Weight",
-    "kg": "kg",
-    "lastWeek": "Same as last week"
   },
   "reminders": {
     "afterBreakfast": "After breakfast",
