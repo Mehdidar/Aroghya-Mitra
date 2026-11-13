@@ -2,19 +2,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { DEMO_USERS } from '@am/shared';
+
 import type { LanguageCode } from '@/features/shared/i18n/languages';
 import type { AppRole } from '@/features/shared/theme';
 
 export type Role = AppRole;
 export const ROLES: readonly Role[] = ['patient', 'asha', 'doctor', 'admin'] as const;
 
-/** Demo user shown for each role until Supabase auth lands (Phase B). Names are fictional. */
-export const DEMO_USERS: Record<Role, { id: string; name: string; phone: string }> = {
-  patient: { id: 'pat-demo-1', name: 'Lakshmi Gowda', phone: '+91 98450 12345' },
-  asha: { id: 'asha-demo-1', name: 'Sunita Devi', phone: '+91 99000 23456' },
-  doctor: { id: 'doc-demo-1', name: 'Dr. Arjun Rao', phone: '+91 98861 34567' },
-  admin: { id: 'adm-demo-1', name: 'Meena Shetty', phone: '+91 97400 45678' },
-};
+/** The demo cast (shared with the ASHA seed, the records seed and the doctor's inbox). Names are fictional. */
+export { DEMO_USERS } from '@am/shared';
 
 export type SessionState = {
   role: Role | null;

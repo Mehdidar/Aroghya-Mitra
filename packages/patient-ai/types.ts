@@ -1,9 +1,3 @@
-/**
- * Types shared inside features/patient-ai. The literal values match the
- * server's prescription schema (server/ai/prescription/schema.ts).
- * TODO(P1): move to the shared types package once it exists.
- */
-export type DoseSlot = 'morning' | 'afternoon' | 'evening' | 'night';
-export const DOSE_SLOTS: readonly DoseSlot[] = ['morning', 'afternoon', 'evening', 'night'];
-
-export type MealRelation = 'before_food' | 'after_food' | 'with_food' | 'empty_stomach' | 'any';
+/** Prescription slot types: re-exported from @am/shared (the literal values match server/ai/prescription/schema.ts). */
+export type { DoseSlot, MealRelation } from '../shared/types.ts';
+export { DOSE_SLOTS } from '../shared/types.ts';

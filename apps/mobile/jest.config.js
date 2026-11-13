@@ -7,4 +7,11 @@ module.exports = {
   // Never put tests inside app/: Expo Router treats every file there as a route.
   testMatch: ['<rootDir>/{features,server,__tests__}/**/*.test.{ts,tsx}'],
   testPathIgnorePatterns: ['/node_modules/', '/dist/', '/\\.expo/'],
+  // Workspace packages (tsconfig paths are not visible to Jest).
+  moduleNameMapper: {
+    '^@am/shared$': '<rootDir>/../../packages/shared/index.ts',
+    '^@am/patient-ai$': '<rootDir>/../../packages/patient-ai/index.ts',
+    '^@am/records$': '<rootDir>/../../packages/records/index.ts',
+    '^@am/(shared|patient-ai|records)/(.*)$': '<rootDir>/../../packages/$1/$2',
+  },
 };

@@ -1,3 +1,4 @@
+import { DEMO_IDS } from '@am/shared';
 import { buildDemoDB } from '../data/seed';
 import { dobFromAge, followUpsDue, lmpFromWeeks, parseDateInput } from '../logic/clinical';
 import { syncOnce, type SyncRequest, type SyncResponse, type SyncTransport } from '../services/sync';
@@ -142,7 +143,7 @@ describe('clinical helpers and seed', () => {
   });
   it('demo data has risk levels and due follow-ups, and nothing queued', () => {
     const db = buildDemoDB('a1');
-    expect(db.patients.demo_p1.riskLevel).toBe('critical');
+    expect(db.patients[DEMO_IDS.patientRecord].riskLevel).toBe('critical');
     expect(db.patients.demo_p3.riskLevel).toBe('high');
     expect(db.outbox).toEqual([]);
     expect(followUpsDue(Object.values(db.visits)).length).toBeGreaterThan(0);

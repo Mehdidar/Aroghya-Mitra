@@ -21,3 +21,5 @@ export { Skeleton } from './Skeleton';
 export { EcgPulseChart } from './EcgPulseChart';
 export { GlowingMedicalOrb } from './GlowingMedicalOrb';
 
+export { ErrorState } from './ErrorState';
+export { VoiceOrb, type VoiceOrbState } from './VoiceOrb';

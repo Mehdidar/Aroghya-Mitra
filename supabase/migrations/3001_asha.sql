@@ -1,72 +1,79 @@
--- ASHA module (P3) tables. Mirrors features/asha/types.ts; nested objects are stored as JSON.
--- Works on PostgreSQL. Upserts use last-write-wins on updated_at (see services/sync.ts contract).
+-- =============================================================================
+-- 3001  ASHA module (P3): home visits and rule-engine alerts.
+-- =============================================================================
+-- Patients and referrals live in the base tables (1000_base.sql): the ASHA
+-- columns (categories, pregnancy, newborn, home, risk_level; referral urgency,
+-- alert_ids, notes) are already on those rows. This file adds the two tables
+-- only the ASHA app writes. Sync is last-write-wins on updated_at
+-- (apps/mobile/features/asha/services/sync.ts); alert ids are deterministic
+-- (`${patientId}:${ruleId}:${visitId}`), so re-sends are idempotent.
+-- =============================================================================
 
-CREATE TABLE IF NOT EXISTS patients (
-  id               TEXT PRIMARY KEY,
-  name             TEXT NOT NULL,
-  sex              CHAR(1) NOT NULL CHECK (sex IN ('F', 'M')),
-  dob              TIMESTAMPTZ NOT NULL,
-  phone            TEXT,
-  village          TEXT NOT NULL,
-  address          TEXT,
-  categories       TEXT[] NOT NULL DEFAULT '{general}',
-  assigned_asha_id TEXT NOT NULL,
-  pregnancy        JSONB,
-  newborn          JSONB,
-  conditions       TEXT[],
-  home             JSONB,
-  risk_level       TEXT NOT NULL DEFAULT 'none',
-  updated_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+create table if not exists public.asha_visits (
+  id           uuid primary key,
+  patient_id   uuid not null references public.patients(id) on delete cascade,
+  asha_id      uuid not null references public.profiles(id),
+  visited_at   timestamptz not null,
+  status       text not null check (status in ('completed', 'follow_up', 'referred', 'not_at_home')),
+  gps          jsonb,
+  vitals       jsonb,
+  notes        text,
+  photos       text[] not null default '{}',
+  follow_up_on timestamptz,
+  source       text not null default 'manual' check (source in ('manual', 'voice')),
+  transcript   text,
+  updated_at   timestamptz not null default now()
 );
-CREATE INDEX IF NOT EXISTS patients_asha_idx ON patients (assigned_asha_id, updated_at);
+create index if not exists asha_visits_patient on public.asha_visits (patient_id, visited_at desc);
+create index if not exists asha_visits_asha on public.asha_visits (asha_id, updated_at);
 
-CREATE TABLE IF NOT EXISTS visits (
-  id           TEXT PRIMARY KEY,
-  patient_id   TEXT NOT NULL REFERENCES patients(id),
-  asha_id      TEXT NOT NULL,
-  visited_at   TIMESTAMPTZ NOT NULL,
-  status       TEXT NOT NULL CHECK (status IN ('completed', 'follow_up', 'referred', 'not_at_home')),
-  gps          JSONB,
-  vitals       JSONB,
-  notes        TEXT,
-  photos       TEXT[] NOT NULL DEFAULT '{}',
-  follow_up_on TIMESTAMPTZ,
-  source       TEXT NOT NULL DEFAULT 'manual',
-  transcript   TEXT,
-  updated_at   TIMESTAMPTZ NOT NULL
+create table if not exists public.risk_alerts (
+  id            text primary key,
+  patient_id    uuid not null references public.patients(id) on delete cascade,
+  visit_id      uuid references public.asha_visits(id) on delete set null,
+  asha_id       uuid references public.profiles(id),
+  rule_id       text not null,
+  severity      text not null check (severity in ('low', 'medium', 'high', 'critical')),
+  reason        text not null,
+  reason_key    text not null,
+  reason_params jsonb not null default '{}',
+  evidence      jsonb not null default '[]',
+  source        text not null,
+  -- 'phone' until server/risk has re-evaluated the visit; 'server' after. Doctors only see server-verified severity.
+  verified_by   text not null default 'phone' check (verified_by in ('phone', 'server')),
+  created_at    timestamptz not null,
+  acknowledged  boolean not null default false,
+  resolved_at   timestamptz
 );
-CREATE INDEX IF NOT EXISTS visits_patient_idx ON visits (patient_id, visited_at DESC);
-CREATE INDEX IF NOT EXISTS visits_asha_idx ON visits (asha_id, updated_at);
+create index if not exists risk_alerts_open on public.risk_alerts (severity, created_at desc) where not acknowledged;
+create index if not exists risk_alerts_patient on public.risk_alerts (patient_id, created_at desc);
 
-CREATE TABLE IF NOT EXISTS risk_alerts (
-  id            TEXT PRIMARY KEY, -- `${patientId}:${ruleId}:${visitId}`, so re-sends are idempotent
-  patient_id    TEXT NOT NULL REFERENCES patients(id),
-  visit_id      TEXT REFERENCES visits(id),
-  rule_id       TEXT NOT NULL,
-  severity      TEXT NOT NULL CHECK (severity IN ('low', 'medium', 'high', 'critical')),
-  reason        TEXT NOT NULL,
-  reason_key    TEXT NOT NULL,
-  reason_params JSONB NOT NULL DEFAULT '{}',
-  evidence      JSONB NOT NULL DEFAULT '[]',
-  source        TEXT NOT NULL,
-  created_at    TIMESTAMPTZ NOT NULL,
-  acknowledged  BOOLEAN NOT NULL DEFAULT false
-);
-CREATE INDEX IF NOT EXISTS alerts_open_idx ON risk_alerts (severity, created_at DESC) WHERE NOT acknowledged;
+drop trigger if exists p1_asha_visits_touch on public.asha_visits;
+create trigger p1_asha_visits_touch before update on public.asha_visits for each row execute function public.p1_touch_updated_at();
 
-CREATE TABLE IF NOT EXISTS referrals (
-  id            TEXT PRIMARY KEY,
-  patient_id    TEXT NOT NULL REFERENCES patients(id),
-  from_asha_id  TEXT NOT NULL,
-  to_doctor_id  TEXT,
-  reason        TEXT NOT NULL,
-  alert_ids     TEXT[] NOT NULL DEFAULT '{}',
-  urgency       TEXT NOT NULL CHECK (urgency IN ('routine', 'urgent', 'emergency')),
-  status        TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'seen', 'closed')),
-  created_at    TIMESTAMPTZ NOT NULL,
-  updated_at    TIMESTAMPTZ NOT NULL,
-  notes         TEXT
-);
--- P4 (doctor) queue: open referrals, most urgent first.
-CREATE INDEX IF NOT EXISTS referrals_queue_idx ON referrals (status, urgency, created_at);
-CREATE INDEX IF NOT EXISTS referrals_asha_idx ON referrals (from_asha_id, updated_at);
+-- -------------------------------------------------------- row-level security
+alter table public.asha_visits enable row level security;
+alter table public.risk_alerts enable row level security;
+
+-- The ASHA: own visits and alerts for own caseload. The patient: own history. Doctors/admins: own facility.
+create policy p3_visits_asha_all on public.asha_visits for all to authenticated
+  using (asha_id = auth.uid()) with check (asha_id = auth.uid() and public.p1_is_my_asha_patient(patient_id));
+create policy p3_visits_patient_select on public.asha_visits for select to authenticated
+  using (public.p1_is_own_patient(patient_id));
+create policy p3_visits_facility_select on public.asha_visits for select to authenticated
+  using (public.p1_my_role() in ('doctor', 'admin') and exists (
+    select 1 from public.patients pt where pt.id = asha_visits.patient_id and pt.facility_id = public.p1_my_facility()));
+
+create policy p3_alerts_asha_select on public.risk_alerts for select to authenticated
+  using (public.p1_is_my_asha_patient(patient_id));
+create policy p3_alerts_asha_insert on public.risk_alerts for insert to authenticated
+  with check (public.p1_is_my_asha_patient(patient_id) and verified_by = 'phone');
+create policy p3_alerts_asha_update on public.risk_alerts for update to authenticated
+  using (public.p1_is_my_asha_patient(patient_id)) with check (public.p1_is_my_asha_patient(patient_id) and verified_by = 'phone');
+create policy p3_alerts_patient_select on public.risk_alerts for select to authenticated
+  using (public.p1_is_own_patient(patient_id));
+create policy p3_alerts_facility_select on public.risk_alerts for select to authenticated
+  using (public.p1_my_role() in ('doctor', 'admin') and verified_by = 'server' and exists (
+    select 1 from public.patients pt where pt.id = risk_alerts.patient_id and pt.facility_id = public.p1_my_facility()));
+
+revoke all on public.asha_visits, public.risk_alerts from anon;

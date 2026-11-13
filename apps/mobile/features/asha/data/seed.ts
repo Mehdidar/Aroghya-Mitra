@@ -1,6 +1,8 @@
 import { addDays, dobFromAge, lmpFromWeeks } from '../logic/clinical';
 import { evaluateVisit, maxRisk } from '../logic/rules';
 import { emptyDB, type AshaDB, type StoredPatient } from '../store/store';
+import { DEMO_IDS, DEMO_USERS } from '@am/shared';
+
 import type { ID, Lang, Patient, Visit, Vitals } from '../types';
 
 /** Demo caseload so the app is explorable offline at the hackathon. Never queued for sync. */
@@ -35,7 +37,7 @@ export function buildDemoDB(ashaId: ID, lang: Lang = 'en', now = new Date()): As
   };
 
   add(
-    { id: 'demo_p1', name: 'Rekha Kumari', sex: 'F', dob: dobFromAge(24, 0, now), phone: '9800000001', village: 'Rampur', categories: ['pregnant'], pregnancy: { lmp: lmpFromWeeks(34, now), gravida: 1 } },
+    { id: DEMO_IDS.patientRecord, name: DEMO_USERS.patient.name, sex: 'F', dob: dobFromAge(24, 0, now), phone: '9800000001', village: 'Rampur', categories: ['pregnant'], pregnancy: { lmp: lmpFromWeeks(34, now), gravida: 1 } },
     { daysAgo: 1, vitals: { systolic: 150, diastolic: 100, hemoglobin: 9.2, weightKg: 58, symptoms: ['severe_headache', 'swelling_face_hands'], fetalMovement: 'normal' }, followUpIn: 1 },
   );
   add(
@@ -54,6 +56,20 @@ export function buildDemoDB(ashaId: ID, lang: Lang = 'en', now = new Date()): As
     { id: 'demo_p5', name: 'Mohd. Aslam', sex: 'M', dob: dobFromAge(41, 0, now), village: 'Bhagwanpur', categories: ['general'] },
     { daysAgo: 3, vitals: { temperatureC: 38.2, weightKg: 51, symptoms: ['cough_2_weeks', 'night_sweats', 'weight_loss'] }, followUpIn: 2 },
   );
+  // Rekha was referred after yesterday's visit; the same referral is in the doctor's inbox (DEMO_IDS.referral).
+  const rekhaAlerts = Object.values(db.alerts).filter((a) => a.patientId === DEMO_IDS.patientRecord).map((a) => a.id);
+  db.referrals[DEMO_IDS.referral] = {
+    id: DEMO_IDS.referral,
+    patientId: DEMO_IDS.patientRecord,
+    fromAshaId: ashaId,
+    toDoctorId: DEMO_IDS.doctor,
+    reason: 'BP 150/100 at 34 weeks with severe headache and swelling of face and hands. Possible pre-eclampsia.',
+    alertIds: rekhaAlerts,
+    urgency: 'emergency',
+    status: 'pending',
+    createdAt: day(-1),
+    updatedAt: day(-1),
+  };
   add({ id: 'demo_p6', name: 'Kamla Devi', sex: 'F', dob: dobFromAge(58, 0, now), phone: '9800000006', village: 'Sonpur', categories: ['ncd'], conditions: ['diabetes'] });
   return db;
 }

@@ -53,7 +53,7 @@ describe('Patient Home', () => {
 
   it('renders greeting, services, AI banner and reminders in English', async () => {
     await render(wrap(<PatientHome />));
-    expect(screen.getByText('Hello, Lakshmi')).toBeTruthy();
+    expect(screen.getByText('Hello, Rekha')).toBeTruthy();
     expect(screen.getByText('Services')).toBeTruthy();
     for (const s of ['Chat', 'Voice', 'Prescription', 'Nutrition', 'Hospital map', 'QR card', 'Blood banks', 'Reports'])
       expect(screen.getByText(s)).toBeTruthy();
