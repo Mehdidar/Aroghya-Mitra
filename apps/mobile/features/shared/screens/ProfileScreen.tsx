@@ -111,7 +111,7 @@ export function ProfileScreen({ note }: { note?: string }) {
                       borderWidth: 1,
                       borderColor: selected ? theme.accent.accent : theme.colors.border,
                     }}>
-                    <Text weight="semibold" color={selected ? theme.accent.onAccent : theme.colors.text}>
+                    <Text weight="semibold" color={selected ? theme.accent.onAccent : theme.colors.textPrimary}>
                       {`A ${Math.round(step * 100)}%`}
                     </Text>
                   </Pressable>
