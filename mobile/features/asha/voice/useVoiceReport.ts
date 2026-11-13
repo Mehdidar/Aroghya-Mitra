@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { RecordingPresets, requestRecordingPermissionsAsync, setAudioModeAsync, useAudioRecorder } from 'expo-audio';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Lang } from '../types';
 import { STT_MAX_SECONDS, SttUnavailableError, transcribe } from './sarvam';
@@ -14,7 +14,9 @@ export function useVoiceReport(lang: Lang) {
   const [seconds, setSeconds] = useState(0);
   const [error, setError] = useState<{ kind: 'permission' | 'stt' | 'other'; message: string } | null>(null);
   const [audioUri, setAudioUri] = useState<string | undefined>();
-  const recRef = useRef<Audio.Recording | null>(null);
+  // expo-av was removed from recent SDKs; expo-audio's recorder is a hook-managed object.
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recRef = useRef<typeof recorder | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const onTranscriptRef = useRef<((text: string) => void) | null>(null);
 
@@ -29,12 +31,12 @@ export function useVoiceReport(lang: Lang) {
     recRef.current = null;
     clearTimer();
     try {
-      await rec.stopAndUnloadAsync();
+      await rec.stop();
     } catch {
       // already stopped
     }
-    await Audio.setAudioModeAsync({ allowsRecordingIOS: false }).catch(() => undefined);
-    const uri = rec.getURI() ?? undefined;
+    await setAudioModeAsync({ allowsRecording: false }).catch(() => undefined);
+    const uri = rec.uri ?? undefined;
     setAudioUri(uri);
     if (!uri) {
       setState('idle');
@@ -55,16 +57,17 @@ export function useVoiceReport(lang: Lang) {
     async (onTranscript: (text: string) => void) => {
       setError(null);
       onTranscriptRef.current = onTranscript;
-      const perm = await Audio.requestPermissionsAsync();
+      const perm = await requestRecordingPermissionsAsync();
       if (!perm.granted) {
         setError({ kind: 'permission', message: 'Microphone permission denied' });
         setState('error');
         return;
       }
       try {
-        await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
-        const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
-        recRef.current = recording;
+        await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+        await recorder.prepareToRecordAsync();
+        recorder.record();
+        recRef.current = recorder;
         setSeconds(0);
         setState('recording');
         const startedAt = Date.now();
@@ -78,13 +81,13 @@ export function useVoiceReport(lang: Lang) {
         setState('error');
       }
     },
-    [stop],
+    [stop, recorder],
   );
 
   useEffect(
     () => () => {
       clearTimer();
-      recRef.current?.stopAndUnloadAsync().catch(() => undefined);
+      recRef.current?.stop().catch(() => undefined);
     },
     [],
   );

@@ -1,21 +1,33 @@
 {
   "expo": {
-    "name": "Sarvam Health",
+    "name": "Aroghya Mitra",
     "slug": "sarvam-health",
     "scheme": "sarvamhealth",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "web": {
+      "output": "single"
+    },
     "plugins": [
       "expo-router",
+      "expo-font",
+      "expo-splash-screen",
+      ["expo-localization", { "supportsRTL": true }],
       ["expo-camera", { "cameraPermission": "Scan the hospital entrance QR code to set your starting point." }],
       ["expo-location", { "locationWhenInUsePermission": "Record where a field visit took place." }],
-      ["expo-image-picker", { "cameraPermission": "Attach photos to a field visit." }],
-      ["expo-av", { "microphonePermission": "Record a voice report of your visit." }]
+      ["expo-image-picker", { "cameraPermission": "Attach photos to a field visit.", "photosPermission": "Choose a photo of your food or a report." }],
+      ["expo-audio", { "microphonePermission": "Record a voice report of your visit." }],
+      "expo-secure-store",
+      "expo-sqlite"
     ],
     "android": {
       "package": "com.sarvamhealth.app",
       "permissions": ["CAMERA", "RECORD_AUDIO", "ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    },
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
     }
   }
 }
