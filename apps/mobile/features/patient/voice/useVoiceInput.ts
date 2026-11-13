@@ -10,6 +10,7 @@ import { Platform } from 'react-native';
 import { LANGUAGES, type LanguageCode } from '@am/shared';
 
 import { ApiError, apiFetch } from '@/features/shared/services/api';
+import { filePart } from '@/features/shared/services/filePart';
 
 export const STT_MAX_SECONDS = 29;
 
@@ -36,7 +37,8 @@ export async function transcribeFile(uri: string, lang: LanguageCode, fetchImpl?
     const blob = await (await fetch(uri)).blob();
     form.append('file', blob, name);
   } else {
-    form.append('file', { uri, name, type: 'audio/mp4' } as unknown as Blob);
+    // expo/fetch does not send React Native's { uri, name, type } parts: see filePart.ts.
+    form.append('file', await filePart(uri, name, 'audio/mp4'));
   }
   form.append('language_code', LANGUAGES[lang].sarvam);
   form.append('mode', 'transcribe');

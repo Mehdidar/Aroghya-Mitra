@@ -9,6 +9,7 @@ import { ApiError, apiFetch } from '@/features/shared/services/api';
 
 import { demoExtraction } from './demoExtraction';
 import type { ExtractResponse } from './types';
+import { filePart } from '@/features/shared/services/filePart';
 
 export type PrescriptionImage = { uri: string; mimeType?: string | null; fileName?: string | null };
 
@@ -24,7 +25,7 @@ async function buildForm(image: PrescriptionImage, fetchImpl: typeof fetch): Pro
   const name = image.fileName || 'prescription.jpg';
   const type = image.mimeType || 'image/jpeg';
   if (Platform.OS === 'web') form.append('file', await (await fetchImpl(image.uri)).blob(), name);
-  else form.append('file', { uri: image.uri, name, type } as unknown as Blob);
+  else form.append('file', await filePart(image.uri, name, type));
   return form;
 }
 

@@ -1,5 +1,6 @@
 import { fingerprint, type AshaStore, type OutboxItem, type StoredPatient } from '../store/store';
 import type { ID, ISODate, Referral, RiskAlert, Visit } from '../types';
+import { filePart } from '@/features/shared/services/filePart';
 
 /**
  * Wire contract with the backend (P1 owns the server; this is what the ASHA app needs):
@@ -123,8 +124,8 @@ export function createHttpTransport(
     async uploadPhoto(localUri) {
       const form = new FormData();
       const name = localUri.split('/').pop() || 'photo.jpg';
-      // React Native's FormData accepts { uri, name, type } file descriptors.
-      form.append('file', { uri: localUri, name, type: 'image/jpeg' } as unknown as Blob);
+      // expo/fetch does not send React Native's { uri, name, type } parts: see filePart.ts.
+      form.append('file', await filePart(localUri, name, 'image/jpeg'));
       const res = await withTimeout(`${baseUrl}/asha/photos`, { method: 'POST', headers: await headers(), body: form }, 60_000);
       const body = (await res.json()) as { url: string };
       return body.url;

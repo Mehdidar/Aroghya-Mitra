@@ -7,6 +7,7 @@ import { Platform } from 'react-native';
 
 import { mockRecognition } from './mock';
 import { FoodRecognitionSchema, type FoodScanResult } from './types';
+import { filePart } from '@/features/shared/services/filePart';
 
 export type FoodImageInput = { uri: string; mimeType?: string | null; fileName?: string | null };
 
@@ -47,8 +48,8 @@ async function buildForm(image: FoodImageInput, platform: string, fetchImpl: typ
     const blob = await (await fetchImpl(image.uri)).blob();
     form.append('file', blob, name);
   } else {
-    // React Native's FormData takes a { uri, name, type } descriptor for files.
-    form.append('file', { uri: image.uri, name, type } as unknown as Blob);
+    // expo/fetch does not send React Native's { uri, name, type } parts: see filePart.ts.
+    form.append('file', await filePart(image.uri, name, type));
   }
   return form;
 }

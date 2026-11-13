@@ -2,6 +2,7 @@ import { apiFetch, ApiError } from '@/features/shared/services/api';
 
 import { config } from '../services/config';
 import type { Lang } from '../types';
+import { filePart } from '@/features/shared/services/filePart';
 
 /**
  * Speech-to-text for the voice visit report, through the server's
@@ -24,7 +25,7 @@ export async function transcribe(fileUri: string, lang: Lang): Promise<string> {
   if (!sttConfigured()) throw new SttUnavailableError('Speech-to-text is not configured');
 
   const form = new FormData();
-  form.append('file', { uri: fileUri, name: 'visit.m4a', type: 'audio/mp4' } as unknown as Blob);
+  form.append('file', await filePart(fileUri, 'visit.m4a', 'audio/mp4'));
   form.append('language_code', LANG_CODE[lang]);
 
   try {
