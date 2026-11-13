@@ -14,7 +14,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { useLanguage } from '../../shared/i18n/useLanguage';
-import { buildTheme, useTheme, type Theme } from '../../shared/theme';
+import { useTheme, type Theme } from '../../shared/theme';
 import {
   Card as SharedCard,
   Icon,
@@ -78,9 +78,6 @@ function ashaColors(t: Theme) {
 }
 
 export type AshaColors = ReturnType<typeof ashaColors>;
-
-/** Temporary: static standard-contrast copy for screens not yet on useAshaColors(). */
-export const colors = ashaColors(buildTheme('asha', false, 1));
 
 /** The old `colors` object, derived from the theme (sage accent, high contrast aware). */
 export function useAshaColors(): AshaColors {
