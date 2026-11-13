@@ -3,10 +3,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { DEMO_IDS } from '@am/shared';
 
-import DoctorAdmin from '@/app/(doctor)/admin';
+import DoctorAdmin from '@/app/(doctor)/(tabs)/admin';
 import ConsultationScreen from '@/app/(doctor)/consultation/[patientId]';
-import DoctorDashboard from '@/app/(doctor)/index';
-import DoctorReferrals from '@/app/(doctor)/referrals';
+import DoctorDashboard from '@/app/(doctor)/(tabs)/index';
+import DoctorReferrals from '@/app/(doctor)/(tabs)/referrals';
 import { mergeReferrals, toRecordReferral } from '@/features/doctor/ashaBridge';
 import { remindersFor } from '@/features/doctor/prescriptions';
 import { resolveScan } from '@/features/doctor/qrScan';
