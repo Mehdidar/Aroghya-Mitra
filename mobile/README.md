@@ -96,7 +96,7 @@ Requirements: Node 24 (`.nvmrc`; Node 25 works with engine warnings). `npm insta
 role and press **Continue in demo mode** (instant), or **Sign in with phone** (demo OTP: any valid
 10-digit number, code `123456`; Supabase is `TODO(Phase B)` in `features/shared/auth/AuthService.ts`).
 The root layout guards the groups with `Stack.Protected`: patient → `(patient)`, ASHA → `(asha)`
-(`/asha`), doctor and admin → `(doctor)`. Profile → **Sign out** (ASHA: header button) returns to the
+(`/asha`), doctor and admin → `(doctor)`. Profile → **Sign out** (ASHA: the person button on the home hero opens `/asha/profile`) returns to the
 role picker. The session `{ role, language, onboarded }` lives in `features/shared/state/session.ts`
 (zustand + AsyncStorage); `useCurrentUser()` gives the demo user (patient: Lakshmi Gowda).
 
