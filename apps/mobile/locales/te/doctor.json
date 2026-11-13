@@ -122,7 +122,8 @@
     "errorSlots": "ప్రతి మందుకు కనీసం ఒక సమయం ఎంచుకోండి.",
     "untitled": "సంప్రదింపు",
     "labs": "ల్యాబ్‌లు: {{labs}}",
-    "followUpOn": "ఫాలో-అప్ {{date}}"
+    "followUpOn": "ఫాలో-అప్ {{date}}",
+    "savedAnnounce": "సంప్రదింపు సేవ్ అయింది"
   },
   "slots": {
     "morning": "ఉదయం",

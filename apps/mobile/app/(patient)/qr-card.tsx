@@ -8,6 +8,7 @@ import { useCurrentUser } from '@/features/shared/state/session';
 import { useRecords } from '@/features/shared/data/recordsStore';
 import { useTheme } from '@/features/shared/theme';
 import { Card, EmptyState, ErrorState, Heading, IconButton, Pill, PrimaryButton, Screen, SecondaryButton, Skeleton, Text } from '@/features/shared/ui';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 /** The QR health card: a short-lived code a doctor scans to open this patient's history. */
 export default function QrCardScreen() {
@@ -24,6 +25,7 @@ export default function QrCardScreen() {
         <IconButton icon="arrow-back" accessibilityLabel={t('common:actions.back', { defaultValue: 'Back' })} onPress={() => (router.canGoBack() ? router.back() : router.replace('/health'))} flipInRTL />
         <Heading variant="h2">{t('qr.title')}</Heading>
       </View>
+      <ScreenGuide id="qrCard" />
 
       <Card radius="xxl" padding="lg">
         <View style={{ alignItems: 'center', gap: theme.space[4] }}>

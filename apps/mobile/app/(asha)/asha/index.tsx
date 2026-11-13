@@ -23,6 +23,7 @@ import {
   type IconName,
   type PillTone,
 } from '../../../features/shared/ui';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 const FILTERS: (PatientCategory | 'all' | 'due')[] = ['all', 'due', 'pregnant', 'newborn', 'ncd', 'tb', 'elderly'];
 
@@ -111,7 +112,7 @@ export default function AshaHome() {
 
         <SyncPill status={sync} pending={db.outbox.length} t={t} onPress={syncNow} />
 
-        <View style={{ flexDirection: 'row', gap: theme.space[3] }}>
+        <View style={{ flexDirection: 'row', alignItems: 'stretch', gap: theme.space[3] }}>
           <StatTile n={highRisk} label={t('home.highRisk')} icon="warning-outline" danger onPress={() => router.push('/asha/alerts')} testID="tile-high-risk" />
           <StatTile n={due.size} label={t('home.dueToday')} icon="calendar-outline" onPress={() => setFilter('due')} testID="tile-due" />
           <StatTile n={openReferrals} label={t('home.referrals')} icon="paper-plane-outline" onPress={() => router.push('/asha/referrals')} testID="tile-referrals" />
@@ -122,14 +123,16 @@ export default function AshaHome() {
         {openAlerts.length ? (
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel={`${t('home.attentionTitle')}. ${t('home.attentionBody', { n: openAlerts.length })}`}
             onPress={() => router.push('/asha/alerts')}
             testID="attention-card"
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',
               gap: theme.space[3],
+              minHeight: theme.sizes.touchMin,
               padding: theme.layout.cardPadding,
-              borderRadius: theme.radii.lg,
+              borderRadius: theme.radii.xl,
               backgroundColor: theme.colors.status.danger.bg,
               borderWidth: theme.highContrast ? 1 : 0,
               borderColor: theme.colors.status.danger.solid,
@@ -148,8 +151,8 @@ export default function AshaHome() {
             >
               <Icon name="warning" size={theme.sizes.icon.sm} color={theme.colors.status.onSolid} />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text variant="bodyStrong" color={theme.colors.status.danger.fg}>
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text variant="title" color={theme.colors.status.danger.fg}>
                 {t('home.attentionTitle')}
               </Text>
               <Text variant="caption" color={theme.colors.status.danger.fg}>
@@ -181,6 +184,7 @@ export default function AshaHome() {
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.page }} testID="screen-asha-home">
       <Stack.Screen options={{ title: t('app.title') }} />
+      <ScreenGuide id="ashaHome" button={false} />
       <FlatList
         data={patients}
         keyExtractor={(p) => p.id}
@@ -226,12 +230,13 @@ function StatTile({ n, label, icon, onPress, danger, testID }: { n: number; labe
       testID={testID}
       style={({ pressed }) => ({ flex: 1, transform: [{ scale: pressed ? theme.motion.pressScale : 1 }] })}
     >
-      <Glass radius="lg" style={{ padding: theme.space[3], gap: theme.space[1], minHeight: theme.sizes.tileMin }}>
+      <Glass radius="xl" style={{ flexGrow: 1, padding: theme.space[3], gap: theme.space[1], minHeight: theme.sizes.tileMin }}>
         <Icon name={icon} size={theme.sizes.icon.sm} color={alarm ? theme.colors.status.danger.icon : theme.accent.accentIcon} />
         <Text variant="h2" weight="bold" numeric color={alarm ? theme.colors.status.danger.fg : theme.colors.textPrimary}>
           {String(n)}
         </Text>
-        <Text variant="caption" tone="secondary" numberOfLines={2}>
+        {/* No line cap: at large text sizes the label wraps and the tile grows instead of clipping. */}
+        <Text variant="caption" tone="secondary">
           {label}
         </Text>
       </Glass>
@@ -273,12 +278,13 @@ function SyncPill({ status, pending, t, onPress }: { status: SyncStatus; pending
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={label}
       accessibilityState={{ disabled }}
       onPress={onPress}
       disabled={disabled}
       hitSlop={theme.sizes.hitSlop}
       testID="asha-sync-pill"
-      style={{ alignSelf: 'flex-start', minHeight: theme.sizes.touchMin - 8, justifyContent: 'center' }}
+      style={{ alignSelf: 'flex-start', minHeight: theme.sizes.touchMin, justifyContent: 'center' }}
     >
       <Pill label={label} tone={tone} icon={icon} style={{ minHeight: 32 }} />
     </Pressable>

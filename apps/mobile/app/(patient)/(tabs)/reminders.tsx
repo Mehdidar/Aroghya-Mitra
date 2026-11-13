@@ -10,6 +10,8 @@ import { useTheme } from '@/features/shared/theme';
 import { Card, EmptyState, Heading, Icon, Pill, PrimaryButton, Screen, SectionHeader, StatCard, Text } from '@/features/shared/ui';
 import { currentPatientId } from '@/features/shared/state/session';
 import { pullPatientRecords, usePullWhileOpen } from '@/features/shared/data/serverSync';
+import { feedback } from '@/features/shared/feedback';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 const fmt = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 
@@ -62,6 +64,7 @@ export default function PatientReminders() {
         <Heading variant="h1">{t('title')}</Heading>
         <Text tone="secondary">{r.meds.length ? t('subtitle', { taken: r.takenToday, total: r.timeline.length }) : t('subtitleEmpty')}</Text>
       </View>
+      <ScreenGuide id="reminders" />
       {r.meds.length ? (
         <View style={{ flexDirection: 'row', gap: theme.space[3] }}>
           <StatCard label={t('streak')} value={String(r.streak)} unit={t('days')} icon="flame" style={{ flex: 1 }} testID="stat-streak" />
@@ -77,7 +80,11 @@ export default function PatientReminders() {
           <View key={g.slot} style={{ gap: theme.space[2] }}>
             <SectionHeader title={t(`slots.${g.slot}`)} />
             {g.items.map((item) => (
-              <DoseRow key={item.dose.id} item={item} onLog={(status) => r.logDose(item.dose.id, status, new Date(), item.dose)} />
+              <DoseRow key={item.dose.id} item={item} onLog={(status) => {
+                  r.logDose(item.dose.id, status, new Date(), item.dose);
+                  if (status === 'taken') feedback.success(t('home.takenAnnounce', { ns: 'patient', name: item.dose.medicineName }));
+                  else feedback.tap();
+                }} />
             ))}
           </View>
         ))

@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Image, Pressable, View } from 'react-native';
 import { AlertCard } from '../../../../features/asha/components/AlertCard';
 import { Button, Card, Chip, ChipRow, Field, H, Muted, Row, Screen, useAshaColors } from '../../../../features/asha/components/ui';
@@ -14,7 +14,7 @@ import type { GeoPoint, Patient, Symptom, Visit, VisitStatus, Vitals } from '../
 import { sttConfigured } from '../../../../features/asha/voice/sarvam';
 import { useVoiceReport } from '../../../../features/asha/voice/useVoiceReport';
 import { useTheme } from '../../../../features/shared/theme';
-import { GlowOrb, Icon, Text } from '../../../../features/shared/ui';
+import { EmptyState, GlowOrb, Icon, Text } from '../../../../features/shared/ui';
 
 type NumField = Exclude<keyof Vitals, 'recordedAt' | 'symptoms' | 'fetalMovement'>;
 
@@ -57,8 +57,9 @@ export default function NewVisit() {
   const theme = useTheme();
   const colors = useAshaColors();
   const patient = db.patients[patientId];
-  const visitId = useRef(newId('visit')).current;
-  const startedAt = useRef(new Date().toISOString()).current;
+  // Fixed for the life of the screen (lazy state rather than ref.current, which is not read during render).
+  const [visitId] = useState(() => newId('visit'));
+  const [startedAt] = useState(() => new Date().toISOString());
 
   const [values, setValues] = useState<Partial<Record<NumField, string>>>({});
   const [symptoms, setSymptoms] = useState<Symptom[]>([]);
@@ -133,7 +134,7 @@ export default function NewVisit() {
   if (!patient || !draft) {
     return (
       <Screen>
-        <Muted>{t('patient.notFound')}</Muted>
+        <EmptyState icon="person-outline" title={t('patient.notFound')} />
       </Screen>
     );
   }
@@ -211,7 +212,7 @@ export default function NewVisit() {
       <Stack.Screen options={{ title: `${t('visit.title')} · ${patient.name}` }} />
 
       <Card>
-        <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap' }}>
           <H>{t('visit.voice')}</H>
           <Text variant="caption" tone="tertiary" style={{ flexShrink: 1 }} align="end">
             {gps === 'pending' ? t('visit.gpsPending') : gps === 'off' ? t('visit.gpsOff') : t('visit.gps', { m: Math.round(gps.accuracyM ?? 0) })}
@@ -329,9 +330,14 @@ export default function NewVisit() {
         <Field label={t('visit.notes')} value={notes} onChangeText={setNotes} multiline />
         <H>{t('visit.photos')}</H>
         <Row style={{ flexWrap: 'wrap', gap: theme.space[3] }}>
-          {photos.map((uri) => (
-            <Pressable key={uri} onLongPress={() => setPhotos((p) => p.filter((x) => x !== uri))}>
-              <Image source={{ uri }} style={{ width: 88, height: 88, borderRadius: theme.radii.sm }} />
+          {photos.map((uri, i) => (
+            <Pressable
+              key={uri}
+              accessibilityRole="imagebutton"
+              accessibilityLabel={`${t('visit.photos')} ${i + 1}`}
+              onLongPress={() => setPhotos((p) => p.filter((x) => x !== uri))}
+            >
+              <Image source={{ uri }} style={{ width: 88, height: 88, borderRadius: theme.radii.md }} />
             </Pressable>
           ))}
           <Pressable
@@ -339,10 +345,12 @@ export default function NewVisit() {
             accessibilityLabel={t('visit.addPhotoCta')}
             onPress={addPhoto}
             testID="add-photo"
+            // min sizes (not fixed): the label can wrap at large text without being clipped.
             style={({ pressed }) => ({
-              width: 88,
-              height: 88,
-              borderRadius: theme.radii.sm,
+              minWidth: 88,
+              minHeight: 88,
+              maxWidth: 140,
+              borderRadius: theme.radii.md,
               borderWidth: 1.5,
               borderStyle: 'dashed',
               borderColor: theme.colors.borderDashed,
@@ -354,7 +362,7 @@ export default function NewVisit() {
             })}
           >
             <Icon name="camera-outline" size={theme.sizes.icon.md} color={theme.accent.accentIcon} />
-            <Text variant="caption" weight="semibold" align="center" numberOfLines={2}>
+            <Text variant="caption" weight="semibold" align="center">
               {t('visit.addPhotoCta')}
             </Text>
           </Pressable>

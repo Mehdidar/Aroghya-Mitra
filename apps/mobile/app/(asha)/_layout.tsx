@@ -35,10 +35,12 @@ function AshaStack() {
   const [synced, setSynced] = useState(false);
 
   useEffect(() => {
-    if (!ready) return;
-    if (lang !== target) setLang(target);
-    else setSynced(true);
+    if (ready && lang !== target) setLang(target);
   }, [ready, lang, target, setLang]);
+
+  // Latch once the store is ready in the right language (set during render, not in the effect);
+  // later language switches re-render in place without going back to the loader.
+  if (!synced && ready && lang === target) setSynced(true);
 
   if (!synced) return <Loading />;
 

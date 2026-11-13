@@ -12,6 +12,7 @@ import { useRecords } from '@/features/shared/data/recordsStore';
 import { pullPatientRecords, usePullWhileOpen } from '@/features/shared/data/serverSync';
 import { useTheme } from '@/features/shared/theme';
 import { Avatar, Card, EmptyState, Heading, Icon, IconButton, Pill, PrimaryButton, Screen, SecondaryButton, SectionHeader, Text } from '@/features/shared/ui';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 /** One patient as the doctor sees them: summary, vitals, prescriptions, consultations, referrals, alerts. */
 export default function DoctorPatient() {
@@ -58,6 +59,7 @@ export default function DoctorPatient() {
         </View>
       </View>
       {via === 'qr' ? <Pill label={t('patient.openedViaQr')} tone="info" icon="qr-code-outline" /> : null}
+      <ScreenGuide id="doctorPatient" />
       {openAlerts.length ? <Pill label={t('patient.highRiskOpen', { count: openAlerts.length })} tone="danger" icon="warning" /> : null}
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2] }}>

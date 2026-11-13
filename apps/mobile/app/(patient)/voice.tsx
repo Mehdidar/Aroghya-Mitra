@@ -4,7 +4,7 @@
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 
 import { EmergencyBanner } from '@/features/patient/chat/EmergencyBanner';
 import { useAiChat } from '@/features/patient/chat/useAiChat';
@@ -14,6 +14,8 @@ import { useVoiceInput } from '@/features/patient/voice/useVoiceInput';
 import { useSession } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
 import { Icon, IconButton, Pill, Screen, Text, VoiceOrb, type VoiceOrbState, type IconName } from '@/features/shared/ui';
+import { feedback } from '@/features/shared/feedback';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 const SAMPLES = ['fever', 'bp'] as const;
 
@@ -52,6 +54,10 @@ export default function VoiceConsultation() {
   const { t } = useTranslation('patient');
   const theme = useTheme();
   const language = useSession((s) => s.language);
+  // Shorter phones (iPhone SE, small Androids) get a smaller orb and caption so nothing is cramped.
+  const { height } = useWindowDimensions();
+  const compact = height < 720;
+  const orbSize = height < 640 ? 88 : compact ? 104 : 128;
   const [transcript, setTranscript] = useState<string | null>(null);
   const [reply, setReply] = useState<string | null>(null);
   const [speaking, setSpeaking] = useState(false);
@@ -88,8 +94,12 @@ export default function VoiceConsultation() {
       setSpeaking(false);
       return;
     }
-    if (voice.state === 'recording') return void voice.stop();
+    if (voice.state === 'recording') {
+      feedback.tap();
+      return void voice.stop();
+    }
     if (orbState !== 'idle') return;
+    feedback.tap();
     setReply(null);
     await voice.start((tr) => {
       setTranscript(tr.text);
@@ -115,6 +125,7 @@ export default function VoiceConsultation() {
 
   return (
     <Screen scroll={false} background="page" testID="screen-voice-consultation" contentStyle={{ gap: theme.space[4] }}>
+      <ScreenGuide id="voice" button={false} />
       <VoicePanel style={{ flex: 1 }} testID="voice-panel">
         <View style={{ flex: 1, paddingHorizontal: theme.space[5], paddingTop: theme.space[4], paddingBottom: theme.space[2] }}>
           {/* Header: back · title and call timer · nothing (keeps the title centred) */}
@@ -149,7 +160,7 @@ export default function VoiceConsultation() {
               color={PANEL.text}
               accessibilityLiveRegion="polite"
               testID={answer ? 'voice-reply' : 'voice-caption'}
-              style={{ fontSize: answer && answer.length > 160 ? 20 : 26, lineHeight: answer && answer.length > 160 ? 28 : 34, fontWeight: '600', textShadowColor: 'rgba(14, 46, 134, 0.35)', textShadowRadius: 12 }}>
+              style={{ fontSize: answer && answer.length > 160 ? (compact ? 18 : 20) : compact ? 22 : 26, lineHeight: answer && answer.length > 160 ? (compact ? 25 : 28) : compact ? 29 : 34, fontWeight: '600', textShadowColor: 'rgba(14, 46, 134, 0.35)', textShadowRadius: 12 }}>
               {caption}
             </Text>
             <View style={{ flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: theme.space[2] }}>
@@ -182,7 +193,7 @@ export default function VoiceConsultation() {
 
           {/* The orb */}
           <View style={{ alignItems: 'center' }}>
-            <VoiceOrb state={orbState} level={voice.level} size={128} onPress={() => void onOrb()} accessibilityLabel={t(`voice.${statusKey}`)} testID="voice-orb" />
+            <VoiceOrb state={orbState} level={voice.level} size={orbSize} onPress={() => void onOrb()} accessibilityLabel={t(`voice.${statusKey}`)} testID="voice-orb" />
           </View>
         </View>
       </VoicePanel>

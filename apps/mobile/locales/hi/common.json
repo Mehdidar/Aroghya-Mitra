@@ -63,7 +63,11 @@
     "highContrastOn": "हाई कॉन्ट्रास्ट: चालू",
     "highContrastOff": "हाई कॉन्ट्रास्ट: बंद",
     "readAloud": "यह स्क्रीन पढ़कर सुनाएँ",
-    "stopReading": "पढ़ना रोकें"
+    "stopReading": "पढ़ना रोकें",
+    "appearance": "रूप",
+    "appearance_system": "फ़ोन जैसा",
+    "appearance_light": "हल्का",
+    "appearance_dark": "गहरा"
   },
   "dev": {
     "title": "कंपोनेंट गैलरी"

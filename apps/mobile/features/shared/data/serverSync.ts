@@ -20,7 +20,7 @@ import { sameRecord, type Patient, type Prescription, type RecordReferral, type 
 import { remindersFor } from '@/features/doctor/prescriptions';
 import { apiJson } from '@/features/shared/services/api';
 
-import { flushOutbox, syncEnabled } from './outbox';
+import { flushOutbox, markOffline, markSynced, syncEnabled } from './outbox';
 import { useRecords, type RecordsState } from './recordsStore';
 
 type Bundle = Pick<RecordsState, 'vitals' | 'prescriptions' | 'doseLogs' | 'reports' | 'consultations' | 'referrals' | 'riskAlerts'> & { patient: Patient };
@@ -94,6 +94,7 @@ export function mergeInbox(state: Data, inbox: Inbox): Partial<Data> {
 
 export type PullOutcome = { ok: boolean; changed: number };
 const apply = (patch: Partial<Data>): PullOutcome => {
+  markSynced();
   const changed = Object.keys(patch).length;
   if (changed) useRecords.setState(patch);
   return { ok: true, changed };
@@ -106,6 +107,7 @@ export async function pullPatientRecords(patientId: string): Promise<PullOutcome
     const res = await apiJson<{ ok: boolean; bundle: Bundle }>(`/records/bundle/${encodeURIComponent(patientId)}`, undefined, { timeoutMs: 10_000 });
     return res.ok ? apply(mergeBundle(useRecords.getState(), res.bundle)) : { ok: false, changed: 0 };
   } catch {
+    markOffline();
     return { ok: false, changed: 0 };
   }
 }
@@ -117,6 +119,7 @@ export async function pullDoctorInbox(): Promise<PullOutcome> {
     const res = await apiJson<{ ok: boolean } & Inbox>('/records/inbox', undefined, { timeoutMs: 10_000 });
     return res.ok ? apply(mergeInbox(useRecords.getState(), res)) : { ok: false, changed: 0 };
   } catch {
+    markOffline();
     return { ok: false, changed: 0 };
   }
 }

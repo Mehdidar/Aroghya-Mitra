@@ -11,6 +11,7 @@ import { EmergencyBanner } from '@/features/patient/chat/EmergencyBanner';
 import type { ChatMessage } from '@/features/patient/chat/types';
 import { useTheme } from '@/features/shared/theme';
 import { Avatar, Card, Heading, Icon, IconButton, Pill, Screen, Skeleton, Text, TextField } from '@/features/shared/ui';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 function Bubble({ m }: { m: ChatMessage }) {
   const { t } = useTranslation('patient');
@@ -70,6 +71,7 @@ export default function PatientAssistant() {
 
   return (
     <Screen scroll={false} background="mist" padded={false} testID="screen-assistant">
+      <ScreenGuide id="assistant" button={false} />
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[3], paddingHorizontal: theme.layout.screenPaddingX, paddingVertical: theme.space[3] }}>
           <IconButton icon="chevron-back" flipInRTL accessibilityLabel={t('chat.back')} onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />

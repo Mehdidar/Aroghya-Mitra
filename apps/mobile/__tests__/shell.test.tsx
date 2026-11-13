@@ -51,17 +51,21 @@ describe('Patient Home', () => {
     await useLanguage('en');
   });
 
-  it('renders greeting, services, AI banner and reminders in English', async () => {
+  it('renders greeting, voice card, next medicine, services and the language chip in English', async () => {
     await render(wrap(<PatientHome />));
     expect(screen.getByText('Hello, Rekha')).toBeTruthy();
     expect(screen.getByText('Services')).toBeTruthy();
-    for (const s of ['Chat', 'Voice', 'Prescription', 'Nutrition', 'Hospital map', 'QR card', 'Blood banks', 'Reports'])
+    for (const s of ['Chat', 'Voice', 'Prescription', 'Nutrition', 'Nearby care', 'QR card', 'Blood banks', 'Reports'])
       expect(screen.getByText(s)).toBeTruthy();
-    expect(screen.getByText('AI Health Assistant')).toBeTruthy();
+    // One way into the assistant: the voice card, with "Type instead" for text chat.
+    expect(screen.queryByText('AI Health Assistant')).toBeNull();
+    expect(screen.getByText('Talk to Aroghya Mitra')).toBeTruthy();
+    expect(screen.getByTestId('type-instead')).toBeTruthy();
+    expect(screen.getByTestId('language-chip')).toBeTruthy();
+    expect(screen.getByTestId('sync-status')).toBeTruthy();
     // Home must not show invented vitals: the app has no live source for them.
     expect(screen.queryByText('Heart rate')).toBeNull();
     expect(screen.queryByText('Weight')).toBeNull();
-    expect(screen.getByText('Upcoming reminders')).toBeTruthy();
     // Real doses from the reminder plan (which ones depends on the time of day), never the old placeholder list.
     expect(screen.queryByText('Metformin 500 mg')).toBeNull();
     const card = screen.getByTestId('reminders-card');
@@ -72,8 +76,7 @@ describe('Patient Home', () => {
     await useLanguage('ur');
     await render(wrap(<PatientHome />));
     expect(screen.getByText('خدمات')).toBeTruthy();
-    expect(screen.getByText('AI صحت معاون')).toBeTruthy();
-    expect(screen.getByText('آنے والی یاد دہانیاں')).toBeTruthy();
+    expect(screen.getByText('آروگیہ مترا سے بات کریں')).toBeTruthy();
     expect(screen.queryByText('Services')).toBeNull();
   });
 });

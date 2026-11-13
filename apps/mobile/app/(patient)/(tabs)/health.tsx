@@ -9,13 +9,14 @@ import { usePatientHistory } from '@/features/health/useHistory';
 import { useRecords } from '@/features/shared/data/recordsStore';
 import { useTheme } from '@/features/shared/theme';
 import { Card, EmptyState, Heading, Icon, Pill, Screen, SectionHeader, ServiceTile, Skeleton, Text, type IconName, type TileTint } from '@/features/shared/ui';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
-const LINKS: { id: 'qr' | 'history' | 'reports' | 'bloodBanks' | 'hospital'; icon: IconName; tint: TileTint; href: '/qr-card' | '/history' | '/upload-report' | '/blood-banks' | '/hospital' }[] = [
+const LINKS: { id: 'qr' | 'history' | 'reports' | 'bloodBanks' | 'hospital'; icon: IconName; tint: TileTint; href: '/qr-card' | '/history' | '/upload-report' | '/blood-banks' | '/nearby' }[] = [
   { id: 'qr', icon: 'qr-code', tint: 'blue', href: '/qr-card' },
   { id: 'history', icon: 'time', tint: 'mint', href: '/history' },
   { id: 'reports', icon: 'folder-open', tint: 'lavender', href: '/upload-report' },
   { id: 'bloodBanks', icon: 'water', tint: 'pink', href: '/blood-banks' },
-  { id: 'hospital', icon: 'map', tint: 'butter', href: '/hospital' },
+  { id: 'hospital', icon: 'map', tint: 'butter', href: '/nearby' },
 ];
 
 const CATEGORY_ICON: Record<string, IconName> = { blood_test: 'water-outline', cardiology: 'heart-outline', prescription: 'receipt-outline', imaging: 'scan-outline', xray: 'bandage-outline' };
@@ -40,6 +41,7 @@ export default function PatientHealth() {
           <Pill label={t('common:demo.badge')} tone="warning" icon="flask-outline" />
         </View>
       </View>
+      <ScreenGuide id="health" />
 
       {history ? (
         <StatCards cards={history.statCards} testID="hub-stats" />

@@ -63,7 +63,11 @@
     "highContrastOn": "ہائی کنٹراسٹ: آن",
     "highContrastOff": "ہائی کنٹراسٹ: آف",
     "readAloud": "یہ اسکرین پڑھ کر سنائیں",
-    "stopReading": "پڑھنا روکیں"
+    "stopReading": "پڑھنا روکیں",
+    "appearance": "ظاہری شکل",
+    "appearance_system": "فون کے مطابق",
+    "appearance_light": "ہلکا",
+    "appearance_dark": "گہرا"
   },
   "dev": {
     "title": "اجزاء کی گیلری"

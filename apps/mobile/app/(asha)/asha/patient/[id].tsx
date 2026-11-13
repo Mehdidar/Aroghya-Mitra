@@ -9,7 +9,7 @@ import { urgencyFor } from '../../../../features/asha/logic/rules';
 import { useAsha } from '../../../../features/asha/store/AshaContext';
 import type { Visit, Vitals } from '../../../../features/asha/types';
 import { useTheme } from '../../../../features/shared/theme';
-import { Avatar, Icon, Pill, SectionHeader, Text } from '../../../../features/shared/ui';
+import { Avatar, EmptyState, Icon, Pill, SectionHeader, Text, type IconName } from '../../../../features/shared/ui';
 
 export default function PatientDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -24,7 +24,7 @@ export default function PatientDetail() {
   if (!patient) {
     return (
       <Screen>
-        <Muted>{t('patient.notFound')}</Muted>
+        <EmptyState icon="person-outline" title={t('patient.notFound')} />
       </Screen>
     );
   }
@@ -93,15 +93,14 @@ export default function PatientDetail() {
         {alerts.length ? (
           alerts.map((a) => <AlertCard key={a.id} alert={a} lang={lang} onAck={a.acknowledged ? undefined : () => store.acknowledgeAlert(a.id)} />)
         ) : (
-          <Card>
+          <Card tone="muted" radius="lg" padding="md">
             <Muted>{t('patient.noAlerts')}</Muted>
           </Card>
         )}
         {alerts.length && !openReferral ? <Button title={t('patient.refer')} icon="paper-plane" variant="danger" onPress={refer} /> : null}
         {openReferral ? (
-          <Pill
+          <StatusNote
             icon="paper-plane-outline"
-            tone="info"
             label={`${t('referrals.title')}: ${t(`urgency.${openReferral.urgency}`)} · ${t(`refstatus.${openReferral.status}`)}`}
           />
         ) : null}
@@ -112,6 +111,35 @@ export default function PatientDetail() {
         <Card>{visits.length ? visits.map((v, i) => <VisitRow key={v.id} visit={v} t={t} first={i === 0} />) : <Muted>{t('patient.noVisits')}</Muted>}</Card>
       </View>
     </Screen>
+  );
+}
+
+/** Info-tinted status line in the shared Pill style, but wrapping: the long referral label never overflows at large text. */
+function StatusNote({ icon, label }: { icon: IconName; label: string }) {
+  const theme = useTheme();
+  const s = theme.colors.status.info;
+  return (
+    <View
+      accessible
+      accessibilityLabel={label}
+      style={{
+        alignSelf: 'flex-start',
+        maxWidth: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: theme.space[2],
+        minHeight: theme.sizes.pill,
+        paddingHorizontal: theme.space[3],
+        paddingVertical: theme.space[1],
+        borderRadius: theme.radii.lg,
+        backgroundColor: s.bg,
+      }}
+    >
+      <Icon name={icon} size={theme.sizes.icon.xs} color={s.icon} />
+      <Text variant="pill" color={s.fg} style={{ flexShrink: 1 }}>
+        {label}
+      </Text>
+    </View>
   );
 }
 
@@ -135,7 +163,7 @@ function VisitRow({ visit, t, first }: { visit: Visit; t: (k: string, p?: Record
     visit.syncState === 'failed' ? theme.colors.status.danger.fg : visit.syncState === 'pending' ? theme.colors.status.warning.fg : theme.colors.textTertiary;
   return (
     <View style={{ borderTopWidth: first ? 0 : 1, borderTopColor: theme.colors.divider, paddingTop: first ? 0 : theme.space[3], gap: 2 }}>
-      <Row style={{ justifyContent: 'space-between' }}>
+      <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <Row style={{ flexShrink: 1, gap: theme.space[1] }}>
           <Text variant="bodyStrong" style={{ flexShrink: 1 }}>
             {formatDate(visit.visitedAt)} · {t(`status.${visit.status}`)}

@@ -11,6 +11,7 @@ import { useRecords } from '@/features/shared/data/recordsStore';
 import { currentPatientId, useSession } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
 import { Card, Heading, Icon, IconButton, Pill, PrimaryButton, Screen, SectionHeader, Text, TextField, type IconName } from '@/features/shared/ui';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 const CATEGORY_ICON: Record<ReportCategory, IconName> = { blood_test: 'water-outline', cardiology: 'heart-outline', prescription: 'receipt-outline', imaging: 'scan-outline', xray: 'bandage-outline' };
 
@@ -94,6 +95,7 @@ export default function UploadHealthReport() {
         <IconButton icon="arrow-back" accessibilityLabel={t('common:actions.back', { defaultValue: 'Back' })} onPress={() => (router.canGoBack() ? router.back() : router.replace('/health'))} flipInRTL />
         <Heading variant="h2">{t('upload.title')}</Heading>
       </View>
+      <ScreenGuide id="uploadReport" />
 
       <Pressable accessibilityRole="button" accessibilityLabel={t('upload.pick')} onPress={pick} testID="upload-pick">
         <View style={{ borderWidth: 1.5, borderColor: theme.colors.border, borderStyle: 'dashed', borderRadius: theme.radii.xl, padding: theme.space[6], backgroundColor: theme.colors.surfaceMuted, alignItems: 'center', gap: theme.space[3] }}>

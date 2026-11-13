@@ -63,7 +63,11 @@
     "highContrastOn": "High contrast: on",
     "highContrastOff": "High contrast: off",
     "readAloud": "Read this screen aloud",
-    "stopReading": "Stop reading"
+    "stopReading": "Stop reading",
+    "appearance": "Appearance",
+    "appearance_system": "Match phone",
+    "appearance_light": "Light",
+    "appearance_dark": "Dark"
   },
   "dev": {
     "title": "Component gallery"

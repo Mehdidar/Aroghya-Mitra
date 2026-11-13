@@ -78,7 +78,7 @@ function Shell() {
     <LocaleProvider direction={direction}>
       <ThemeProvider role={themeRole}>
         <Root direction={direction}>
-          <StatusBar style="dark" />
+          <ThemedStatusBar />
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Protected guard={role === null}>
               <Stack.Screen name="(auth)" />
@@ -109,4 +109,10 @@ function Root({ direction, children }: { direction: 'ltr' | 'rtl'; children: Rea
       {children}
     </View>
   );
+}
+
+/** Clock and battery icons stay readable: light on dark mode, dark otherwise. */
+function ThemedStatusBar() {
+  const theme = useTheme();
+  return <StatusBar style={theme.dark ? 'light' : 'dark'} />;
 }

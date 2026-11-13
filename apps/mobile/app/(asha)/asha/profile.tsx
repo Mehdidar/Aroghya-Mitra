@@ -8,7 +8,7 @@ import { LANGUAGES } from '../../../features/shared/i18n/languages';
 import { useLanguage } from '../../../features/shared/i18n/useLanguage';
 import { useCurrentUser, useSession } from '../../../features/shared/state/session';
 import { useTheme } from '../../../features/shared/theme';
-import { Avatar, Icon, Pill, PrimaryButton, SecondaryButton, Text } from '../../../features/shared/ui';
+import { Avatar, Icon, Pill, PrimaryButton, SecondaryButton, SectionHeader, Text } from '../../../features/shared/ui';
 
 const ASHA_LANGS: Lang[] = ['en', 'hi'];
 
@@ -60,9 +60,7 @@ export default function AshaProfile() {
       </Card>
 
       <View style={{ gap: theme.space[3] }}>
-        <Text variant="h3" accessibilityRole="header">
-          {t('profile.language')}
-        </Text>
+        <SectionHeader title={t('profile.language')} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2] }} role="radiogroup">
           {ASHA_LANGS.map((code) => {
             const selected = code === lang;
@@ -99,9 +97,7 @@ export default function AshaProfile() {
       </View>
 
       <View style={{ gap: theme.space[3] }}>
-        <Text variant="h3" accessibilityRole="header">
-          {t('profile.data')}
-        </Text>
+        <SectionHeader title={t('profile.data')} />
         <Card>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[3] }}>
             <View
@@ -116,7 +112,7 @@ export default function AshaProfile() {
             >
               <Icon name={sync.kind === 'local' ? 'phone-portrait-outline' : 'cloud-outline'} size={theme.sizes.icon.sm} color={theme.accent.accentIcon} />
             </View>
-            <Text variant="bodyStrong" style={{ flex: 1 }}>
+            <Text variant="bodyStrong" style={{ flex: 1 }} accessibilityLiveRegion="polite">
               {syncLabel}
             </Text>
           </View>

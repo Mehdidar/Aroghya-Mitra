@@ -11,6 +11,7 @@ import { useDoctorId, usePatientRecord } from '@/features/doctor/useDoctorData';
 import { useRecords } from '@/features/shared/data/recordsStore';
 import { useTheme } from '@/features/shared/theme';
 import { Card, EmptyState, Heading, Icon, IconButton, Pill, PrimaryButton, Screen, SecondaryButton, SectionHeader, Text, TextField } from '@/features/shared/ui';
+import { feedback } from '@/features/shared/feedback';
 
 const LAB_OPTIONS = ['CBC', 'Urine protein', 'Blood sugar', 'HbA1c', 'LFT', 'KFT', 'ECG', 'Ultrasound', 'Chest X-ray'];
 
@@ -104,6 +105,7 @@ export default function ConsultationScreen() {
       if (patch) updateReferral(referral.id, patch);
     }
     setSaving(false);
+    feedback.success(t('consultation.savedAnnounce', { defaultValue: 'Consultation saved' }));
     router.replace({ pathname: '/patient/[id]', params: { id: patient.id } });
   };
 

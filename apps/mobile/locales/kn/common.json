@@ -63,7 +63,11 @@
     "highContrastOn": "ಹೈ ಕಾಂಟ್ರಾಸ್ಟ್: ಆನ್",
     "highContrastOff": "ಹೈ ಕಾಂಟ್ರಾಸ್ಟ್: ಆಫ್",
     "readAloud": "ಈ ಪರದೆಯನ್ನು ಓದಿ ಹೇಳಿ",
-    "stopReading": "ಓದುವುದನ್ನು ನಿಲ್ಲಿಸಿ"
+    "stopReading": "ಓದುವುದನ್ನು ನಿಲ್ಲಿಸಿ",
+    "appearance": "ಗೋಚರತೆ",
+    "appearance_system": "ಫೋನ್‌ನಂತೆ",
+    "appearance_light": "ತಿಳಿ",
+    "appearance_dark": "ಗಾಢ"
   },
   "dev": {
     "title": "ಕಾಂಪೊನೆಂಟ್ ಗ್ಯಾಲರಿ"

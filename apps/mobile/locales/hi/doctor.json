@@ -122,7 +122,8 @@
     "errorSlots": "हर दवा के लिए कम से कम एक समय चुनें।",
     "untitled": "परामर्श",
     "labs": "जाँच: {{labs}}",
-    "followUpOn": "फ़ॉलो-अप {{date}}"
+    "followUpOn": "फ़ॉलो-अप {{date}}",
+    "savedAnnounce": "परामर्श सहेजा गया"
   },
   "slots": {
     "morning": "सुबह",

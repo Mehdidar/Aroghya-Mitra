@@ -15,6 +15,7 @@ import { useRecords } from '@/features/shared/data/recordsStore';
 import { currentPatientId } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
 import { Card, ErrorState, Heading, Icon, IconButton, Pill, PrimaryButton, Screen, SecondaryButton, Skeleton, Text } from '@/features/shared/ui';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 type Step = { kind: 'pick' } | { kind: 'analyzing' } | { kind: 'review'; result: ExtractResponse; meds: ReviewedMedicine[] } | { kind: 'saved'; scheduled: number; notif: string } | { kind: 'error'; message: string };
 
@@ -73,6 +74,7 @@ export default function PrescriptionExplainer() {
           </Text>
         </View>
       </View>
+      <ScreenGuide id="prescription" />
 
       {step.kind === 'pick' ? (
         <Card radius="xl" padding="lg">

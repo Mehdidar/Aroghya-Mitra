@@ -5,7 +5,7 @@ import { Icon, Text } from '../../shared/ui';
 import { t } from '../data/i18n';
 import { localizeAlert } from '../logic/rules';
 import type { Lang, RiskAlert } from '../types';
-import { Button, RiskBadge, useAshaColors } from './ui';
+import { Button, Card, RiskBadge, useAshaColors } from './ui';
 
 export function AlertCard({
   alert,
@@ -28,30 +28,25 @@ export function AlertCard({
   const theme = useTheme();
   const c = useAshaColors().risk[alert.severity];
   return (
-    <View
-      style={{
-        backgroundColor: compact ? theme.colors.surfaceMuted : theme.colors.surface,
-        borderRadius: compact ? theme.radii.md : theme.radii.lg,
-        borderWidth: 1,
-        borderColor: theme.colors.border,
-        borderStartWidth: 4,
-        borderStartColor: c.bar,
-        boxShadow: compact ? undefined : theme.shadows.card.boxShadow,
-        padding: theme.layout.cardPadding,
-        gap: theme.space[2],
-        opacity: alert.acknowledged ? 0.75 : 1,
-      }}
+    // List-row geometry shared with the doctor lists (radius lg); compact sits on a muted fill inside
+    // another card. The coloured start bar repeats the severity, which the pill also says in words.
+    <Card
+      radius="lg"
+      padding="md"
+      tone={compact ? 'muted' : 'surface'}
+      style={{ borderStartWidth: 4, borderStartColor: c.bar, gap: theme.space[2], opacity: alert.acknowledged ? 0.75 : 1 }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: theme.space[2] }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: theme.space[2] }}>
         <RiskBadge level={alert.severity} label={t(`risk.${alert.severity}`, lang)} style={{ alignSelf: 'center' }} />
         {patientName ? (
           <Pressable
             accessibilityRole="link"
+            accessibilityLabel={patientName}
             onPress={onOpen}
             hitSlop={theme.sizes.hitSlop}
             style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[1], minHeight: theme.sizes.touchMin, flexShrink: 1 }}
           >
-            <Text variant="label" tone="accent" numberOfLines={1} style={{ flexShrink: 1 }}>
+            <Text variant="label" tone="accent" numberOfLines={2} style={{ flexShrink: 1 }}>
               {patientName}
             </Text>
             <Icon name="chevron-forward" size={theme.sizes.icon.sm} color={theme.accent.accentIcon} flipInRTL />
@@ -80,6 +75,6 @@ export function AlertCard({
           ) : null}
         </View>
       ) : null}
-    </View>
+    </Card>
   );
 }

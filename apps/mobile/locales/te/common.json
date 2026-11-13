@@ -63,7 +63,11 @@
     "highContrastOn": "హై కాంట్రాస్ట్: ఆన్",
     "highContrastOff": "హై కాంట్రాస్ట్: ఆఫ్",
     "readAloud": "ఈ స్క్రీన్‌ను చదివి వినిపించు",
-    "stopReading": "చదవడం ఆపు"
+    "stopReading": "చదవడం ఆపు",
+    "appearance": "రూపం",
+    "appearance_system": "ఫోన్ లాగే",
+    "appearance_light": "లేత",
+    "appearance_dark": "ముదురు"
   },
   "dev": {
     "title": "కాంపోనెంట్ గ్యాలరీ"

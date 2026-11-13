@@ -190,7 +190,95 @@ const highContrastColors: ColorTokens = {
     },
   };
 
-export const colorSchemes = { standard: standardColors, highContrast: highContrastColors } as const;
+
+/**
+ * Dark mode. Same token names as the standard scheme; dark grey surfaces (not
+ * pure black, which smears on OLED when scrolling), light text at WCAG AA or
+ * better, and status / tile colours toned down so they do not glow.
+ */
+const darkColors: ColorTokens = {
+    page: '#0F1218',
+    pageAlt: '#141820',
+    surface: '#1A1F29',
+    surfaceMuted: '#20262F',
+    surfaceSunken: '#262C37',
+    surfaceInverse: '#E9ECF2',
+    surfaceInverseRaised: '#D7DCE6',
+    scrim: 'rgba(0, 0, 0, 0.6)',
+    mistGradient: ['#121821', '#1A222C'],
+    glassFill: 'rgba(30, 36, 46, 0.72)',
+    glassFillStrong: 'rgba(36, 43, 54, 0.88)',
+    glassFillOnDark: 'rgba(255, 255, 255, 0.1)',
+    glassBorder: 'rgba(255, 255, 255, 0.12)',
+    glassBorderOnDark: 'rgba(255, 255, 255, 0.28)',
+    glassFallback: '#1A2029',
+    textPrimary: '#ECEFF4',
+    textSecondary: '#C2C8D3',
+    textTertiary: '#A3ABB9',
+    textDisabled: '#6E7685',
+    textOnDark: '#FFFFFF',
+    textOnDarkSecondary: 'rgba(255, 255, 255, 0.88)',
+    textOnAccent: '#FFFFFF',
+    textOnHero: '#ECEFF4',
+    textOnHeroSecondary: '#C2C8D3',
+    border: '#2E3542',
+    borderStrong: '#6E7685',
+    borderDashed: '#6E7685',
+    focusRing: '#6CB4FF',
+    divider: '#2A303C',
+    primary: '#ECEFF4',
+    primaryPressed: '#D2D7E1',
+    onPrimary: '#111318',
+    primaryDisabled: '#343B48',
+    onPrimaryDisabled: '#8A92A1',
+    secondary: '#1A1F29',
+    secondaryBorder: '#3A4250',
+    onSecondary: '#ECEFF4',
+    tertiaryButton: '#262C37',
+    onTertiaryButton: '#ECEFF4',
+    chipActive: '#ECEFF4',
+    onChipActive: '#111318',
+    chipInactive: 'rgba(36, 43, 54, 0.9)',
+    onChipInactive: '#ECEFF4',
+    tabBar: '#05070A',
+    tabActiveBg: '#ECEFF4',
+    tabInactiveFg: '#A3ABB9',
+    danger: '#F0625A',
+    onDanger: '#FFFFFF',
+    endCallGradient: ['#D8352A', '#E2553A'],
+    status: {
+      success: { bg: '#163322', fg: '#8FE3A6', solid: '#2E9B4E', icon: '#6FD08C' },
+      warning: { bg: '#3A2C10', fg: '#F5C875', solid: '#B07D12', icon: '#E9B04A' },
+      danger: { bg: '#3D1A1A', fg: '#FFADA5', solid: '#D93A34', icon: '#FF8A80' },
+      info: { bg: '#142A44', fg: '#9CCBFF', solid: '#2C8BE9', icon: '#7DB9FF' },
+      neutral: { bg: '#262C37', fg: '#C2C8D3', solid: '#8A92A1', icon: '#A3ABB9' },
+      onSolid: '#FFFFFF',
+    },
+    tile: {
+      blue: { bg: '#182C46', icon: '#7DB9FF', border: 'transparent' },
+      butter: { bg: '#332B12', icon: '#E2C25A', border: 'transparent' },
+      mint: { bg: '#123329', icon: '#5FD3AE', border: 'transparent' },
+      pink: { bg: '#3A1A25', icon: '#FF8FB0', border: 'transparent' },
+      lavender: { bg: '#2A2140', icon: '#B89CF2', border: 'transparent' },
+      label: '#ECEFF4',
+      sublabel: '#C2C8D3',
+    },
+    chart: {
+      bar: '#ECEFF4',
+      barGhost: '#2A303C',
+      line: '#6CB4FF',
+      lineFill: 'rgba(108, 180, 255, 0.18)',
+      ecg: '#FF7A72',
+      bars2: '#F08A6C',
+      grid: '#2A303C',
+      axisLabel: '#A3ABB9',
+      series: ['#6CB4FF', '#F08A6C', '#5FD3AE', '#B89CF2', '#E2C25A'],
+      progressTrack: '#2A303C',
+      progressFill: '#ECEFF4',
+    },
+  };
+
+export const colorSchemes = { standard: standardColors, highContrast: highContrastColors, dark: darkColors } as const;
 
 // Only these tokens change with the signed-in role. 'admin' reuses 'doctor' (SPEC: Admin / Doctor = indigo).
 const standardRoles = {
@@ -301,7 +389,15 @@ const highContrastRoles: Record<AccentRole, RoleAccent> = {
       immersiveGlassFallback: '#000000',
     },
   };
-export const roleAccents = { standard: standardRoles, highContrast: highContrastRoles } as const;
+
+/** Dark-mode role accents: the same hues, lighter text on dark, deep soft fills and a dark hero wash. */
+const darkRoles: Record<AccentRole, RoleAccent> = {
+  patient: { ...standardRoles.patient, accent: '#2C8BE9', accentPressed: '#1E74CC', accentText: '#7DB9FF', accentIcon: '#6CB4FF', accentSoft: '#142A44', accentSoftText: '#9CCBFF', accentBorder: '#2C8BE9', tabActiveFg: '#0B3A66', heroGradient: ['#173B66', '#121B28', '#0F1218'] },
+  asha: { ...standardRoles.asha, accent: '#4E8A63', accentPressed: '#3F7552', accentText: '#8FD0A6', accentIcon: '#7DC497', accentSoft: '#163322', accentSoftText: '#A6DDB9', accentBorder: '#4E8A63', tabActiveFg: '#1F4A30', heroGradient: ['#1B3A27', '#131C17', '#0F1218'] },
+  doctor: { ...standardRoles.doctor, accent: '#7476E0', accentPressed: '#5F61CC', accentText: '#B4B5FF', accentIcon: '#A3A5FF', accentSoft: '#232445', accentSoftText: '#C4C5FF', accentBorder: '#7476E0', tabActiveFg: '#2E2F72', heroGradient: ['#2A2A5C', '#16172A', '#0F1218'] },
+};
+
+export const roleAccents = { standard: standardRoles, highContrast: highContrastRoles, dark: darkRoles } as const;
 
 export const roleAccentKey: Record<'patient' | 'asha' | 'doctor' | 'admin', AccentRole> = { patient: 'patient', asha: 'asha', doctor: 'doctor', admin: 'doctor' };
 

@@ -11,6 +11,7 @@
  * unit tests and screens rendered in isolation never touch the network.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { create } from 'zustand';
 
 import type { Consultation, DoseLog, HealthReport, Prescription, RecordReferral, VitalsReading } from '@am/shared';
 
@@ -41,6 +42,11 @@ let timer: ReturnType<typeof setTimeout> | null = null;
 let flushing: Promise<FlushOutcome> | null = null;
 export type FlushOutcome = { sent: number; rejected: number; offline: boolean };
 let lastOutcome: FlushOutcome | null = null;
+
+/** What the "Synced 2 min ago" line shows. Updated by sends (here) and pulls (serverSync.ts). */
+export const useSyncStatus = create<{ queued: number; lastSyncAt: number | null; offline: boolean }>(() => ({ queued: 0, lastSyncAt: null, offline: false }));
+export const markSynced = () => useSyncStatus.setState({ lastSyncAt: Date.now(), offline: false });
+export const markOffline = () => useSyncStatus.setState({ offline: true });
 
 /** Merge `extra` into `base`: same id → the newer copy (referral updates are merged field by field). */
 export function mergeBatch(base: PushBatch, extra: PushBatch): PushBatch {
@@ -74,6 +80,7 @@ const save = () => AsyncStorage.setItem(OUTBOX_KEY, JSON.stringify(pending)).cat
 /** Queue records for the server. Safe to call from store actions; never throws. */
 export function queuePush(batch: PushBatch) {
   pending = mergeBatch(pending, batch);
+  useSyncStatus.setState({ queued: batchSize(pending) });
   void save();
   if (enabled) scheduleFlush();
 }
@@ -104,7 +111,12 @@ export function flushOutbox(): Promise<FlushOutcome> {
     })().finally(() => {
       flushing = null;
     });
-    void flushing.then((o) => (lastOutcome = o));
+    void flushing.then((o) => {
+      lastOutcome = o;
+      useSyncStatus.setState({ queued: batchSize(pending) });
+      if (o.offline) markOffline();
+      else if (o.sent || o.rejected) markSynced();
+    });
   }
   return flushing;
 }

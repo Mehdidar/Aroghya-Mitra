@@ -27,14 +27,18 @@ import {
   type IconName,
   type PillTone,
 } from '../../shared/ui';
+import type { CardProps as SharedCardProps } from '../../shared/ui/Card';
 import type { RiskLevel } from '../types';
 
 type RiskColors = { bg: string; fg: string; bar: string };
 
-/** Semantic status tone (shared Pill) for each ASHA risk level. */
+/**
+ * Semantic status tone (shared Pill) for each ASHA risk level, matching the doctor's referral cards:
+ * critical/high = danger, medium = warning, low = neutral, none = success.
+ */
 export const RISK_TONE: Record<RiskLevel, PillTone> = {
   none: 'success',
-  low: 'info',
+  low: 'neutral',
   medium: 'warning',
   high: 'danger',
   critical: 'danger',
@@ -43,7 +47,7 @@ export const RISK_TONE: Record<RiskLevel, PillTone> = {
 /** Icon shown with every risk pill so colour is never the only signal. */
 export const RISK_ICON: Record<RiskLevel, IconName> = {
   none: 'checkmark-circle',
-  low: 'information-circle',
+  low: 'information-circle-outline',
   medium: 'alert-circle',
   high: 'warning',
   critical: 'warning',
@@ -52,9 +56,10 @@ export const RISK_ICON: Record<RiskLevel, IconName> = {
 function ashaColors(t: Theme) {
   const s = t.colors.status;
   const risk = (level: RiskLevel): RiskColors => {
-    const tone = s[RISK_TONE[level] as 'success' | 'info' | 'warning' | 'danger'];
-    // critical is the darkest bar so it stands apart from high.
-    return { bg: tone.bg, fg: tone.fg, bar: level === 'critical' ? tone.fg : tone.solid };
+    const tone = s[RISK_TONE[level] as 'success' | 'neutral' | 'warning' | 'danger'];
+    // critical is the darkest bar so it stands apart from high; low keeps a quiet grey bar.
+    const bar = level === 'critical' ? tone.fg : level === 'low' ? tone.icon : tone.solid;
+    return { bg: tone.bg, fg: tone.fg, bar };
   };
   return {
     bg: t.colors.page,
@@ -98,8 +103,34 @@ export function Screen({ children, scroll = true, footer, testID }: { children: 
   );
 }
 
-export function Card({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
-  return <SharedCard style={style}>{children}</SharedCard>;
+/**
+ * Section card for ASHA screens: the shared Card with the patient/doctor section geometry
+ * (radius xl, roomy padding). List rows pass radius="lg" padding="md" like the doctor lists.
+ */
+export function Card({
+  children,
+  style,
+  radius = 'xl',
+  padding = 'lg',
+  tone,
+  onPress,
+  accessibilityLabel,
+  testID,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+  radius?: SharedCardProps['radius'];
+  padding?: SharedCardProps['padding'];
+  tone?: SharedCardProps['tone'];
+  onPress?: () => void;
+  accessibilityLabel?: string;
+  testID?: string;
+}) {
+  return (
+    <SharedCard style={style} radius={radius} padding={padding} tone={tone} onPress={onPress} accessibilityLabel={accessibilityLabel} testID={testID}>
+      {children}
+    </SharedCard>
+  );
 }
 
 /** Section title inside a card. */
@@ -152,6 +183,7 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={title}
       accessibilityState={{ disabled: !!off, busy: !!loading }}
       onPress={onPress}
       disabled={off}
@@ -189,6 +221,7 @@ export function Chip({ label, selected, onPress, tone }: { label: string; select
   return (
     <Pressable
       accessibilityRole={onPress ? 'checkbox' : undefined}
+      accessibilityLabel={label}
       accessibilityState={{ checked: !!selected }}
       onPress={onPress}
       hitSlop={t.sizes.hitSlop / 2}
@@ -206,7 +239,7 @@ export function Chip({ label, selected, onPress, tone }: { label: string; select
       })}
     >
       {selected ? <Icon name="checkmark" size={t.sizes.icon.xs} color={selFg} /> : null}
-      <Text variant="label" color={selected ? selFg : t.colors.onChipInactive}>
+      <Text variant="label" color={selected ? selFg : t.colors.onChipInactive} style={{ flexShrink: 1 }}>
         {label}
       </Text>
     </Pressable>

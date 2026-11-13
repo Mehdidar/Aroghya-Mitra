@@ -122,7 +122,8 @@
     "errorSlots": "پرتھ دوا خٲطرٕ ژارِو کم از کم اکھ وقت۔",
     "untitled": "مشورٕ",
     "labs": "لیب: {{labs}}",
-    "followUpOn": "فالو اپ {{date}}"
+    "followUpOn": "فالو اپ {{date}}",
+    "savedAnnounce": "مشورٕ گوٚو محفوظ"
   },
   "slots": {
     "morning": "صُبحٕ",

@@ -10,6 +10,8 @@ import en_health from './en/health.json';
 import en_reminders from './en/reminders.json';
 import en_doctor from './en/doctor.json';
 import en_hospital from './en/hospital.json';
+import en_maps from './en/maps.json';
+import en_guide from './en/guide.json';
 import hi_common from './hi/common.json';
 import hi_auth from './hi/auth.json';
 import hi_patient from './hi/patient.json';
@@ -18,6 +20,8 @@ import hi_health from './hi/health.json';
 import hi_reminders from './hi/reminders.json';
 import hi_doctor from './hi/doctor.json';
 import hi_hospital from './hi/hospital.json';
+import hi_maps from './hi/maps.json';
+import hi_guide from './hi/guide.json';
 import kn_common from './kn/common.json';
 import kn_auth from './kn/auth.json';
 import kn_patient from './kn/patient.json';
@@ -26,6 +30,8 @@ import kn_health from './kn/health.json';
 import kn_reminders from './kn/reminders.json';
 import kn_doctor from './kn/doctor.json';
 import kn_hospital from './kn/hospital.json';
+import kn_maps from './kn/maps.json';
+import kn_guide from './kn/guide.json';
 import ur_common from './ur/common.json';
 import ur_auth from './ur/auth.json';
 import ur_patient from './ur/patient.json';
@@ -34,6 +40,8 @@ import ur_health from './ur/health.json';
 import ur_reminders from './ur/reminders.json';
 import ur_doctor from './ur/doctor.json';
 import ur_hospital from './ur/hospital.json';
+import ur_maps from './ur/maps.json';
+import ur_guide from './ur/guide.json';
 import ta_common from './ta/common.json';
 import ta_auth from './ta/auth.json';
 import ta_patient from './ta/patient.json';
@@ -42,6 +50,8 @@ import ta_health from './ta/health.json';
 import ta_reminders from './ta/reminders.json';
 import ta_doctor from './ta/doctor.json';
 import ta_hospital from './ta/hospital.json';
+import ta_maps from './ta/maps.json';
+import ta_guide from './ta/guide.json';
 import te_common from './te/common.json';
 import te_auth from './te/auth.json';
 import te_patient from './te/patient.json';
@@ -50,6 +60,8 @@ import te_health from './te/health.json';
 import te_reminders from './te/reminders.json';
 import te_doctor from './te/doctor.json';
 import te_hospital from './te/hospital.json';
+import te_maps from './te/maps.json';
+import te_guide from './te/guide.json';
 import ks_common from './ks/common.json';
 import ks_auth from './ks/auth.json';
 import ks_patient from './ks/patient.json';
@@ -58,16 +70,18 @@ import ks_health from './ks/health.json';
 import ks_reminders from './ks/reminders.json';
 import ks_doctor from './ks/doctor.json';
 import ks_hospital from './ks/hospital.json';
+import ks_maps from './ks/maps.json';
+import ks_guide from './ks/guide.json';
 
-export const NAMESPACES = ['common', 'auth', 'patient', 'nutrition', 'health', 'reminders', 'doctor', 'hospital'] as const;
+export const NAMESPACES = ['common', 'auth', 'patient', 'nutrition', 'health', 'reminders', 'doctor', 'hospital', 'maps', 'guide'] as const;
 export type Namespace = (typeof NAMESPACES)[number];
 
 export const resources = {
-  en: { common: en_common, auth: en_auth, patient: en_patient, nutrition: en_nutrition, health: en_health, reminders: en_reminders, doctor: en_doctor, hospital: en_hospital },
-  hi: { common: hi_common, auth: hi_auth, patient: hi_patient, nutrition: hi_nutrition, health: hi_health, reminders: hi_reminders, doctor: hi_doctor, hospital: hi_hospital },
-  kn: { common: kn_common, auth: kn_auth, patient: kn_patient, nutrition: kn_nutrition, health: kn_health, reminders: kn_reminders, doctor: kn_doctor, hospital: kn_hospital },
-  ur: { common: ur_common, auth: ur_auth, patient: ur_patient, nutrition: ur_nutrition, health: ur_health, reminders: ur_reminders, doctor: ur_doctor, hospital: ur_hospital },
-  ta: { common: ta_common, auth: ta_auth, patient: ta_patient, nutrition: ta_nutrition, health: ta_health, reminders: ta_reminders, doctor: ta_doctor, hospital: ta_hospital },
-  te: { common: te_common, auth: te_auth, patient: te_patient, nutrition: te_nutrition, health: te_health, reminders: te_reminders, doctor: te_doctor, hospital: te_hospital },
-  ks: { common: ks_common, auth: ks_auth, patient: ks_patient, nutrition: ks_nutrition, health: ks_health, reminders: ks_reminders, doctor: ks_doctor, hospital: ks_hospital },
+  en: { common: en_common, auth: en_auth, patient: en_patient, nutrition: en_nutrition, health: en_health, reminders: en_reminders, doctor: en_doctor, hospital: en_hospital, maps: en_maps, guide: en_guide },
+  hi: { common: hi_common, auth: hi_auth, patient: hi_patient, nutrition: hi_nutrition, health: hi_health, reminders: hi_reminders, doctor: hi_doctor, hospital: hi_hospital, maps: hi_maps, guide: hi_guide },
+  kn: { common: kn_common, auth: kn_auth, patient: kn_patient, nutrition: kn_nutrition, health: kn_health, reminders: kn_reminders, doctor: kn_doctor, hospital: kn_hospital, maps: kn_maps, guide: kn_guide },
+  ur: { common: ur_common, auth: ur_auth, patient: ur_patient, nutrition: ur_nutrition, health: ur_health, reminders: ur_reminders, doctor: ur_doctor, hospital: ur_hospital, maps: ur_maps, guide: ur_guide },
+  ta: { common: ta_common, auth: ta_auth, patient: ta_patient, nutrition: ta_nutrition, health: ta_health, reminders: ta_reminders, doctor: ta_doctor, hospital: ta_hospital, maps: ta_maps, guide: ta_guide },
+  te: { common: te_common, auth: te_auth, patient: te_patient, nutrition: te_nutrition, health: te_health, reminders: te_reminders, doctor: te_doctor, hospital: te_hospital, maps: te_maps, guide: te_guide },
+  ks: { common: ks_common, auth: ks_auth, patient: ks_patient, nutrition: ks_nutrition, health: ks_health, reminders: ks_reminders, doctor: ks_doctor, hospital: ks_hospital, maps: ks_maps, guide: ks_guide },
 } as const;

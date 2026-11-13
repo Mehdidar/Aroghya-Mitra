@@ -9,6 +9,8 @@ import { useInbox } from '@/features/doctor/useDoctorData';
 import { useRecords } from '@/features/shared/data/recordsStore';
 import { useTheme } from '@/features/shared/theme';
 import { EmptyState, Heading, Screen, SecondaryButton, Skeleton, Text } from '@/features/shared/ui';
+import { feedback } from '@/features/shared/feedback';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 /** Referral inbox: ASHA referrals (records store + the ASHA module on this device), high risk first. */
 export default function DoctorReferrals() {
@@ -25,6 +27,7 @@ export default function DoctorReferrals() {
         <Heading variant="h1">{t('inbox.title')}</Heading>
         <Text tone="secondary">{t('inbox.subtitle', { count: items.length })}</Text>
       </View>
+      <ScreenGuide id="doctorInbox" />
       <SecondaryButton label={t('inbox.refresh')} icon="refresh" onPress={reload} />
       {loading ? (
         <View style={{ gap: theme.space[3] }}>
@@ -43,6 +46,7 @@ export default function DoctorReferrals() {
               actions={availableActions(item.referral)}
               onAction={(a) => {
                 const patch = applyAction(item.referral, a, new Date());
+                feedback.success();
                 if (!patch) return;
                 // A referral that only exists in the ASHA store is copied into the records store on first action.
                 if (!referrals.some((r) => r.id === item.referral.id)) addReferral({ ...item.referral, ...patch });

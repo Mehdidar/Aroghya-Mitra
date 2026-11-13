@@ -24,3 +24,4 @@ export { GlowingMedicalOrb } from './GlowingMedicalOrb';
 export { ErrorState } from './ErrorState';
 export { VoiceOrb, type VoiceOrbState } from './VoiceOrb';
 export { ReadAloud } from './ReadAloud';
+export { FabInsetContext, useFabInset } from './fabInset';

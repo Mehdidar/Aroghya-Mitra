@@ -122,7 +122,8 @@
     "errorSlots": "ಪ್ರತಿ ಔಷಧಕ್ಕೆ ಕನಿಷ್ಠ ಒಂದು ಸಮಯ ಆರಿಸಿ.",
     "untitled": "ಸಮಾಲೋಚನೆ",
     "labs": "ಪರೀಕ್ಷೆಗಳು: {{labs}}",
-    "followUpOn": "ಫಾಲೋ-ಅಪ್ {{date}}"
+    "followUpOn": "ಫಾಲೋ-ಅಪ್ {{date}}",
+    "savedAnnounce": "ಸಮಾಲೋಚನೆ ಉಳಿಸಲಾಗಿದೆ"
   },
   "slots": {
     "morning": "ಬೆಳಿಗ್ಗೆ",

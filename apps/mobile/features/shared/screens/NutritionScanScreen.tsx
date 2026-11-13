@@ -25,6 +25,7 @@ import {
   Text,
   TextField,
 } from '@/features/shared/ui';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 type Photo = { uri: string; mimeType?: string | null; fileName?: string | null };
 type Status = { kind: 'idle' } | { kind: 'loading' } | { kind: 'done'; result: FoodScanResult } | { kind: 'error'; message: string };
@@ -73,6 +74,7 @@ export function NutritionScanScreen() {
         </Heading>
         <View style={{ width: theme.sizes.iconButton }} />
       </View>
+      <ScreenGuide id="nutrition" />
 
       {photo ? (
         <View style={{ gap: theme.space[3] }}>

@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useFabInset } from './fabInset';
+
 import { useTheme } from '@/features/shared/theme';
 
 export type ScreenProps = {
@@ -39,9 +41,10 @@ export function Screen({
         : background === 'mist'
           ? { backgroundColor: t.colors.glassFallback, backgroundImage: t.gradient(t.colors.mistGradient) }
           : { backgroundColor: t.colors.page };
+  const fab = useFabInset();
   const bottom = withTabBar
-    ? t.sizes.tabBar.height + t.sizes.tabBar.marginBottom + insets.bottom + t.space[6]
-    : insets.bottom + t.space[6];
+    ? t.sizes.tabBar.height + t.sizes.tabBar.marginBottom + insets.bottom + t.space[6] + fab
+    : insets.bottom + t.space[6] + fab;
   const inner: StyleProp<ViewStyle> = [
     styles.inner,
     { maxWidth: t.layout.maxContentWidth, paddingTop: insets.top + t.space[3], paddingBottom: footer ? t.space[4] : bottom },

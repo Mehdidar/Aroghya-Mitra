@@ -122,7 +122,8 @@
     "errorSlots": "Choose at least one time of day for each medicine.",
     "untitled": "Consultation",
     "labs": "Labs: {{labs}}",
-    "followUpOn": "Follow-up {{date}}"
+    "followUpOn": "Follow-up {{date}}",
+    "savedAnnounce": "Consultation saved"
   },
   "slots": {
     "morning": "Morning",

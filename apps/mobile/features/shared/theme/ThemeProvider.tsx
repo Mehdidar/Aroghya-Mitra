@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Platform } from 'react-native';
+import { Platform, useColorScheme } from 'react-native';
 
 import {
   colorSchemes,
@@ -27,6 +27,8 @@ export type Theme = {
   colors: ColorTokens;
   accent: RoleAccent;
   highContrast: boolean;
+  /** Dark colours in use (dark appearance, or "match phone" with the phone in dark mode). */
+  dark: boolean;
   /** User text-size step (1, 1.15, 1.3, 1.5). Multiplied into every <Text> size. */
   textScale: number;
   /** 'blur' (iOS/web), 'tint' (Android: translucent fill, no blur), 'solid' (high contrast). */
@@ -42,11 +44,15 @@ export type Theme = {
   gradient: (stops: readonly string[], locations?: readonly number[], angle?: string) => string;
 };
 
+export type Appearance = 'system' | 'light' | 'dark';
+
 type ThemeSettings = {
   highContrast: boolean;
   textScale: number;
+  appearance: Appearance;
   setHighContrast: (value: boolean) => void;
   setTextScale: (value: number) => void;
+  setAppearance: (value: Appearance) => void;
 };
 
 export function linearGradient(
@@ -60,8 +66,9 @@ export function linearGradient(
   return `linear-gradient(${angle}, ${parts.join(', ')})`;
 }
 
-export function buildTheme(role: AppRole, highContrast: boolean, textScale: number): Theme {
-  const scheme = highContrast ? 'highContrast' : 'standard';
+export function buildTheme(role: AppRole, highContrast: boolean, textScale: number, dark = false): Theme {
+  // High contrast wins over dark: it is the accessibility setting.
+  const scheme = highContrast ? 'highContrast' : dark ? 'dark' : 'standard';
   const accentRole = roleAccentKey[role];
   return {
     role,
@@ -69,6 +76,7 @@ export function buildTheme(role: AppRole, highContrast: boolean, textScale: numb
     colors: colorSchemes[scheme],
     accent: roleAccents[scheme][accentRole],
     highContrast,
+    dark: !highContrast && dark,
     textScale,
     glass: highContrast ? 'solid' : Platform.OS === 'android' ? 'tint' : 'blur',
     radii,
@@ -86,8 +94,10 @@ export function buildTheme(role: AppRole, highContrast: boolean, textScale: numb
 const defaultSettings: ThemeSettings = {
   highContrast: false,
   textScale: textScaleTokens.default,
+  appearance: 'system',
   setHighContrast: () => {},
   setTextScale: () => {},
+  setAppearance: () => {},
 };
 
 const ThemeContext = createContext<Theme>(buildTheme('patient', false, textScaleTokens.default));
@@ -104,32 +114,40 @@ const SETTINGS_KEY = 'aroghya-a11y-v1';
 export function ThemeProvider({ role, children }: { role: AppRole; children: ReactNode }) {
   const [highContrast, setHighContrastState] = useState(false);
   const [textScale, setTextScaleState] = useState<number>(textScaleTokens.default);
+  const [appearance, setAppearanceState] = useState<Appearance>('system');
+  const phoneScheme = useColorScheme();
+  const dark = appearance === 'dark' || (appearance === 'system' && phoneScheme === 'dark');
 
   // Accessibility settings survive restarts (high contrast, text size). Reads are best-effort.
   useEffect(() => {
     AsyncStorage.getItem(SETTINGS_KEY)
       .then((raw) => {
         if (!raw) return;
-        const saved = JSON.parse(raw) as { highContrast?: boolean; textScale?: number };
+        const saved = JSON.parse(raw) as { highContrast?: boolean; textScale?: number; appearance?: Appearance };
+        if (saved.appearance === 'system' || saved.appearance === 'light' || saved.appearance === 'dark') setAppearanceState(saved.appearance);
         if (typeof saved.highContrast === 'boolean') setHighContrastState(saved.highContrast);
         if (typeof saved.textScale === 'number' && (textScaleTokens.steps as readonly number[]).includes(saved.textScale)) setTextScaleState(saved.textScale);
       })
       .catch(() => undefined);
   }, []);
-  const persist = (next: { highContrast: boolean; textScale: number }) => {
+  const persist = (next: { highContrast: boolean; textScale: number; appearance?: Appearance }) => {
     AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next)).catch(() => undefined);
   };
   const setHighContrast = (value: boolean) => {
     setHighContrastState(value);
-    persist({ highContrast: value, textScale });
+    persist({ highContrast: value, textScale, appearance });
   };
   const setTextScale = (value: number) => {
     setTextScaleState(value);
-    persist({ highContrast, textScale: value });
+    persist({ highContrast, textScale: value, appearance });
   };
-  const theme = useMemo(() => buildTheme(role, highContrast, textScale), [role, highContrast, textScale]);
+  const setAppearance = (value: Appearance) => {
+    setAppearanceState(value);
+    persist({ highContrast, textScale, appearance: value });
+  };
+  const theme = useMemo(() => buildTheme(role, highContrast, textScale, dark), [role, highContrast, textScale, dark]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const settings = useMemo(() => ({ highContrast, textScale, setHighContrast, setTextScale }), [highContrast, textScale]);
+  const settings = useMemo(() => ({ highContrast, textScale, appearance, setHighContrast, setTextScale, setAppearance }), [highContrast, textScale, appearance]);
   return (
     <SettingsContext.Provider value={settings}>
       <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>

@@ -1,16 +1,13 @@
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Linking, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { currentPatientId, useCurrentUser } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
 import {
   Avatar,
-  Card,
-  GlowOrb,
   Icon,
   IconButton,
-  ReadAloud,
   Screen,
   SectionHeader,
   ServiceTile,
@@ -20,8 +17,12 @@ import {
 } from '@/features/shared/ui';
 import { pullPatientRecords, usePullWhileOpen } from '@/features/shared/data/serverSync';
 import { StepsCard } from '@/features/patient/steps/StepsCard';
-import { useReminders } from '@/features/patient/reminders/useReminders';
+import { LanguageChip } from '@/features/patient/home/LanguageChip';
+import { NextDoseCard } from '@/features/patient/home/NextDoseCard';
+import { SyncStatusLine } from '@/features/patient/home/SyncStatusLine';
 import { VoiceHeroCard } from '@/features/patient/voice/VoiceHeroCard';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
+import { useReminders } from '@/features/patient/reminders/useReminders';
 
 type ServiceId = 'chat' | 'voice' | 'prescription' | 'nutrition' | 'hospitalMap' | 'qrCard' | 'bloodBanks' | 'reports';
 
@@ -42,29 +43,37 @@ function openService(id: ServiceId) {
   else if (id === 'voice') router.push('/voice');
   else if (id === 'chat') router.push('/assistant');
   else if (id === 'prescription') router.push('/prescription');
-  else if (id === 'hospitalMap') router.push('/hospital');
+  else if (id === 'hospitalMap') router.push('/nearby');
   else if (id === 'qrCard') router.push('/qr-card');
   else if (id === 'bloodBanks') router.push('/blood-banks');
   else router.push({ pathname: '/service/[id]', params: { id } });
 }
 
 /** Emergency ambulance: one tap, no confirmation screen in between. */
-function call108() {
-  void Linking.openURL('tel:108');
-}
-
 /**
- * Patient home: greeting, the big voice assistant card, Call 108, the services,
- * today's real step count, the AI assistant banner and today's reminders.
- * Only real features and data: no placeholder appointments or invented vitals.
+ * Patient home, most useful first: greeting (with language and sync status),
+ * the big voice card (or type instead), the next medicine with a Taken button,
+ * Call 108, the services and today's real step count. A red 108 button also
+ * floats on every patient screen (EmergencyButton in the patient layout).
  */
 export default function PatientHome() {
   usePullWhileOpen(() => pullPatientRecords(currentPatientId()), 'patient-records');
-  const { t } = useTranslation('patient');
+  const { t, i18n } = useTranslation('patient');
   const theme = useTheme();
   const user = useCurrentUser();
   const name = user?.name ?? 'Rekha Kumari';
   const firstName = name.split(' ')[0];
+  // The spoken guide ends with the live next medicine.
+  const { timeline } = useReminders();
+  const nextDose = timeline.find((x) => x.status === 'due' || x.status === 'upcoming');
+  const guideExtra = nextDose
+    ? t('guide:nextDose', {
+        name: nextDose.dose.medicineName,
+        when: nextDose.status === 'due' ? t('home.dueNow') : new Intl.DateTimeFormat(i18n.language, { hour: 'numeric', minute: '2-digit' }).format(nextDose.dose.at),
+      })
+    : timeline.length
+      ? t('guide:noDose')
+      : '';
 
   return (
     <Screen withTabBar testID="screen-patient-home" contentStyle={{ gap: theme.layout.sectionGap - 8 }}>
@@ -75,42 +84,31 @@ export default function PatientHome() {
           <Text variant="title" numberOfLines={2}>
             {t('home.greeting', { name: firstName })}
           </Text>
-          <Text variant="caption" tone="tertiary" numberOfLines={1}>
-            {t('home.subtitle')}
-          </Text>
+          <SyncStatusLine />
         </View>
+        <LanguageChip />
         <IconButton icon="notifications-outline" accessibilityLabel={t('common:actions.notifications')} onPress={() => router.push('/reminders')} />
       </View>
 
       {/* Big voice assistant button: the first thing on the screen */}
-      <VoiceHeroCard />
+      <View style={{ gap: theme.space[2] }}>
+        <VoiceHeroCard />
+        <Pressable accessibilityRole="link" onPress={() => router.push('/assistant')} testID="type-instead" style={{ alignSelf: 'center', minHeight: theme.sizes.touchMin, flexDirection: 'row', alignItems: 'center', gap: theme.space[1], paddingHorizontal: theme.space[3] }}>
+          <Icon name="chatbubble-ellipses-outline" size={18} color={theme.accent.accentText} />
+          <Text variant="label" weight="semibold" color={theme.accent.accentText}>
+            {t('home.typeInstead')}
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* Today's next medicine, with a Taken button */}
+      <NextDoseCard />
 
 
       {/* Services Grid (Image 1 left) */}
       <View style={{ gap: theme.space[3] }}>
         <View style={{ flexDirection: 'row', gap: theme.space[2], flexWrap: 'wrap', marginBottom: theme.space[2] }}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('home.call108')}
-            accessibilityHint={t('home.call108Hint')}
-            onPress={call108}
-            testID="call-108"
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: theme.space[2],
-              minHeight: theme.sizes.touchMin,
-              paddingHorizontal: theme.space[4],
-              borderRadius: theme.radii.full,
-              backgroundColor: theme.colors.status.danger.solid,
-              opacity: pressed ? 0.85 : 1,
-            })}>
-            <Icon name="call" size={theme.sizes.icon.sm} color={theme.colors.textOnDark} />
-            <Text weight="semibold" color={theme.colors.textOnDark}>
-              {t('home.call108')}
-            </Text>
-          </Pressable>
-          <ReadAloud text={`${t('home.greeting', { name: firstName })}. ${t('home.subtitle')}. ${t('home.services')}: ${SERVICES.map((s) => t(`services.${s.id}`)).join(', ')}.`} />
+          <ScreenGuide id="home" extra={guideExtra} />
         </View>
         <SectionHeader title={t('home.services')} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: theme.space[4] }}>
@@ -125,100 +123,6 @@ export default function PatientHome() {
       {/* Real step counter from the phone's motion sensor */}
       <StepsCard />
 
-      {/* AI assistant hero banner */}
-      <Card tone="inverse" radius="xl" padding="lg" onPress={() => router.push('/assistant')} accessibilityLabel={t('ai.title')} testID="ai-banner">
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[4] }}>
-          <View style={{ flex: 1, gap: theme.space[2] }}>
-            <Text variant="h3" tone="inverse">
-              {t('ai.title')}
-            </Text>
-            <Text variant="bodySmall" tone="inverseSecondary">
-              {t('ai.body')}
-            </Text>
-            <View
-              style={{
-                alignSelf: 'flex-start',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: theme.space[2],
-                marginTop: theme.space[2],
-                minHeight: 40,
-                paddingHorizontal: theme.space[4],
-                borderRadius: theme.radii.full,
-                backgroundColor: theme.colors.surface,
-              }}>
-              <Text variant="label">{t('ai.cta')}</Text>
-              <Icon name="arrow-forward" size={theme.sizes.icon.sm} flipInRTL />
-            </View>
-          </View>
-          <GlowOrb size={88}>
-            <Icon name="heart" size={36} color={theme.colors.textOnDark} />
-          </GlowOrb>
-        </View>
-      </Card>
-
-      {/* Today's next doses, from the patient's real reminder plan */}
-      <UpcomingDoses />
     </Screen>
-  );
-}
-
-/** The next doses still to take today (at most three), from the same plan as the Reminders tab. */
-function UpcomingDoses() {
-  const { t, i18n } = useTranslation('patient');
-  const theme = useTheme();
-  const { timeline } = useReminders();
-  const next = timeline.filter((x) => x.status === 'due' || x.status === 'upcoming').slice(0, 3);
-  const time = (d: Date) => new Intl.DateTimeFormat(i18n.language, { hour: 'numeric', minute: '2-digit' }).format(d);
-  return (
-    <Card radius="xl" testID="reminders-card">
-      <SectionHeader title={t('home.reminders')} />
-      {next.length === 0 ? (
-        <Pressable accessibilityRole="button" onPress={() => router.push('/reminders')} style={{ minHeight: theme.sizes.touchMin, justifyContent: 'center' }}>
-          <Text tone="secondary">{timeline.length ? t('home.dosesDone') : t('home.noDoses')}</Text>
-        </Pressable>
-      ) : (
-        next.map((x, i) => (
-          <Pressable
-            key={x.dose.id}
-            accessibilityRole="button"
-            onPress={() => router.push('/reminders')}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: theme.space[3],
-              minHeight: theme.sizes.touchMin + 8,
-              borderTopWidth: i === 0 ? 0 : 1,
-              borderTopColor: theme.colors.divider,
-              paddingTop: i === 0 ? 0 : theme.space[3],
-            }}>
-            <View
-              style={{
-                width: theme.sizes.iconChip,
-                height: theme.sizes.iconChip,
-                borderRadius: theme.radii.sm,
-                backgroundColor: x.status === 'due' ? theme.colors.status.warning.bg : theme.colors.tile.mint.bg,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Icon name="medical" color={x.status === 'due' ? theme.colors.status.warning.icon : theme.colors.tile.mint.icon} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text variant="bodyStrong" numberOfLines={1}>
-                {x.dose.medicineName}
-              </Text>
-              {x.dose.dose ? (
-                <Text variant="caption" tone="tertiary" numberOfLines={1}>
-                  {x.dose.dose}
-                </Text>
-              ) : null}
-            </View>
-            <Text variant="label" tone="accent" numeric>
-              {x.status === 'due' ? t('home.dueNow') : time(x.dose.at)}
-            </Text>
-          </Pressable>
-        ))
-      )}
-    </Card>
   );
 }

@@ -23,6 +23,7 @@ import {
 import { apiJson } from '@/features/shared/services/api';
 import { useTheme } from '@/features/shared/theme';
 import { Card, EmptyState, ErrorState, Heading, Icon, IconButton, Pill, Screen, SecondaryButton, Skeleton, Text } from '@/features/shared/ui';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 // Real banks from the official directory when the server has them imported; otherwise the labelled demo banks.
 const service = createBloodBankService(new RemoteBloodBankProvider(() => apiJson<BloodBankPayload>('/blood-banks', undefined, { timeoutMs: 8000 }).catch(() => null)));
@@ -111,6 +112,7 @@ export default function BloodBanksScreen() {
           {t('blood.title')}
         </Heading>
       </View>
+      <ScreenGuide id="bloodBanks" />
 
       <Card tone="muted" radius="xl" padding="md" testID="blood-mock-banner">
         <View style={{ flexDirection: 'row', gap: theme.space[2], alignItems: 'flex-start' }}>

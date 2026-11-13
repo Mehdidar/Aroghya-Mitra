@@ -1,0 +1,32 @@
+{
+  "explain": "Explain this screen",
+  "stop": "Stop",
+  "explainHint": "Speaks a short description of this screen and what you can do here",
+  "setting": {
+    "title": "Audio guide",
+    "help": "Speaks a short description of every screen when it opens, in your language. Useful if you cannot see the screen well or prefer listening.",
+    "on": "Audio guide: on",
+    "off": "Audio guide: off"
+  },
+  "nextDose": "Your next medicine is {{name}}, {{when}}.",
+  "noDose": "You have no more medicines to take today.",
+  "screens": {
+    "home": "Home screen. At the top is a large blue button: tap it and speak to ask about your health in your own language. Below it is your next medicine with a Taken button. Then a red button to call 108 for an ambulance; a small red 108 button also stays in the bottom corner of every screen. Further down are the services: chat, voice, prescription, nutrition, nearby care, QR health card, blood banks and reports, and your steps today. At the very bottom are four tabs: Home, Health, Reminders and Profile.",
+    "health": "Health screen. It shows your blood group and weight, any alert from your ASHA worker, and buttons for your QR health card, your history, reports, blood banks and nearby care. Further down is a switch to share your history with a doctor who scans your QR card, and your recent reports.",
+    "reminders": "Reminders screen. It lists today's medicines by time of day: morning, afternoon, evening and night. Each medicine has a Taken button and a Skip button. At the top you can see how many doses you have taken today.",
+    "profile": "Profile screen. Here you can change the app language, the text size and high contrast, and switch this audio guide on or off. The sign out button is at the bottom.",
+    "voice": "Voice assistant. Tap the round button at the bottom and speak your question. Tap it again when you finish. The answer is shown in large letters and spoken aloud. At the very bottom: a speaker button to stop the voice, a red button to end, and a keypad button to type instead. If you describe an emergency, a banner with 108 appears.",
+    "assistant": "Health chat. Type your question in the box at the bottom and press send. Answers appear above. You can also tap one of the suggested questions.",
+    "nutrition": "Nutrition scan. Take a photo of your food or choose one from your gallery. The app names the dish and shows calories, protein, allergens and health cautions. You can change the portion size.",
+    "prescription": "Prescription reader. Take a clear photo of a printed prescription. The app reads the medicine names and timings, and you can set reminders for them. Always confirm with your pharmacist.",
+    "qrCard": "QR health card. A doctor can scan this code to see your health history, only while sharing is switched on. The code changes every few minutes for your safety. You can pause sharing at any time.",
+    "bloodBanks": "Blood banks. Choose a blood group and a component at the top. The list shows the nearest blood banks with their distance, and buttons to call or get directions.",
+    "nearby": "Nearby care. A map and a list of hospitals, clinics, pharmacies and blood banks near you, nearest first. Use the buttons at the top to choose a type. Each place has a Call button when a number is known, and a Directions button.",
+    "history": "My history. It shows your details, alerts, recent visits, prescriptions and reports in date order, and how regularly you took your medicines.",
+    "uploadReport": "Upload a report. Choose a photo or a PDF of your report, give it a name, choose its type, and press Save.",
+    "doctorHome": "Doctor dashboard. It shows today's numbers, recent referrals from ASHA workers, and buttons to scan a patient's QR card and to see your patients.",
+    "doctorInbox": "Referral inbox. Referrals from ASHA workers, highest risk first. Each one has buttons to mark it seen or accept it.",
+    "doctorPatient": "Patient record. It shows the patient's details, alerts, recent vital signs, prescriptions and referrals, and a button to start a new consultation.",
+    "ashaHome": "ASHA home. At the top, patients who need attention today. Below are your households, alerts and referrals, and the sync button to send your visits."
+  }
+}

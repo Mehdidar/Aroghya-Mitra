@@ -63,7 +63,11 @@
     "highContrastOn": "ہائی کنٹراسٹ: آن",
     "highContrastOff": "ہائی کنٹراسٹ: آف",
     "readAloud": "یہ اسکرین پرِو",
-    "stopReading": "پرُن روکیو"
+    "stopReading": "پرُن روکیو",
+    "appearance": "شکل",
+    "appearance_system": "فونہٕ مطٲبِق",
+    "appearance_light": "لوٚت",
+    "appearance_dark": "گٹہٕ"
   },
   "dev": {
     "title": "کمپونینٹ گیلری"

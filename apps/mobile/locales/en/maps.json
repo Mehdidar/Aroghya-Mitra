@@ -1,0 +1,41 @@
+{
+  "title": "Nearby care",
+  "filters": {
+    "all": "All",
+    "hospital": "Hospitals",
+    "clinic": "Clinics",
+    "pharmacy": "Pharmacies",
+    "bloodbank": "Blood banks"
+  },
+  "kind": {
+    "hospital": "Hospital",
+    "clinic": "Clinic",
+    "pharmacy": "Pharmacy",
+    "bloodbank": "Blood bank"
+  },
+  "unnamed": {
+    "hospital": "Unnamed hospital",
+    "clinic": "Unnamed clinic",
+    "pharmacy": "Unnamed pharmacy",
+    "bloodbank": "Unnamed blood bank"
+  },
+  "open24x7": "24x7",
+  "emergency": "Emergency",
+  "call": "Call",
+  "callA11y": "Call {{name}}",
+  "directions": "Directions",
+  "directionsA11y": "Directions to {{name}}",
+  "locating": "Finding your location…",
+  "nearYou": "Showing places near you",
+  "fallbackNote": "Showing Bengaluru; allow location for places near you",
+  "mapA11y": "Map of nearby care; the same places are listed below",
+  "errorTitle": "Could not load nearby places",
+  "errorBody": "Check your internet and try again. In an emergency, call 108.",
+  "emptyTitle": "Nothing found nearby",
+  "emptyBody": "Try another filter. In an emergency, call 108.",
+  "credit": "Data © OpenStreetMap contributors",
+  "demo": "Demo",
+  "indoorTitle": "Indoor guide: PHC Hebbal (demo)",
+  "indoorBody": "Step-by-step directions inside a sample health centre.",
+  "indoorA11y": "Open the indoor guide for PHC Hebbal, a demo health centre"
+}

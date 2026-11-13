@@ -9,6 +9,7 @@ import { useRecords } from '@/features/shared/data/recordsStore';
 import { useCurrentUser } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
 import { Card, EmptyState, Heading, Icon, Pill, PrimaryButton, Screen, SecondaryButton, SectionHeader, Skeleton, StatCard, Text } from '@/features/shared/ui';
+import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 /** Doctor / Admin dashboard: today's numbers, the big Scan QR action, recent referrals. */
 export default function DoctorDashboard() {
@@ -28,6 +29,7 @@ export default function DoctorDashboard() {
         <Heading variant="h1">{t('common:doctor.dashboardTitle', { name: user?.name ?? '' })}</Heading>
         <Text tone="secondary">{t('common:doctor.dashboardSub')}</Text>
       </View>
+      <ScreenGuide id="doctorHome" />
 
       <Pressable
         accessibilityRole="button"

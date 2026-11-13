@@ -6,6 +6,7 @@ import { useLanguage } from '@/features/shared/i18n/useLanguage';
 import { useCurrentUser, useSession } from '@/features/shared/state/session';
 import { textScale as textScaleTokens, useTheme, useThemeSettings } from '@/features/shared/theme';
 import { Avatar, Card, Heading, Icon, Pill, PrimaryButton, Screen, SecondaryButton, Text } from '@/features/shared/ui';
+import { AudioGuideToggle, ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 /** Shared profile: who is signed in, the language switcher, sign out. Used by patient and doctor tabs. */
 export function ProfileScreen({ note }: { note?: string }) {
@@ -19,6 +20,7 @@ export function ProfileScreen({ note }: { note?: string }) {
   return (
     <Screen withTabBar testID="screen-profile" contentStyle={{ gap: theme.space[5] }}>
       <Heading variant="h1">{t('profile.title')}</Heading>
+      <ScreenGuide id="profile" />
       {user ? (
         <Card radius="xl">
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[3] }}>
@@ -125,6 +127,44 @@ export function ProfileScreen({ note }: { note?: string }) {
             onPress={() => a11y.setHighContrast(!a11y.highContrast)}
             testID="high-contrast-toggle"
           />
+          <AudioGuideToggle />
+          <View style={{ gap: theme.space[2] }}>
+            <Text variant="bodySmall" tone="secondary">
+              {t('profile.appearance')}
+            </Text>
+            <View style={{ flexDirection: 'row', gap: theme.space[2], flexWrap: 'wrap' }} accessibilityRole="radiogroup">
+              {(['system', 'light', 'dark'] as const).map((mode) => {
+                const selected = a11y.appearance === mode;
+                return (
+                  <Pressable
+                    key={mode}
+                    role="radio"
+                    aria-checked={selected}
+                    accessibilityState={{ selected }}
+                    accessibilityLabel={t(`profile.appearance_${mode}`)}
+                    onPress={() => a11y.setAppearance(mode)}
+                    testID={`appearance-${mode}`}
+                    style={{
+                      minHeight: theme.sizes.touchMin,
+                      paddingHorizontal: theme.space[4],
+                      borderRadius: theme.radii.full,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'row',
+                      gap: theme.space[1],
+                      backgroundColor: selected ? theme.accent.accent : theme.colors.surfaceMuted,
+                      borderWidth: 1,
+                      borderColor: selected ? theme.accent.accent : theme.colors.border,
+                    }}>
+                    <Icon name={mode === 'dark' ? 'moon' : mode === 'light' ? 'sunny' : 'phone-portrait-outline'} size={16} color={selected ? theme.accent.onAccent : theme.colors.textSecondary} />
+                    <Text weight="semibold" color={selected ? theme.accent.onAccent : theme.colors.textPrimary}>
+                      {t(`profile.appearance_${mode}`)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
         </View>
       </Card>
       <PrimaryButton label={t('actions.signOut')} icon="log-out-outline" onPress={signOut} testID="sign-out" />

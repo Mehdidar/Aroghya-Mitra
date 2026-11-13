@@ -1,6 +1,7 @@
 import { router, Stack } from 'expo-router';
 import React, { useMemo } from 'react';
 import { Alert, FlatList } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AlertCard } from '../../../features/asha/components/AlertCard';
 import { SEVERITY_RANK, urgencyFor } from '../../../features/asha/logic/rules';
 import { useAsha } from '../../../features/asha/store/AshaContext';
@@ -11,6 +12,7 @@ import { EmptyState } from '../../../features/shared/ui';
 export default function AlertsScreen() {
   const { db, store, lang, t, user } = useAsha();
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   const alerts = useMemo(
     () =>
@@ -53,7 +55,16 @@ export default function AlertsScreen() {
         keyExtractor={(a) => a.id}
         testID="screen-asha-alerts"
         style={{ backgroundColor: theme.colors.page }}
-        contentContainerStyle={{ paddingHorizontal: theme.layout.screenPaddingX, paddingVertical: theme.space[4], gap: theme.space[3] }}
+        // Same page padding as the shared Screen: clears the home indicator at the bottom.
+        contentContainerStyle={{
+          paddingHorizontal: theme.layout.screenPaddingX,
+          paddingTop: theme.space[4],
+          paddingBottom: insets.bottom + theme.space[6],
+          gap: theme.space[3],
+          width: '100%',
+          maxWidth: theme.layout.maxContentWidth,
+          alignSelf: 'center',
+        }}
         renderItem={({ item }) => (
           <AlertCard
             alert={item}

@@ -122,7 +122,8 @@
     "errorSlots": "ہر دوا کے لیے کم از کم ایک وقت چنیں۔",
     "untitled": "مشاورت",
     "labs": "ٹیسٹ: {{labs}}",
-    "followUpOn": "فالو اپ {{date}}"
+    "followUpOn": "فالو اپ {{date}}",
+    "savedAnnounce": "مشاورت محفوظ ہو گئی"
   },
   "slots": {
     "morning": "صبح",

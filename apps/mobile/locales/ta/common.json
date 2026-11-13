@@ -63,7 +63,11 @@
     "highContrastOn": "உயர் மாறுபாடு: ஆன்",
     "highContrastOff": "உயர் மாறுபாடு: ஆஃப்",
     "readAloud": "இந்தத் திரையை வாசித்துக் காட்டு",
-    "stopReading": "வாசிப்பை நிறுத்து"
+    "stopReading": "வாசிப்பை நிறுத்து",
+    "appearance": "தோற்றம்",
+    "appearance_system": "போனைப் போல",
+    "appearance_light": "வெளிர்",
+    "appearance_dark": "இருண்ட"
   },
   "dev": {
     "title": "கூறுகளின் தொகுப்பு"

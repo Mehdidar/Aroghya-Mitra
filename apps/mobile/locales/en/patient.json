@@ -13,14 +13,20 @@
     "viewAnalytics": "View analytics",
     "dueNow": "Due now",
     "dosesDone": "All of today's medicines are done.",
-    "noDoses": "No medicines scheduled. Scan a prescription to set reminders."
+    "noDoses": "No medicines scheduled. Scan a prescription to set reminders.",
+    "typeInstead": "Type instead",
+    "nextDose": "Next medicine",
+    "taken": "Taken",
+    "markTaken": "Mark {{name}} as taken",
+    "takenAnnounce": "{{name}} marked as taken",
+    "moreToday": "{{count}} more today: see all"
   },
   "services": {
     "chat": "Chat",
     "voice": "Voice",
     "prescription": "Prescription",
     "nutrition": "Nutrition",
-    "hospitalMap": "Hospital map",
+    "hospitalMap": "Nearby care",
     "qrCard": "QR card",
     "bloodBanks": "Blood banks",
     "reports": "Reports"
@@ -180,5 +186,19 @@
     "unavailable": "Step counting works on your phone.",
     "denied": "Allow motion access so the phone can count your steps.",
     "allow": "Allow step counting"
+  },
+  "sync": {
+    "never": "Not synced yet",
+    "justNow": "Synced just now",
+    "minutes": "Synced {{count}} min ago",
+    "hours": "Synced {{count}} h ago",
+    "offline": "Offline: changes will be sent later",
+    "offlineWaiting": "Offline: {{count}} changes waiting",
+    "waiting": "Sending {{count}} changes…"
+  },
+  "lang": {
+    "change": "Language: {{current}}. Change language",
+    "close": "Close",
+    "title": "Choose language"
   }
 }
