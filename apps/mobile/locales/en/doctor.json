@@ -1,1 +1,192 @@
-{}
+{
+  "back": "Back",
+  "retry": "Try again",
+  "cancel": "Cancel",
+  "none": "None",
+  "demoNote": "Demo data: every patient, referral and number here is fictional.",
+  "dashboard": {
+    "patientsToday": "Patients today",
+    "openReferrals": "Open referrals",
+    "highRisk": "High-risk alerts",
+    "followUps": "Follow-ups due",
+    "recentReferrals": "Recent referrals",
+    "seeAll": "See all",
+    "quick": "Quick actions",
+    "openDemoPatient": "Open {{name}} (demo patient)"
+  },
+  "risk": {
+    "high": "High risk",
+    "medium": "Medium risk"
+  },
+  "status": {
+    "pending": "Pending",
+    "seen": "Seen",
+    "accepted": "Accepted",
+    "closed": "Closed"
+  },
+  "actions": {
+    "mark_seen": "Mark seen",
+    "accept": "Accept",
+    "close": "Close"
+  },
+  "inbox": {
+    "title": "Referral inbox",
+    "subtitle": "{{count}} open",
+    "new": "New",
+    "refresh": "Refresh from ASHA app",
+    "open": "Open {{name}}",
+    "referredOn": "Referred on {{date}}",
+    "emptyTitle": "No open referrals",
+    "emptyBody": "ASHA referrals from your facility appear here."
+  },
+  "patients": {
+    "title": "Patients",
+    "count": "{{count}} registered",
+    "search": "Search by name, phone or id",
+    "register": "Register patient",
+    "emptyTitle": "No patients",
+    "emptyBody": "Register a patient to get started.",
+    "emptySearch": "No patient matches that search."
+  },
+  "sex": {
+    "male": "Male",
+    "female": "Female",
+    "other": "Other"
+  },
+  "patient": {
+    "age": "{{age}} yrs",
+    "unknown": "Unknown patient",
+    "notFound": "Patient not found",
+    "notFoundBody": "This record is not on this device.",
+    "openedViaQr": "Opened via QR scan",
+    "highRiskOpen": "{{count}} open high-risk alert(s)",
+    "bloodGroup": "Blood group {{group}}",
+    "asha": "ASHA: {{name}}",
+    "noAsha": "No ASHA assigned",
+    "allergies": "Allergies",
+    "conditions": "Chronic conditions",
+    "latestVitals": "Latest vitals",
+    "noVitals": "No vitals recorded yet.",
+    "referrals": "Referrals",
+    "noReferrals": "No referrals.",
+    "prescriptions": "Prescriptions",
+    "noPrescriptions": "No prescriptions yet.",
+    "consultations": "Consultations",
+    "noConsultations": "No consultations yet.",
+    "alerts": "Risk alerts",
+    "noAlerts": "No risk alerts."
+  },
+  "vitals": {
+    "bp": "BP {{s}}/{{d}} mmHg",
+    "hr": "Heart rate {{v}} bpm",
+    "weight": "Weight {{v}} kg",
+    "spo2": "SpO₂ {{v}}%",
+    "recorded": "{{date}} · {{source}}",
+    "source": {
+      "asha_visit": "ASHA visit",
+      "consultation": "Consultation",
+      "self": "Self-recorded",
+      "device": "Device"
+    }
+  },
+  "rx": {
+    "source": {
+      "doctor": "Doctor's prescription",
+      "scan": "Scanned prescription"
+    },
+    "days": "{{n}} days"
+  },
+  "consultation": {
+    "title": "New consultation",
+    "new": "New consultation",
+    "fromReferral": "From an ASHA referral: saving accepts it",
+    "diagnosis": "Diagnosis",
+    "diagnosisHint": "e.g. Gestational hypertension",
+    "notes": "Notes",
+    "notesHint": "Findings, advice, warnings…",
+    "labOrders": "Lab orders",
+    "followUp": "Follow-up date",
+    "prescription": "Prescription",
+    "addMedicine": "Add medicine",
+    "medicineN": "Medicine {{n}}",
+    "removeMedicine": "Remove medicine",
+    "medName": "Medicine",
+    "dose": "Dose",
+    "durationDays": "Days",
+    "timesOfDay": "Times of day",
+    "instructions": "Instructions",
+    "instructionsHint": "After food, with water…",
+    "save": "Save consultation",
+    "errorEmpty": "Add a diagnosis or a note.",
+    "errorDate": "Follow-up date must be YYYY-MM-DD.",
+    "errorSlots": "Choose at least one time of day for each medicine.",
+    "untitled": "Consultation",
+    "labs": "Labs: {{labs}}",
+    "followUpOn": "Follow-up {{date}}"
+  },
+  "slots": {
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "night": "Night"
+  },
+  "scan": {
+    "title": "Scan QR health card",
+    "body": "Point the camera at the patient's QR card, or paste the code.",
+    "cameraLabel": "Camera viewfinder",
+    "permissionBody": "Camera access is needed to scan a card.",
+    "allowCamera": "Allow camera",
+    "pasteLabel": "Or paste the code",
+    "open": "Open record",
+    "useDemo": "Use demo patient card",
+    "failedTitle": "Could not open this card",
+    "error": {
+      "invalid": "This is not a valid or current health card.",
+      "denied": "Access denied: the patient has not shared their history.",
+      "not_found": "No record found for this card on this device.",
+      "server": "The server could not be reached. Use the demo card or try again."
+    }
+  },
+  "register": {
+    "title": "Register patient",
+    "name": "Full name",
+    "dob": "Date of birth",
+    "phone": "Mobile number",
+    "sex": "Sex",
+    "bloodGroup": "Blood group",
+    "area": "Area / village",
+    "conditions": "Chronic conditions",
+    "conditionsHint": "Comma separated, e.g. diabetes, hypertension",
+    "asha": "Assign ASHA worker",
+    "save": "Register",
+    "errors": {
+      "name_required": "Enter the patient's name.",
+      "dob_invalid": "Enter a valid date (YYYY-MM-DD).",
+      "phone_invalid": "Enter a valid 10-digit mobile number.",
+      "blood_group_invalid": "Choose a valid blood group."
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitleAdmin": "Users, assignments, blood stock and analytics",
+    "subtitleDoctor": "Admin tools (read-only for doctors in production)",
+    "profile": "Profile",
+    "adherence": "Adherence (30 days)",
+    "adherenceCaption": "{{n}} patient(s) below 80%",
+    "pendingApprovals": "Pending approvals",
+    "analytics": "Analytics",
+    "visitsPerAsha": "Visits per ASHA (30 days; red = high risk)",
+    "highRiskByArea": "High-risk alerts by area (red = open)",
+    "staff": "Users",
+    "active": "Active",
+    "pending": "Pending",
+    "approve": "Approve",
+    "deactivate": "Deactivate",
+    "assignments": "ASHA assignments",
+    "bloodStock": "Blood stock",
+    "bankError": "Could not load the blood bank.",
+    "demoStock": "Demo stock, not e-RaktKosh",
+    "less": "Fewer units",
+    "more": "More units"
+  }
+}

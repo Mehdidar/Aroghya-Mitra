@@ -1,1 +1,110 @@
-{}
+{
+  "back": "واپس",
+  "retry": "دوبارہ کوشش کریں",
+  "cancel": "منسوخ",
+  "none": "کوئی نہیں",
+  "demoNote": "ڈیمو ڈیٹا: یہاں ہر مریض، ریفرل اور نمبر فرضی ہے۔",
+  "dashboard": {
+    "patientsToday": "آج کے مریض",
+    "openReferrals": "کھلے ریفرلز",
+    "highRisk": "زیادہ خطرے کے الرٹ",
+    "followUps": "فالو اپ باقی",
+    "recentReferrals": "حالیہ ریفرلز",
+    "seeAll": "سب دیکھیں",
+    "quick": "فوری کارروائیاں",
+    "openDemoPatient": "{{name}} کھولیں (ڈیمو مریض)"
+  },
+  "risk": {
+    "high": "زیادہ خطرہ",
+    "medium": "درمیانہ خطرہ"
+  },
+  "status": {
+    "pending": "زیر التوا",
+    "seen": "دیکھا گیا",
+    "accepted": "قبول",
+    "closed": "بند"
+  },
+  "actions": {
+    "mark_seen": "دیکھا گیا نشان لگائیں",
+    "accept": "قبول کریں",
+    "close": "بند کریں"
+  },
+  "inbox": {
+    "title": "ریفرل ان باکس",
+    "subtitle": "{{count}} کھلے",
+    "new": "نیا",
+    "refresh": "ASHA ایپ سے تازہ کریں",
+    "open": "{{name}} کھولیں",
+    "referredOn": "{{date}} کو ریفر کیا",
+    "emptyTitle": "کوئی کھلا ریفرل نہیں",
+    "emptyBody": "آپ کے مرکز کے ASHA ریفرلز یہاں نظر آئیں گے۔"
+  },
+  "patients": {
+    "title": "مریض",
+    "count": "{{count}} رجسٹرڈ",
+    "search": "نام، فون یا آئی ڈی سے تلاش",
+    "register": "مریض رجسٹر کریں",
+    "emptyTitle": "کوئی مریض نہیں",
+    "emptyBody": "شروع کرنے کے لیے مریض رجسٹر کریں۔",
+    "emptySearch": "اس تلاش سے کوئی مریض نہیں ملا۔"
+  },
+  "sex": {
+    "male": "مرد",
+    "female": "عورت",
+    "other": "دیگر"
+  },
+  "patient": {
+    "age": "{{age}} سال",
+    "unknown": "نامعلوم مریض",
+    "notFound": "مریض نہیں ملا",
+    "latestVitals": "تازہ وائٹلز",
+    "referrals": "ریفرلز",
+    "prescriptions": "نسخے",
+    "consultations": "مشاورتیں",
+    "alerts": "خطرے کے الرٹ",
+    "allergies": "الرجی",
+    "conditions": "پرانی بیماریاں",
+    "openedViaQr": "QR اسکین سے کھولا گیا"
+  },
+  "consultation": {
+    "title": "نئی مشاورت",
+    "new": "نئی مشاورت",
+    "diagnosis": "تشخیص",
+    "notes": "نوٹس",
+    "labOrders": "ٹیسٹ",
+    "followUp": "فالو اپ تاریخ",
+    "prescription": "نسخہ",
+    "addMedicine": "دوا شامل کریں",
+    "save": "مشاورت محفوظ کریں"
+  },
+  "slots": {
+    "morning": "صبح",
+    "afternoon": "دوپہر",
+    "evening": "شام",
+    "night": "رات"
+  },
+  "scan": {
+    "title": "QR ہیلتھ کارڈ اسکین کریں",
+    "open": "ریکارڈ کھولیں",
+    "useDemo": "ڈیمو مریض کارڈ استعمال کریں",
+    "pasteLabel": "یا کوڈ پیسٹ کریں"
+  },
+  "register": {
+    "title": "مریض رجسٹر کریں",
+    "name": "پورا نام",
+    "phone": "موبائل نمبر",
+    "save": "رجسٹر کریں"
+  },
+  "admin": {
+    "title": "ایڈمن",
+    "staff": "صارفین",
+    "analytics": "تجزیات",
+    "bloodStock": "خون کا ذخیرہ",
+    "assignments": "ASHA تفویض",
+    "approve": "منظور",
+    "deactivate": "غیر فعال",
+    "active": "فعال",
+    "pending": "زیر التوا",
+    "profile": "پروفائل"
+  }
+}

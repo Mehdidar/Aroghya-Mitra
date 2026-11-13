@@ -12,9 +12,6 @@ Endpoints:
     POST /predict     multipart image upload -> full dietary verdict
     POST /ai/food     the same upload, in the mobile app's FoodRecognition
                       shape (api/food.py): dish, portion, macros, diet
-    POST /asha/sync   the ASHA app's outbox -> what changed on the server
-    POST /asha/photos visit photo upload -> {url}   (api/asha.py)
-    GET  /asha/photos/<name>   serves an uploaded photo
     POST /feedback    a correction against a request_id -> review queue
 
 The model is loaded once at startup, not per request.
@@ -34,8 +31,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse
+from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image, UnidentifiedImageError
 
@@ -46,7 +42,6 @@ from core.config import HEADS
 from core.predictor import DietPredictor
 from . import feedback as fb
 from . import food as food_shape
-from . import asha as asha_sync
 from . import security, telemetry
 
 MAX_UPLOAD_BYTES = 12 * 1024 * 1024
@@ -225,43 +220,3 @@ def feedback_stats(caller: str = Depends(security.caller)):
             # ranked shortlist for what to add to the vocabulary next.
             'dishes_not_in_taxonomy': unknown}
 
-
-# ----------------------------------------------------------------- ASHA sync
-
-@app.post('/asha/sync')
-async def asha_sync_route(payload: dict, caller: str = Depends(security.caller)):
-    """The ASHA app's push+pull round (api/asha.py). Same auth and rate
-    limit as /predict; the app sends its session token as a Bearer header,
-    which is accepted but not yet verified."""
-    try:
-        return asha_sync.sync(payload)
-    except ValueError as e:
-        raise HTTPException(400, str(e))
-
-
-@app.post('/asha/photos')
-async def asha_photo_upload(request: Request, file: UploadFile = File(...),
-                            caller: str = Depends(security.caller)):
-    raw = await file.read()
-    if not raw:
-        raise HTTPException(400, 'empty upload')
-    if len(raw) > MAX_UPLOAD_BYTES:
-        raise HTTPException(413, f'file larger than {MAX_UPLOAD_BYTES // (1024*1024)}MB')
-    try:
-        Image.open(io.BytesIO(raw)).verify()
-    except (UnidentifiedImageError, OSError):
-        raise HTTPException(400, 'could not decode image')
-    name, path = asha_sync.photo_path(file.filename)
-    with open(path, 'wb') as f:
-        f.write(raw)
-    return {'url': str(request.base_url).rstrip('/') + f'/asha/photos/{name}'}
-
-
-@app.get('/asha/photos/{name}')
-def asha_photo(name: str):
-    if asha_sync._SAFE_NAME.search(name) or '..' in name:
-        raise HTTPException(404)
-    path = os.path.join(asha_sync.ROOT_DIR, 'photos', name)
-    if not os.path.isfile(path):
-        raise HTTPException(404)
-    return FileResponse(path)

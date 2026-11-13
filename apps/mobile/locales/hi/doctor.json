@@ -1,1 +1,192 @@
-{}
+{
+  "back": "वापस",
+  "retry": "फिर कोशिश करें",
+  "cancel": "रद्द करें",
+  "none": "कोई नहीं",
+  "demoNote": "डेमो डेटा: यहाँ हर मरीज़, रेफ़रल और संख्या काल्पनिक है।",
+  "dashboard": {
+    "patientsToday": "आज के मरीज़",
+    "openReferrals": "खुले रेफ़रल",
+    "highRisk": "उच्च-जोखिम अलर्ट",
+    "followUps": "फ़ॉलो-अप बाकी",
+    "recentReferrals": "हाल के रेफ़रल",
+    "seeAll": "सभी देखें",
+    "quick": "त्वरित कार्य",
+    "openDemoPatient": "{{name}} खोलें (डेमो मरीज़)"
+  },
+  "risk": {
+    "high": "उच्च जोखिम",
+    "medium": "मध्यम जोखिम"
+  },
+  "status": {
+    "pending": "लंबित",
+    "seen": "देखा गया",
+    "accepted": "स्वीकृत",
+    "closed": "बंद"
+  },
+  "actions": {
+    "mark_seen": "देखा गया चिह्नित करें",
+    "accept": "स्वीकार करें",
+    "close": "बंद करें"
+  },
+  "inbox": {
+    "title": "रेफ़रल इनबॉक्स",
+    "subtitle": "{{count}} खुले",
+    "new": "नया",
+    "refresh": "ASHA ऐप से ताज़ा करें",
+    "open": "{{name}} खोलें",
+    "referredOn": "{{date}} को रेफ़र किया",
+    "emptyTitle": "कोई खुला रेफ़रल नहीं",
+    "emptyBody": "आपकी सुविधा के ASHA रेफ़रल यहाँ दिखेंगे।"
+  },
+  "patients": {
+    "title": "मरीज़",
+    "count": "{{count}} पंजीकृत",
+    "search": "नाम, फ़ोन या आईडी से खोजें",
+    "register": "मरीज़ पंजीकृत करें",
+    "emptyTitle": "कोई मरीज़ नहीं",
+    "emptyBody": "शुरू करने के लिए मरीज़ पंजीकृत करें।",
+    "emptySearch": "इस खोज से कोई मरीज़ नहीं मिला।"
+  },
+  "sex": {
+    "male": "पुरुष",
+    "female": "महिला",
+    "other": "अन्य"
+  },
+  "patient": {
+    "age": "{{age}} वर्ष",
+    "unknown": "अज्ञात मरीज़",
+    "notFound": "मरीज़ नहीं मिला",
+    "notFoundBody": "यह रिकॉर्ड इस डिवाइस पर नहीं है।",
+    "openedViaQr": "QR स्कैन से खोला गया",
+    "highRiskOpen": "{{count}} खुला उच्च-जोखिम अलर्ट",
+    "bloodGroup": "रक्त समूह {{group}}",
+    "asha": "ASHA: {{name}}",
+    "noAsha": "कोई ASHA नियुक्त नहीं",
+    "allergies": "एलर्जी",
+    "conditions": "पुरानी बीमारियाँ",
+    "latestVitals": "ताज़ा वाइटल्स",
+    "noVitals": "अभी कोई वाइटल दर्ज नहीं।",
+    "referrals": "रेफ़रल",
+    "noReferrals": "कोई रेफ़रल नहीं।",
+    "prescriptions": "पर्चे",
+    "noPrescriptions": "अभी कोई पर्चा नहीं।",
+    "consultations": "परामर्श",
+    "noConsultations": "अभी कोई परामर्श नहीं।",
+    "alerts": "जोखिम अलर्ट",
+    "noAlerts": "कोई जोखिम अलर्ट नहीं।"
+  },
+  "vitals": {
+    "bp": "BP {{s}}/{{d}} mmHg",
+    "hr": "हृदय गति {{v}} bpm",
+    "weight": "वज़न {{v}} किग्रा",
+    "spo2": "SpO₂ {{v}}%",
+    "recorded": "{{date}} · {{source}}",
+    "source": {
+      "asha_visit": "ASHA भेंट",
+      "consultation": "परामर्श",
+      "self": "स्वयं दर्ज",
+      "device": "डिवाइस"
+    }
+  },
+  "rx": {
+    "source": {
+      "doctor": "डॉक्टर का पर्चा",
+      "scan": "स्कैन किया पर्चा"
+    },
+    "days": "{{n}} दिन"
+  },
+  "consultation": {
+    "title": "नया परामर्श",
+    "new": "नया परामर्श",
+    "fromReferral": "ASHA रेफ़रल से: सहेजने पर स्वीकार होगा",
+    "diagnosis": "निदान",
+    "diagnosisHint": "जैसे गर्भावस्था में उच्च रक्तचाप",
+    "notes": "नोट्स",
+    "notesHint": "निष्कर्ष, सलाह, चेतावनी…",
+    "labOrders": "जाँच",
+    "followUp": "फ़ॉलो-अप तारीख़",
+    "prescription": "पर्चा",
+    "addMedicine": "दवा जोड़ें",
+    "medicineN": "दवा {{n}}",
+    "removeMedicine": "दवा हटाएँ",
+    "medName": "दवा",
+    "dose": "खुराक",
+    "durationDays": "दिन",
+    "timesOfDay": "समय",
+    "instructions": "निर्देश",
+    "instructionsHint": "खाने के बाद, पानी के साथ…",
+    "save": "परामर्श सहेजें",
+    "errorEmpty": "निदान या नोट जोड़ें।",
+    "errorDate": "फ़ॉलो-अप तारीख़ YYYY-MM-DD में हो।",
+    "errorSlots": "हर दवा के लिए कम से कम एक समय चुनें।",
+    "untitled": "परामर्श",
+    "labs": "जाँच: {{labs}}",
+    "followUpOn": "फ़ॉलो-अप {{date}}"
+  },
+  "slots": {
+    "morning": "सुबह",
+    "afternoon": "दोपहर",
+    "evening": "शाम",
+    "night": "रात"
+  },
+  "scan": {
+    "title": "QR हेल्थ कार्ड स्कैन करें",
+    "body": "कैमरा मरीज़ के QR कार्ड पर रखें, या कोड पेस्ट करें।",
+    "cameraLabel": "कैमरा व्यूफ़ाइंडर",
+    "permissionBody": "कार्ड स्कैन करने के लिए कैमरा अनुमति चाहिए।",
+    "allowCamera": "कैमरा अनुमति दें",
+    "pasteLabel": "या कोड पेस्ट करें",
+    "open": "रिकॉर्ड खोलें",
+    "useDemo": "डेमो मरीज़ कार्ड उपयोग करें",
+    "failedTitle": "यह कार्ड नहीं खुल सका",
+    "error": {
+      "invalid": "यह मान्य या वर्तमान हेल्थ कार्ड नहीं है।",
+      "denied": "पहुँच अस्वीकृत: मरीज़ ने इतिहास साझा नहीं किया।",
+      "not_found": "इस कार्ड का रिकॉर्ड इस डिवाइस पर नहीं मिला।",
+      "server": "सर्वर से संपर्क नहीं हो सका। डेमो कार्ड उपयोग करें या फिर कोशिश करें।"
+    }
+  },
+  "register": {
+    "title": "मरीज़ पंजीकृत करें",
+    "name": "पूरा नाम",
+    "dob": "जन्म तिथि",
+    "phone": "मोबाइल नंबर",
+    "sex": "लिंग",
+    "bloodGroup": "रक्त समूह",
+    "area": "क्षेत्र / गाँव",
+    "conditions": "पुरानी बीमारियाँ",
+    "conditionsHint": "अल्पविराम से अलग, जैसे मधुमेह, उच्च रक्तचाप",
+    "asha": "ASHA कार्यकर्ता नियुक्त करें",
+    "save": "पंजीकृत करें",
+    "errors": {
+      "name_required": "मरीज़ का नाम लिखें।",
+      "dob_invalid": "मान्य तारीख़ लिखें (YYYY-MM-DD)।",
+      "phone_invalid": "मान्य 10 अंकों का मोबाइल नंबर लिखें।",
+      "blood_group_invalid": "मान्य रक्त समूह चुनें।"
+    }
+  },
+  "admin": {
+    "title": "एडमिन",
+    "subtitleAdmin": "उपयोगकर्ता, नियुक्तियाँ, रक्त भंडार और विश्लेषण",
+    "subtitleDoctor": "एडमिन टूल (प्रोडक्शन में डॉक्टर के लिए केवल-पढ़ें)",
+    "profile": "प्रोफ़ाइल",
+    "adherence": "दवा पालन (30 दिन)",
+    "adherenceCaption": "{{n}} मरीज़ 80% से नीचे",
+    "pendingApprovals": "लंबित स्वीकृतियाँ",
+    "analytics": "विश्लेषण",
+    "visitsPerAsha": "प्रति ASHA भेंटें (30 दिन; लाल = उच्च जोखिम)",
+    "highRiskByArea": "क्षेत्रवार उच्च-जोखिम अलर्ट (लाल = खुले)",
+    "staff": "उपयोगकर्ता",
+    "active": "सक्रिय",
+    "pending": "लंबित",
+    "approve": "स्वीकृत करें",
+    "deactivate": "निष्क्रिय करें",
+    "assignments": "ASHA नियुक्तियाँ",
+    "bloodStock": "रक्त भंडार",
+    "bankError": "ब्लड बैंक लोड नहीं हो सका।",
+    "demoStock": "डेमो भंडार, e-RaktKosh नहीं",
+    "less": "कम यूनिट",
+    "more": "अधिक यूनिट"
+  }
+}

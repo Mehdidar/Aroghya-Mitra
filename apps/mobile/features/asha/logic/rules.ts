@@ -1,5 +1,5 @@
-import { ageYears, gestationWeeks, isNewborn, isPregnant } from './clinical';
-import { t } from '../data/i18n';
+import { ageYears, gestationWeeks, isNewborn, isPregnant } from './clinical.ts';
+import { t } from '../data/i18n.ts';
 import type {
   Lang,
   Patient,

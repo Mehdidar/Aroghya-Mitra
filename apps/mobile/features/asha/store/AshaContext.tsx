@@ -5,6 +5,7 @@ import { AppState } from 'react-native';
 import { buildDemoDB } from '../data/seed';
 import { t as translate } from '../data/i18n';
 import { config } from '../services/config';
+import { authHeaders } from '@/features/shared/services/api';
 import { createHttpTransport, syncOnce, type SyncTransport } from '../services/sync';
 import type { AppUser, Lang } from '../types';
 import { AshaStore, type AshaDB } from './store';
@@ -33,7 +34,7 @@ const LANG_KEY = 'asha.lang';
 
 export function AshaProvider({ children, user }: { children: React.ReactNode; user?: AppUser }) {
   const store = useMemo(() => new AshaStore(AsyncStorage), []);
-  const transport = useMemo<SyncTransport | null>(() => (config.apiUrl ? createHttpTransport(config.apiUrl) : null), []);
+  const transport = useMemo<SyncTransport | null>(() => (config.apiUrl ? createHttpTransport(config.apiUrl, undefined, authHeaders) : null), []);
   const me = useMemo<AppUser>(() => user ?? { id: config.ashaId, role: 'asha', name: config.ashaName }, [user]);
 
   const [db, setDb] = useState<AshaDB>(store.snapshot);

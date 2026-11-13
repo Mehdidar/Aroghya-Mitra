@@ -90,10 +90,15 @@ async function doSync(store: AshaStore, transport: SyncTransport, ashaId: ID): P
   }
 }
 
-export function createHttpTransport(baseUrl: string, getToken?: () => Promise<string | undefined>): SyncTransport {
+export function createHttpTransport(
+  baseUrl: string,
+  getToken?: () => Promise<string | undefined>,
+  /** Extra headers per request (the app passes its demo-auth / session headers here). */
+  extraHeaders?: () => Record<string, string>,
+): SyncTransport {
   const headers = async (): Promise<Record<string, string>> => {
     const token = await getToken?.();
-    return token ? { Authorization: `Bearer ${token}` } : {};
+    return { ...(extraHeaders?.() ?? {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) };
   };
   const withTimeout = async (input: string, init: RequestInit, ms = 20_000) => {
     const ctrl = new AbortController();
