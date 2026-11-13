@@ -22,5 +22,13 @@
   },
   "language": {
     "label": "భాష"
+  },
+  "profile": {
+    "accessibility": "అందుబాటు",
+    "textSize": "అక్షర పరిమాణం",
+    "highContrastOn": "హై కాంట్రాస్ట్: ఆన్",
+    "highContrastOff": "హై కాంట్రాస్ట్: ఆఫ్",
+    "readAloud": "ఈ స్క్రీన్‌ను చదివి వినిపించు",
+    "stopReading": "చదవడం ఆపు"
   }
 }

@@ -57,7 +57,13 @@
     "title": "प्रोफ़ाइल",
     "language": "ऐप की भाषा",
     "account": "खाता",
-    "phone": "फ़ोन"
+    "phone": "फ़ोन",
+    "accessibility": "सुलभता",
+    "textSize": "अक्षर का आकार",
+    "highContrastOn": "हाई कॉन्ट्रास्ट: चालू",
+    "highContrastOff": "हाई कॉन्ट्रास्ट: बंद",
+    "readAloud": "यह स्क्रीन पढ़कर सुनाएँ",
+    "stopReading": "पढ़ना रोकें"
   },
   "dev": {
     "title": "कंपोनेंट गैलरी"

@@ -4,8 +4,8 @@ import { Pressable, View } from 'react-native';
 import { LANGUAGES, LANGUAGE_CODES } from '@/features/shared/i18n/languages';
 import { useLanguage } from '@/features/shared/i18n/useLanguage';
 import { useCurrentUser, useSession } from '@/features/shared/state/session';
-import { useTheme } from '@/features/shared/theme';
-import { Avatar, Card, Heading, Icon, Pill, PrimaryButton, Screen, Text } from '@/features/shared/ui';
+import { textScale as textScaleTokens, useTheme, useThemeSettings } from '@/features/shared/theme';
+import { Avatar, Card, Heading, Icon, Pill, PrimaryButton, Screen, SecondaryButton, Text } from '@/features/shared/ui';
 
 /** Shared profile: who is signed in, the language switcher, sign out. Used by patient and doctor tabs. */
 export function ProfileScreen({ note }: { note?: string }) {
@@ -14,6 +14,7 @@ export function ProfileScreen({ note }: { note?: string }) {
   const user = useCurrentUser();
   const signOut = useSession((s) => s.signOut);
   const { language, setLanguage } = useLanguage();
+  const a11y = useThemeSettings();
 
   return (
     <Screen withTabBar testID="screen-profile" contentStyle={{ gap: theme.space[5] }}>
@@ -80,6 +81,52 @@ export function ProfileScreen({ note }: { note?: string }) {
       <Text variant="caption" tone="tertiary">
         {t('demo.note')}
       </Text>
+      <Card radius="xl" testID="a11y-card">
+        <View style={{ gap: theme.space[3] }}>
+          <Text variant="label">{t('profile.accessibility')}</Text>
+          <View style={{ gap: theme.space[2] }}>
+            <Text variant="bodySmall" tone="secondary">
+              {t('profile.textSize')}
+            </Text>
+            <View style={{ flexDirection: 'row', gap: theme.space[2], flexWrap: 'wrap' }} accessibilityRole="radiogroup">
+              {textScaleTokens.steps.map((step) => {
+                const selected = a11y.textScale === step;
+                return (
+                  <Pressable
+                    key={step}
+                    role="radio"
+                    aria-checked={selected}
+                    accessibilityState={{ selected }}
+                    accessibilityLabel={`${t('profile.textSize')} ${Math.round(step * 100)}%`}
+                    onPress={() => a11y.setTextScale(step)}
+                    testID={`text-scale-${step}`}
+                    style={{
+                      minHeight: theme.sizes.touchMin,
+                      minWidth: theme.sizes.touchMin,
+                      paddingHorizontal: theme.space[4],
+                      borderRadius: theme.radii.full,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: selected ? theme.accent.accent : theme.colors.surfaceMuted,
+                      borderWidth: 1,
+                      borderColor: selected ? theme.accent.accent : theme.colors.border,
+                    }}>
+                    <Text weight="semibold" color={selected ? theme.accent.onAccent : theme.colors.text}>
+                      {`A ${Math.round(step * 100)}%`}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+          <SecondaryButton
+            label={a11y.highContrast ? t('profile.highContrastOn') : t('profile.highContrastOff')}
+            icon={a11y.highContrast ? 'contrast' : 'contrast-outline'}
+            onPress={() => a11y.setHighContrast(!a11y.highContrast)}
+            testID="high-contrast-toggle"
+          />
+        </View>
+      </Card>
       <PrimaryButton label={t('actions.signOut')} icon="log-out-outline" onPress={signOut} testID="sign-out" />
     </Screen>
   );

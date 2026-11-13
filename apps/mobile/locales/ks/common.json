@@ -4,5 +4,13 @@
     "reminders": "یاد دہانی",
     "referrals": "حوالہ",
     "admin": "ایڈمن"
+  },
+  "profile": {
+    "accessibility": "رسائی",
+    "textSize": "حرفن ہُند سایز",
+    "highContrastOn": "ہائی کنٹراسٹ: آن",
+    "highContrastOff": "ہائی کنٹراسٹ: آف",
+    "readAloud": "یہ اسکرین پرِو",
+    "stopReading": "پرُن روکیو"
   }
 }

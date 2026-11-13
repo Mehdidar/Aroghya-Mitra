@@ -57,7 +57,13 @@
     "title": "Profile",
     "language": "App language",
     "account": "Account",
-    "phone": "Phone"
+    "phone": "Phone",
+    "accessibility": "Accessibility",
+    "textSize": "Text size",
+    "highContrastOn": "High contrast: on",
+    "highContrastOff": "High contrast: off",
+    "readAloud": "Read this screen aloud",
+    "stopReading": "Stop reading"
   },
   "dev": {
     "title": "Component gallery"

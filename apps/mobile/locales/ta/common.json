@@ -22,5 +22,13 @@
   },
   "language": {
     "label": "மொழி"
+  },
+  "profile": {
+    "accessibility": "அணுகல்",
+    "textSize": "எழுத்து அளவு",
+    "highContrastOn": "உயர் மாறுபாடு: ஆன்",
+    "highContrastOff": "உயர் மாறுபாடு: ஆஃப்",
+    "readAloud": "இந்தத் திரையை வாசித்துக் காட்டு",
+    "stopReading": "வாசிப்பை நிறுத்து"
   }
 }

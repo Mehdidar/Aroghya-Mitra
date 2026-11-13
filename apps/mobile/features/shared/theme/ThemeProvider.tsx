@@ -1,4 +1,5 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 
 import {
@@ -98,14 +99,37 @@ const RoleOverrideContext = createContext<AppRole | null>(null);
  * useSegments()[0] to a role), so teammates never pass it. High contrast and text scale live in
  * provider state for now; the Phase B settings screen calls useThemeSettings().setX.
  */
+const SETTINGS_KEY = 'aroghya-a11y-v1';
+
 export function ThemeProvider({ role, children }: { role: AppRole; children: ReactNode }) {
-  const [highContrast, setHighContrast] = useState(false);
-  const [textScale, setTextScale] = useState<number>(textScaleTokens.default);
+  const [highContrast, setHighContrastState] = useState(false);
+  const [textScale, setTextScaleState] = useState<number>(textScaleTokens.default);
+
+  // Accessibility settings survive restarts (high contrast, text size). Reads are best-effort.
+  useEffect(() => {
+    AsyncStorage.getItem(SETTINGS_KEY)
+      .then((raw) => {
+        if (!raw) return;
+        const saved = JSON.parse(raw) as { highContrast?: boolean; textScale?: number };
+        if (typeof saved.highContrast === 'boolean') setHighContrastState(saved.highContrast);
+        if (typeof saved.textScale === 'number' && (textScaleTokens.steps as readonly number[]).includes(saved.textScale)) setTextScaleState(saved.textScale);
+      })
+      .catch(() => undefined);
+  }, []);
+  const persist = (next: { highContrast: boolean; textScale: number }) => {
+    AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next)).catch(() => undefined);
+  };
+  const setHighContrast = (value: boolean) => {
+    setHighContrastState(value);
+    persist({ highContrast: value, textScale });
+  };
+  const setTextScale = (value: number) => {
+    setTextScaleState(value);
+    persist({ highContrast, textScale: value });
+  };
   const theme = useMemo(() => buildTheme(role, highContrast, textScale), [role, highContrast, textScale]);
-  const settings = useMemo(
-    () => ({ highContrast, textScale, setHighContrast, setTextScale }),
-    [highContrast, textScale]
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const settings = useMemo(() => ({ highContrast, textScale, setHighContrast, setTextScale }), [highContrast, textScale]);
   return (
     <SettingsContext.Provider value={settings}>
       <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>

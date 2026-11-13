@@ -46,6 +46,12 @@
     "title": "پروفائل",
     "language": "ایپ کی زبان",
     "account": "اکاؤنٹ",
-    "phone": "فون"
+    "phone": "فون",
+    "accessibility": "رسائی",
+    "textSize": "حروف کا سائز",
+    "highContrastOn": "ہائی کنٹراسٹ: آن",
+    "highContrastOff": "ہائی کنٹراسٹ: آف",
+    "readAloud": "یہ اسکرین پڑھ کر سنائیں",
+    "stopReading": "پڑھنا روکیں"
   }
 }

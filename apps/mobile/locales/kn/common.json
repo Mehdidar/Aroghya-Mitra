@@ -57,7 +57,13 @@
     "title": "ಪ್ರೊಫೈಲ್",
     "language": "ಆ್ಯಪ್ ಭಾಷೆ",
     "account": "ಖಾತೆ",
-    "phone": "ಫೋನ್"
+    "phone": "ಫೋನ್",
+    "accessibility": "ಸುಲಭ ಬಳಕೆ",
+    "textSize": "ಅಕ್ಷರ ಗಾತ್ರ",
+    "highContrastOn": "ಹೈ ಕಾಂಟ್ರಾಸ್ಟ್: ಆನ್",
+    "highContrastOff": "ಹೈ ಕಾಂಟ್ರಾಸ್ಟ್: ಆಫ್",
+    "readAloud": "ಈ ಪರದೆಯನ್ನು ಓದಿ ಹೇಳಿ",
+    "stopReading": "ಓದುವುದನ್ನು ನಿಲ್ಲಿಸಿ"
   },
   "dev": {
     "title": "ಕಾಂಪೊನೆಂಟ್ ಗ್ಯಾಲರಿ"

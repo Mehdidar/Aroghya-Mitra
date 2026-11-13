@@ -18,3 +18,27 @@ jest.mock('expo-audio', () => ({
     getStatus: jest.fn(() => ({ isRecording: false, durationMillis: 0 })),
   }),
 }));
+
+// expo-speech talks to the native TTS engine; under Jest it records calls and resolves immediately.
+jest.mock('expo-speech', () => ({
+  speak: jest.fn((_text, opts) => opts?.onDone?.()),
+  stop: jest.fn(async () => undefined),
+  isSpeakingAsync: jest.fn(async () => false),
+  getAvailableVoicesAsync: jest.fn(async () => []),
+}));
+
+// expo-notifications: no native scheduler under Jest.
+jest.mock('expo-notifications', () => ({
+  setNotificationHandler: jest.fn(),
+  setNotificationChannelAsync: jest.fn(async () => undefined),
+  setNotificationCategoryAsync: jest.fn(async () => undefined),
+  getPermissionsAsync: jest.fn(async () => ({ status: 'granted', granted: true })),
+  requestPermissionsAsync: jest.fn(async () => ({ status: 'granted', granted: true })),
+  scheduleNotificationAsync: jest.fn(async () => 'id'),
+  cancelScheduledNotificationAsync: jest.fn(async () => undefined),
+  cancelAllScheduledNotificationsAsync: jest.fn(async () => undefined),
+  getAllScheduledNotificationsAsync: jest.fn(async () => []),
+  addNotificationResponseReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+  AndroidImportance: { HIGH: 4, MAX: 5, DEFAULT: 3 },
+  SchedulableTriggerInputTypes: { DATE: 'date', TIME_INTERVAL: 'timeInterval' },
+}));
