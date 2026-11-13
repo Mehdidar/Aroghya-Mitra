@@ -113,13 +113,27 @@ export const KNOWLEDGE_BASE: KnowledgeDoc[] = [
     followUps: ['What foods are good for diabetes?', 'What should I do if my sugar is low?', 'Why should I check my feet?'],
   },
   {
+    id: 'cough-cold',
+    title: 'Cough and cold: home care and when to see a doctor',
+    source: { org: 'WHO', url: 'https://www.who.int/news-room/fact-sheets/detail/pneumonia' },
+    reviewed: false,
+    keywords: ['cough', 'coughing', 'cold', 'sore throat', 'throat', 'runny nose', 'blocked nose', 'sneezing', 'phlegm', 'khansi', 'khasi', 'zukam', 'jukam', 'sardi', 'gala', 'खांसी', 'खाँसी', 'जुकाम', 'सर्दी', 'गला', 'இருமல்', 'சளி', 'কাশি', 'সর্দি', 'దగ్గు', 'జలుబు', 'खोकला', 'ઉધરસ', 'શરદી', 'ಕೆಮ್ಮು', 'ನೆಗಡಿ', 'ಶೀತ', 'ചുമ', 'ജലദോഷം', 'ਖੰਘ', 'ਜ਼ੁਕਾਮ', 'کھانسی', 'زکام', 'نزلہ', 'ଖାସି', 'ଥଣ୍ଡା'],
+    body:
+      'Most coughs and colds are caused by common viral infections and get better on their own in 1 to 2 weeks. ' +
+      'Rest, drink plenty of warm fluids, gargle with warm salt water for a sore throat, and use steam if the nose is blocked. Honey in warm water can soothe a cough in adults and children over 1 year. Do not take antibiotics unless a doctor prescribes them. ' +
+      'See a doctor if the cough lasts more than 2 weeks (a free TB test is available at government health centres), if fever stays for more than 3 days, or if there is wheezing. ' +
+      'Go to a hospital immediately for difficulty breathing, fast breathing in a child, chest pain, coughing up blood, or lips turning blue.',
+    followUps: ['How to ease a sore throat at home?', 'When should I see a doctor for a cough?', 'Do I need antibiotics for a cold?'],
+  },
+  {
     id: 'tuberculosis',
     title: 'Tuberculosis (TB)',
     source: { org: 'NTEP', url: 'https://tbcindia.gov.in/' },
     reviewed: false,
-    keywords: ['tb', 'tuberculosis', 'cough', 'long cough', 'night sweats', 'weight loss', 'khansi', 'खांसी', 'टीबी', 'இருமல்', 'কাশি', 'దగ్గు', 'खोकला', 'ઉધરસ', 'ಕೆಮ್ಮು', 'ചുമ', 'ਖੰਘ', 'کھانسی', 'ଟିବି'],
+    // Plain "cough" words belong to 'cough-cold': most coughs are not TB. TB is found by its specific signs.
+    keywords: ['tb', 'tuberculosis', 'tibi', 'weeks', 'months', 'night sweats', 'sweats', 'weight loss', 'weight', 'losing weight', 'टीबी', 'तपेदिक', 'वजन', 'ଟିବି', 'ٹی بی'],
     body:
-      'A cough lasting more than 2 weeks, fever, night sweats or weight loss can be signs of TB. Get tested at a government health centre: TB testing and treatment are free under the National TB Elimination Programme. ' +
+      'Coughing for more than 2 weeks, fever, night sweats or weight loss can be signs of TB. A few days of coughing with a cold is usually not TB. Get tested at a government health centre: TB testing and treatment are free under the National TB Elimination Programme. ' +
       'TB can be cured, but the full course of medicines must be completed even after you feel better.',
     followUps: ['Where can I get a free TB test?', 'Is TB curable?', 'Why must I finish the whole TB course?'],
   },
