@@ -229,42 +229,55 @@ alter table public.blood_banks          enable row level security;
 alter table public.blood_stock          enable row level security;
 
 -- Consent: only the patient reads or changes it.
+drop policy if exists p4_consents_select on public.patient_consents;
 create policy p4_consents_select on public.patient_consents for select to authenticated
   using (public.p4_is_my_patient_record(patient_id));
+drop policy if exists p4_consents_insert on public.patient_consents;
 create policy p4_consents_insert on public.patient_consents for insert to authenticated
   with check (public.p4_is_my_patient_record(patient_id));
+drop policy if exists p4_consents_update on public.patient_consents;
 create policy p4_consents_update on public.patient_consents for update to authenticated
   using (public.p4_is_my_patient_record(patient_id))
   with check (public.p4_is_my_patient_record(patient_id));
 
 -- Grants: the doctor holding one and the patient can see it; nobody writes from the client.
+drop policy if exists p4_grants_select on public.record_access_grants;
 create policy p4_grants_select on public.record_access_grants for select to authenticated
   using (viewer_id = auth.uid() or public.p4_is_my_patient_record(patient_id));
 
 -- Redemptions: server only (no policies → no client access).
 
 -- Reports: whoever can view the patient can read; patient or a doctor with access can upload.
+drop policy if exists p4_reports_select on public.health_reports;
 create policy p4_reports_select on public.health_reports for select to authenticated
   using (public.p4_can_view_patient(patient_id));
+drop policy if exists p4_reports_insert on public.health_reports;
 create policy p4_reports_insert on public.health_reports for insert to authenticated
   with check (
     uploaded_by = auth.uid()
     and public.p4_my_role() in ('patient', 'doctor')
     and public.p4_can_view_patient(patient_id)
   );
+drop policy if exists p4_reports_delete on public.health_reports;
 create policy p4_reports_delete on public.health_reports for delete to authenticated
   using (uploaded_by = auth.uid() and public.p4_can_view_patient(patient_id));
 
 -- Blood banks: any signed-in user reads; the admin of the owning facility edits.
+drop policy if exists p4_banks_select on public.blood_banks;
 create policy p4_banks_select on public.blood_banks for select to authenticated using (is_active);
+drop policy if exists p4_banks_update on public.blood_banks;
 create policy p4_banks_update on public.blood_banks for update to authenticated
   using (public.p4_admins_bank(id)) with check (public.p4_admins_bank(id));
 
+drop policy if exists p4_stock_select on public.blood_stock;
 create policy p4_stock_select on public.blood_stock for select to authenticated using (true);
+drop policy if exists p4_stock_insert on public.blood_stock;
 create policy p4_stock_insert on public.blood_stock for insert to authenticated
   with check (public.p4_admins_bank(bank_id));
+drop policy if exists p4_stock_update on public.blood_stock;
 create policy p4_stock_update on public.blood_stock for update to authenticated
   using (public.p4_admins_bank(bank_id)) with check (public.p4_admins_bank(bank_id));
+drop policy if exists p4_stock_delete on public.blood_stock;
 create policy p4_stock_delete on public.blood_stock for delete to authenticated
   using (public.p4_admins_bank(bank_id));
 

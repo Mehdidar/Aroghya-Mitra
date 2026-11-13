@@ -102,6 +102,22 @@ Supabase is not configured):
 Every step works with no network. With the server running, speech, chat and
 prescription reading are live; with Supabase keys, sign-in sends real OTPs.
 
+### Connecting the phones through Supabase
+
+With a database, the three apps share data across separate phones: an ASHA
+sync reaches the doctor's inbox, the doctor's prescription reaches the
+patient's Reminders, and the patient's dose taps reach the record. Each phone
+still works offline and sends its changes later (`features/shared/data/outbox.ts`).
+
+1. In the repo-root `.env`: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
+   `DATABASE_URL`, and `AUTH_MODE=demo` while phone sign-in is off.
+2. `npm run db:migrate` applies `supabase/migrations` (safe to repeat).
+3. `npm run db:seed` creates the four demo users and Rekha's records (safe to repeat).
+4. `npm run db:check` confirms every table, then restart the server.
+
+Without these the server keeps records in memory, which is enough for a
+one-laptop demo.
+
 ## Repository
 
 ```

@@ -3,10 +3,10 @@
  *
  * Two implementations:
  *  - `memoryRepository.ts`: in-memory, for tests and offline demos.
- *  - a Supabase implementation (service-role client inside an Edge Function),
- *    to be added once P1's shared tables exist. Row-level security in
- *    `supabase/migrations/4xxx_*.sql` enforces the same rules as
- *    `access.ts` for every other client.
+ *  - `supabaseRepository.ts`: Supabase over PostgREST with the service-role
+ *    key (server only), chosen when SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
+ *    are set. Row-level security in `supabase/migrations/4xxx_*.sql` enforces
+ *    the same rules as `access.ts` for every other client.
  */
 import type {
   AccessGrant,
@@ -23,6 +23,7 @@ import type {
   RiskAlert,
   VitalsReading,
 } from '../../packages/records/records/types.ts';
+import type { AshaBatch } from '../asha/toRecords.ts';
 
 /** Everything needed to render one patient's history. */
 export interface PatientRecordBundle {
@@ -65,4 +66,31 @@ export interface RecordsRepository {
   listAccessLogs(patientId: string, limit: number): Promise<AccessLog[]>;
 
   loadRecordBundle(patientId: string): Promise<PatientRecordBundle | null>;
+
+  /** The patient record a signed-in patient owns. */
+  findPatientByUser(userId: string): Promise<Patient | null>;
+  getReferral(id: string): Promise<Referral | null>;
+
+  // Writes from the phones (server/records/push.ts checks who may write what first).
+  // Each is an upsert by id, so sending the same record twice is harmless.
+  savePrescription(p: Prescription): Promise<Prescription>;
+  saveConsultation(c: Consultation): Promise<Consultation>;
+  saveDoseLog(d: DoseLog): Promise<DoseLog>;
+  saveVitals(v: VitalsReading): Promise<VitalsReading>;
+  saveReport(r: HealthReport): Promise<HealthReport>;
+  updateReferral(id: string, patch: ReferralPatch): Promise<Referral | null>;
+
+  /** Mirror one ASHA sync into the records (patients, visits, alerts, referrals). */
+  saveAshaBatch(batch: AshaBatch): Promise<void>;
+  /** A doctor's inbox: open referrals to them or their facility, with the patients and their open alerts. */
+  listInbox(doctor: Pick<Profile, 'id' | 'facilityId'>): Promise<DoctorInbox>;
 }
+
+export interface DoctorInbox {
+  referrals: Referral[];
+  riskAlerts: RiskAlert[];
+  patients: Patient[];
+}
+
+/** The referral fields a doctor changes from the inbox. */
+export type ReferralPatch = Partial<Pick<Referral, 'status' | 'seenAt' | 'acceptedAt'>>;

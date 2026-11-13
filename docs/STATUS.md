@@ -42,12 +42,43 @@ Not testable headless, so not verified here: recording audio from a real microph
 
 **Gemini note.** New Gemini keys get an empty 404 from `generateContent`. The server now uses Google's Interactions API and walks a model chain (`gemini-3.5-flash`, `3.8-flash`, `3.1-flash-lite`, `flash-latest`), because several flash models answer "high demand" at times. Without any answering model, prescription reading returns a labelled demo extraction.
 
+## Phones connected through the database (2026-11-13)
+
+The server now stores records in Supabase when `SUPABASE_URL` and
+`SUPABASE_SERVICE_ROLE_KEY` are set (`server/records/supabaseRepository.ts`),
+and the app sends its changes there and pulls other phones' changes back
+(`apps/mobile/features/shared/data/outbox.ts`, `serverSync.ts`).
+
+Verified against a real Postgres (the `supabase/postgres` image with PostgREST
+in front, the same API Supabase serves):
+
+| Check | Result |
+|---|---|
+| `npm run db:migrate` twice in a row | all migrations re-run cleanly (policies now `drop policy if exists`); 4003 skipped locally (no Storage schema) |
+| `npm run db:seed` twice in a row | identical row counts, no duplicates |
+| RLS test after the policy change | 56 / 56 |
+| API flow against the database | 18 / 18: history, inbox, doctor push, patient pull, dose log, five refusal cases, ASHA sync mirrored, tampered alert replaced, referral never moves backwards, QR issue and scan, consent |
+| Separate browser profiles as separate phones | ASHA sync → doctor inbox; doctor's prescription → in the database in 30 ms → patient's Reminders; patient's Taken tap → database in under 1 s |
+| Server tests / app tests | 219 / 219, 104 / 104 |
+
+Rules on writes (`server/records/push.ts`, mirroring the RLS policies because
+the service-role key bypasses them): patients write only their own dose logs,
+vitals, scanned prescriptions, reports and consent; doctors write prescriptions
+and consultations only in their own name, only for patients they may open, and
+update only referrals addressed to them or their facility; ASHA data arrives
+through `/asha/sync`, where the server's risk check replaces the phone's.
+
+**Not yet done on the cloud project.** Its tables do not exist yet (every table
+returns 404). It needs the secret key and the database password in the root
+`.env`, then `npm run db:migrate && npm run db:seed`. Keep `AUTH_MODE=demo`
+until phone sign-in is switched on, or every call is refused.
+
 ## Mocked or demo
 
 - **e-RaktKosh** is not connected. Blood banks are 15 fictional Bengaluru entries with mock stock; every phone number is labelled "Demo number".
 - **Hospital navigation** uses one fictional three-floor PHC graph.
 - **Demo cast** (Rekha Kumari, Sunita Devi, Dr. Arjun Rao, Meena Shetty, PHC Hebbal): fictional people and records.
-- **Records persistence**: the app keeps records in a local store seeded with the demo dataset. The Supabase tables exist and are tested, but the app does not write to them yet.
+- **Records persistence**: in memory on the server until the Supabase keys are set (see above); each phone also keeps a local copy and works offline.
 - **QR scan offline**: the payload `AM1.demo.<id>` resolves locally so the doctor flow works without a server.
 - **Phone OTP** is real only when phone sign-in is enabled on the Supabase project (it is off today); otherwise the code is `123456` and the screen says so.
 - **Server auth** runs in demo mode (trusts `x-demo-role`) until `SUPABASE_URL` or `SUPABASE_JWT_SECRET` is set in the root `.env`.
@@ -64,7 +95,8 @@ Not testable headless, so not verified here: recording audio from a real microph
 ## Known gaps
 
 - Translations: English, Hindi and Kannada are complete; Urdu covers the main labels; Tamil, Telugu and Kashmiri fall back to English on the newer screens.
-- The ASHA phone keeps its own alert severity after sync; the server's verified severity is stored for doctors but not yet merged back into the phone's store.
+- The ASHA phone keeps its own alert severity after sync; the server's verified severity reaches doctors (inbox and database) but is not yet merged back into the ASHA phone's store.
+- Dose logs and consent use the demo patient's record id; with real sign-in they need the signed-in patient's record id from the server.
 - `4003` (storage bucket) applies on Supabase cloud; the local Postgres image lacks the `public` column on `storage.buckets`.
 - The Supabase Edge Function entry (`supabase/functions/api`) is written but has not been deployed.
 - Expo SDK: the app is already on SDK 58, the version the brief's SDK 52 concern pointed towards. `eas.json` has development and preview (APK) profiles as the fallback path for a phone whose Expo Go does not match.

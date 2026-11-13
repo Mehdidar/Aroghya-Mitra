@@ -3,3 +3,4 @@ export * from './types.ts';
 export * from './languages.ts';
 export * from './tokens.ts';
 export * from './demo.ts';
+export * from './ids.ts';

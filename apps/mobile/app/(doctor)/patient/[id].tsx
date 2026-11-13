@@ -9,6 +9,7 @@ import { useAdmin } from '@/features/doctor/adminStore';
 import { ageFrom } from '@/features/doctor/prescriptions';
 import { useColumns, usePatientRecord } from '@/features/doctor/useDoctorData';
 import { useRecords } from '@/features/shared/data/recordsStore';
+import { pullPatientRecords, usePullWhileOpen } from '@/features/shared/data/serverSync';
 import { useTheme } from '@/features/shared/theme';
 import { Avatar, Card, EmptyState, Heading, Icon, IconButton, Pill, PrimaryButton, Screen, SecondaryButton, SectionHeader, Text } from '@/features/shared/ui';
 
@@ -18,6 +19,8 @@ export default function DoctorPatient() {
   const { t } = useTranslation('doctor');
   const theme = useTheme();
   const { twoColumn } = useColumns();
+  // The latest record from the server (ASHA visits, other doctors' notes); the local copy shows meanwhile.
+  usePullWhileOpen(id ? () => pullPatientRecords(id) : null, `doctor-patient-${id}`);
   const rec = usePatientRecord(id);
   const updateReferral = useRecords((s) => s.updateReferral);
   const staff = useAdmin((s) => s.staff);

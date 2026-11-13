@@ -18,7 +18,9 @@ import type {
   RecordRiskAlert,
   VitalsReading,
 } from '../../packages/shared/types.ts';
+import { RestClient, restConfigFromEnv } from '../db/rest.ts';
 import { MemoryRecordsRepository, type MemoryData } from './memoryRepository.ts';
+import { SupabaseRecordsRepository } from './supabaseRepository.ts';
 import type { RecordsRepository } from './repository.ts';
 
 const daysAgo = (d: number, hour: number, now: Date) => {
@@ -159,15 +161,23 @@ export function demoMemoryData(now = new Date()): MemoryData {
 
 let shared: RecordsRepository | null = null;
 
-/** The process-wide demo repository (seeded once). */
+/**
+ * The process-wide records repository: Supabase when SUPABASE_URL and
+ * SUPABASE_SERVICE_ROLE_KEY are set, otherwise the in-memory demo data
+ * (seeded once, lost on restart).
+ */
 export function getDemoRepository(): RecordsRepository {
-  if (!shared) shared = new MemoryRecordsRepository(demoMemoryData());
+  if (!shared) {
+    const cfg = restConfigFromEnv();
+    shared = cfg ? new SupabaseRecordsRepository(new RestClient(cfg)) : new MemoryRecordsRepository(demoMemoryData());
+  }
   return shared;
 }
 
+/** Which store the server is using, for /health and the start-up log. */
+export const recordsBackend = (): 'supabase' | 'memory' => (restConfigFromEnv() ? 'supabase' : 'memory');
+
 /** The patient record owned by this user id, if any. */
-export async function patientRecordFor(repo: RecordsRepository, userId: string): Promise<Patient | null> {
-  const r = repo as MemoryRecordsRepository;
-  if ('data' in r) return r.data.patients.find((p) => p.userId === userId) ?? null;
-  return null;
+export function patientRecordFor(repo: RecordsRepository, userId: string): Promise<Patient | null> {
+  return repo.findPatientByUser(userId);
 }

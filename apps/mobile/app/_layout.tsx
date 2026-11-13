@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Platform, View } from 'react-native';
 
+import { startOutbox } from '@/features/shared/data/outbox';
 import { FONT_FILES } from '@/features/shared/i18n/fonts';
 import { applyLanguage, useLanguage } from '@/features/shared/i18n/useLanguage';
 import { useSession } from '@/features/shared/state/session';
@@ -38,6 +39,8 @@ export default function RootLayout() {
   useEffect(() => {
     if (ready) SplashScreen.hide();
   }, [ready]);
+  // Start sending queued record changes to the server (retries quietly while offline).
+  useEffect(() => startOutbox(), []);
 
   // Rendering nothing until the role is known stops the guard flashing (auth) on launch.
   if (!ready) return null;

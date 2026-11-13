@@ -5,9 +5,10 @@
  *
  * A doctor's new prescription goes in here and the patient's Reminders tab
  * reads it on the next render: that is the demo's "it appears on the
- * patient's phone" step without a network. When Supabase keys are present
- * the same actions can be mirrored to the tables in 1000_base.sql; nothing
- * here depends on that.
+ * patient's phone" step on one device. Every write is also queued for the
+ * server (outbox.ts → POST /records/push → Supabase), and serverSync.ts pulls
+ * other phones' writes back in, so separate phones see each other's changes.
+ * Offline, everything still works locally and is sent later.
  *
  * Seeded from features/shared/seed/demoRecords.ts (Rekha Kumari) on first
  * launch. `reset()` reloads the seed.
@@ -19,6 +20,8 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { DEMO_IDS, type Consultation, type DoseLog, type HealthReport, type Patient, type Prescription, type RecordReferral, type RecordRiskAlert, type VitalsReading } from '@am/shared';
 
 import { buildDemoRecords } from '@/features/shared/seed/demoRecords';
+
+import { queuePush } from './outbox';
 
 export type ReminderPlanItem = {
   /** Matches packages/patient-ai ReminderMedicine so the Reminders tab can expand doses. */
@@ -60,7 +63,8 @@ export type RecordsState = {
   reset: () => void;
   addPrescription: (p: Prescription, reminders?: ReminderPlanItem[]) => void;
   setReminders: (items: ReminderPlanItem[]) => void;
-  logDose: (doseId: string, status: 'taken' | 'skipped', at?: Date) => void;
+  /** `dose` (from the Reminders timeline) lets the server keep a dose log; without it the tap stays on this phone. */
+  logDose: (doseId: string, status: 'taken' | 'skipped', at?: Date, dose?: { medicineId: string; medicineName: string; at: Date }) => void;
   addReport: (r: HealthReport) => void;
   addConsultation: (c: Consultation) => void;
   updateReferral: (id: string, patch: Partial<RecordReferral>) => void;
@@ -127,18 +131,46 @@ export const useRecords = create<RecordsState>()(
         if (!get().seededAt) set(seedState());
       },
       reset: () => set(seedState()),
-      addPrescription: (p, reminders = []) =>
-        set((s) => ({ prescriptions: [p, ...s.prescriptions.filter((x) => x.id !== p.id)], reminders: [...reminders, ...s.reminders.filter((r) => r.prescriptionId !== p.id)] })),
+      addPrescription: (p, reminders = []) => {
+        set((s) => ({ prescriptions: [p, ...s.prescriptions.filter((x) => x.id !== p.id)], reminders: [...reminders, ...s.reminders.filter((r) => r.prescriptionId !== p.id)] }));
+        queuePush({ prescriptions: [p] });
+      },
       setReminders: (items) => set({ reminders: items }),
-      logDose: (doseId, status, at = new Date()) =>
-        set((s) => ({ doseActions: [...s.doseActions.filter((a) => a.doseId !== doseId), { doseId, status, at: at.toISOString() }] })),
-      addReport: (r) => set((s) => ({ reports: [r, ...s.reports] })),
-      addConsultation: (c) => set((s) => ({ consultations: [c, ...s.consultations] })),
-      updateReferral: (id, patch) => set((s) => ({ referrals: s.referrals.map((r) => (r.id === id ? { ...r, ...patch } : r)) })),
-      addReferral: (r) => set((s) => ({ referrals: [r, ...s.referrals.filter((x) => x.id !== r.id)] })),
-      addVitals: (v) => set((s) => ({ vitals: [v, ...s.vitals] })),
+      logDose: (doseId, status, at = new Date(), dose) => {
+        set((s) => ({ doseActions: [...s.doseActions.filter((a) => a.doseId !== doseId), { doseId, status, at: at.toISOString() }] }));
+        if (dose) {
+          const plan = get().reminders.find((r) => r.id === dose.medicineId);
+          queuePush({
+            doseLogs: [{ id: doseId, patientId: demoPatientId, prescriptionId: plan?.prescriptionId ?? null, medicineName: dose.medicineName, scheduledAt: dose.at.toISOString(), status, takenAt: status === 'taken' ? at.toISOString() : null }],
+          });
+        }
+      },
+      addReport: (r) => {
+        set((s) => ({ reports: [r, ...s.reports] }));
+        queuePush({ reports: [r] });
+      },
+      addConsultation: (c) => {
+        set((s) => ({ consultations: [c, ...s.consultations] }));
+        queuePush({ consultations: [c] });
+      },
+      updateReferral: (id, patch) => {
+        set((s) => ({ referrals: s.referrals.map((r) => (r.id === id ? { ...r, ...patch } : r)) }));
+        queuePush({ referrals: [{ id, status: patch.status, seenAt: patch.seenAt, acceptedAt: patch.acceptedAt }] });
+      },
+      addReferral: (r) => {
+        set((s) => ({ referrals: [r, ...s.referrals.filter((x) => x.id !== r.id)] }));
+        // A referral the doctor first saw on the ASHA bridge: send the doctor's status change.
+        if (r.status !== 'pending') queuePush({ referrals: [{ id: r.id, status: r.status, seenAt: r.seenAt, acceptedAt: r.acceptedAt }] });
+      },
+      addVitals: (v) => {
+        set((s) => ({ vitals: [v, ...s.vitals] }));
+        queuePush({ vitals: [v] });
+      },
       addFoodLog: (e) => set((s) => ({ foodLog: [e, ...s.foodLog] })),
-      setShareHistory: (on) => set({ shareHistory: on }),
+      setShareHistory: (on) => {
+        set({ shareHistory: on });
+        queuePush({ consent: { patientId: demoPatientId, shareHistory: on } });
+      },
       upsertPatient: (p) => set((s) => ({ patients: { ...s.patients, [p.id]: p } })),
     }),
     {

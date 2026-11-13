@@ -17,7 +17,9 @@ import type {
   RiskAlert,
   VitalsReading,
 } from '../../packages/records/records/types.ts';
-import type { PatientRecordBundle, RecordsRepository } from './repository.ts';
+import { sameRecord } from '../../packages/shared/ids.ts';
+import { alertToRecord, ashaPatientToRecord, furtherStatus, referralToRecord, visitToRecord, type AshaBatch } from '../asha/toRecords.ts';
+import type { DoctorInbox, PatientRecordBundle, RecordsRepository, ReferralPatch } from './repository.ts';
 
 export interface MemoryData {
   profiles: Profile[];
@@ -170,5 +172,82 @@ export class MemoryRecordsRepository implements RecordsRepository {
       .filter((p) => ids.has(p.id))
       .map((p) => ({ id: p.id, fullName: p.fullName, role: p.role }));
     return { ...bundle, people };
+  }
+
+  async findPatientByUser(userId: string) {
+    return this.data.patients.find((p) => p.userId === userId) ?? null;
+  }
+
+  async getReferral(id: string) {
+    return this.data.referrals.find((r) => r.id === id) ?? null;
+  }
+
+  private put<K extends 'prescriptions' | 'consultations' | 'doseLogs' | 'vitals' | 'reports'>(key: K, row: MemoryData[K][number]) {
+    const rows = this.data[key] as { id: string }[];
+    const i = rows.findIndex((r) => r.id === row.id);
+    if (i >= 0) rows[i] = row;
+    else rows.push(row);
+    return row;
+  }
+
+  async savePrescription(p: Prescription) {
+    return this.put('prescriptions', p);
+  }
+  async saveConsultation(c: Consultation) {
+    return this.put('consultations', c);
+  }
+  async saveDoseLog(d: DoseLog) {
+    return this.put('doseLogs', d);
+  }
+  async saveVitals(v: VitalsReading) {
+    return this.put('vitals', v);
+  }
+  async saveReport(r: HealthReport) {
+    return this.put('reports', r);
+  }
+
+  async updateReferral(id: string, patch: ReferralPatch) {
+    const r = this.data.referrals.find((x) => x.id === id);
+    if (!r) return null;
+    Object.assign(r, patch);
+    return r;
+  }
+
+  async saveAshaBatch(batch: AshaBatch) {
+    for (const p of batch.patients) {
+      if (!this.data.patients.some((x) => x.id === p.id)) this.data.patients.push(ashaPatientToRecord(p));
+    }
+    for (const v of batch.visits) {
+      const row = visitToRecord(v, batch.alerts);
+      const i = this.data.ashaVisits.findIndex((x) => x.id === v.id);
+      if (i >= 0) this.data.ashaVisits[i] = row;
+      else this.data.ashaVisits.push(row);
+    }
+    const reVisited = new Set(batch.visits.map((v) => v.id));
+    const replaced = new Set(batch.alerts.map((a) => a.id));
+    const visitOf = new Map(batch.alerts.map((a) => [a.id, a.visitId]));
+    this.data.riskAlerts = this.data.riskAlerts.filter((a) => !replaced.has(a.id) && !(visitOf.get(a.id) && reVisited.has(visitOf.get(a.id)!)));
+    for (const a of batch.alerts) {
+      const ashaId = batch.visits.find((v) => v.id === a.visitId)?.ashaId ?? batch.referrals.find((r) => r.patientId === a.patientId)?.fromAshaId ?? '';
+      this.data.riskAlerts.push(alertToRecord(a, ashaId));
+    }
+    for (const r of batch.referrals) {
+      const row = referralToRecord(r);
+      const existing = this.data.referrals.find((x) => sameRecord(x.id, r.id));
+      if (existing) Object.assign(existing, { ...row, id: existing.id, status: furtherStatus(existing.status, row.status), seenAt: existing.seenAt ?? row.seenAt, acceptedAt: existing.acceptedAt ?? row.acceptedAt, toDoctorId: row.toDoctorId ?? existing.toDoctorId });
+      else this.data.referrals.push(row);
+    }
+  }
+
+  async listInbox(doctor: Pick<Profile, 'id' | 'facilityId'>): Promise<DoctorInbox> {
+    const referrals = this.data.referrals.filter(
+      (r) => r.status !== 'closed' && (r.toDoctorId === doctor.id || (doctor.facilityId !== null && r.toFacilityId === doctor.facilityId)),
+    );
+    const ids = new Set(referrals.map((r) => r.patientId));
+    return {
+      referrals,
+      riskAlerts: this.data.riskAlerts.filter((a) => ids.has(a.patientId) && a.resolvedAt === null),
+      patients: this.data.patients.filter((p) => ids.has(p.id)),
+    };
   }
 }

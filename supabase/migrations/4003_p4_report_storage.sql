@@ -15,12 +15,14 @@ on conflict (id) do update
       file_size_limit = excluded.file_size_limit,
       allowed_mime_types = excluded.allowed_mime_types;
 
+drop policy if exists p4_report_files_select on storage.objects;
 create policy p4_report_files_select on storage.objects for select to authenticated
   using (
     bucket_id = 'health-reports'
     and public.p4_can_view_patient(public.p4_try_uuid((storage.foldername(name))[1]))
   );
 
+drop policy if exists p4_report_files_insert on storage.objects;
 create policy p4_report_files_insert on storage.objects for insert to authenticated
   with check (
     bucket_id = 'health-reports'
@@ -28,6 +30,7 @@ create policy p4_report_files_insert on storage.objects for insert to authentica
     and public.p4_can_view_patient(public.p4_try_uuid((storage.foldername(name))[1]))
   );
 
+drop policy if exists p4_report_files_delete on storage.objects;
 create policy p4_report_files_delete on storage.objects for delete to authenticated
   using (
     bucket_id = 'health-reports'

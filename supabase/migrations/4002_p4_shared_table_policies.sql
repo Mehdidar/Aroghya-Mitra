@@ -28,10 +28,12 @@ alter table public.access_logs   enable row level security;
 alter table public.profiles      enable row level security;
 
 -- --- patients ---------------------------------------------------------------
+drop policy if exists p4_patients_select on public.patients;
 create policy p4_patients_select on public.patients for select to authenticated
   using (public.p4_can_view_patient(id));
 
 -- Doctors and admins register patients at their own facility only.
+drop policy if exists p4_patients_insert on public.patients;
 create policy p4_patients_insert on public.patients for insert to authenticated
   with check (
     public.p4_my_role() in ('doctor', 'admin')
@@ -40,6 +42,7 @@ create policy p4_patients_insert on public.patients for insert to authenticated
   );
 
 -- Edit (and assign to an ASHA worker of the same facility); cannot move a patient to another facility.
+drop policy if exists p4_patients_update on public.patients;
 create policy p4_patients_update on public.patients for update to authenticated
   using (public.p4_my_role() in ('doctor', 'admin') and facility_id = public.p4_my_facility())
   with check (
@@ -48,10 +51,12 @@ create policy p4_patients_update on public.patients for update to authenticated
   );
 
 -- --- prescriptions ----------------------------------------------------------
+drop policy if exists p4_prescriptions_select on public.prescriptions;
 create policy p4_prescriptions_select on public.prescriptions for select to authenticated
   using (public.p4_can_view_patient(patient_id));
 
 -- A doctor writes prescriptions only in their own name and only for patients they can see.
+drop policy if exists p4_prescriptions_insert on public.prescriptions;
 create policy p4_prescriptions_insert on public.prescriptions for insert to authenticated
   with check (
     public.p4_my_role() = 'doctor'
@@ -60,19 +65,23 @@ create policy p4_prescriptions_insert on public.prescriptions for insert to auth
   );
 
 -- --- consultations ----------------------------------------------------------
+drop policy if exists p4_consultations_select on public.consultations;
 create policy p4_consultations_select on public.consultations for select to authenticated
   using (public.p4_can_view_patient(patient_id));
+drop policy if exists p4_consultations_insert on public.consultations;
 create policy p4_consultations_insert on public.consultations for insert to authenticated
   with check (
     public.p4_my_role() = 'doctor'
     and doctor_id = auth.uid()
     and public.p4_can_view_patient(patient_id)
   );
+drop policy if exists p4_consultations_update on public.consultations;
 create policy p4_consultations_update on public.consultations for update to authenticated
   using (doctor_id = auth.uid() and public.p4_my_role() = 'doctor')
   with check (doctor_id = auth.uid() and public.p4_can_view_patient(patient_id));
 
 -- --- referrals (inbox) ------------------------------------------------------
+drop policy if exists p4_referrals_select on public.referrals;
 create policy p4_referrals_select on public.referrals for select to authenticated
   using (
     public.p4_my_role() in ('doctor', 'admin')
@@ -80,6 +89,7 @@ create policy p4_referrals_select on public.referrals for select to authenticate
          or (to_facility_id is not null and to_facility_id = public.p4_my_facility()))
   );
 -- Accept / Mark seen / Close.
+drop policy if exists p4_referrals_update on public.referrals;
 create policy p4_referrals_update on public.referrals for update to authenticated
   using (
     public.p4_my_role() = 'doctor'
@@ -93,6 +103,7 @@ create policy p4_referrals_update on public.referrals for update to authenticate
   );
 
 -- --- access logs: written by the server only, never edited ------------------
+drop policy if exists p4_access_logs_select on public.access_logs;
 create policy p4_access_logs_select on public.access_logs for select to authenticated
   using (
     public.p4_is_my_patient_record(patient_id)
@@ -106,9 +117,11 @@ revoke insert, update, delete on public.access_logs from anon, authenticated;
 
 -- --- staff management (admin tools) -----------------------------------------
 -- Everyone can read their own profile (so enabling RLS here never locks a user out).
+drop policy if exists p4_profiles_self_select on public.profiles;
 create policy p4_profiles_self_select on public.profiles for select to authenticated
   using (id = auth.uid());
 
+drop policy if exists p4_profiles_admin_select on public.profiles;
 create policy p4_profiles_admin_select on public.profiles for select to authenticated
   using (
     public.p4_my_role() = 'admin'
@@ -116,6 +129,7 @@ create policy p4_profiles_admin_select on public.profiles for select to authenti
   );
 -- Approve / deactivate doctors and ASHA workers at the admin's own facility.
 -- Cannot touch other admins (or themself), promote anyone, or move staff out.
+drop policy if exists p4_profiles_admin_update on public.profiles;
 create policy p4_profiles_admin_update on public.profiles for update to authenticated
   using (
     public.p4_my_role() = 'admin'

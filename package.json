@@ -22,7 +22,10 @@
     "ml:test": "cd ml/food-classifier && python -m pytest -m \"not slow\" -q",
     "start": "npm run start --workspace apps/mobile",
     "demo:web": "node scripts/demo.mjs --web",
-    "demo:server": "node scripts/demo.mjs --server-only"
+    "demo:server": "node scripts/demo.mjs --server-only",
+    "db:check": "node server/scripts/dbCheck.ts",
+    "db:seed": "node server/scripts/dbSeed.ts",
+    "db:migrate": "node server/scripts/dbMigrate.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

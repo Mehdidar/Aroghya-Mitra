@@ -56,22 +56,30 @@ alter table public.asha_visits enable row level security;
 alter table public.risk_alerts enable row level security;
 
 -- The ASHA: own visits and alerts for own caseload. The patient: own history. Doctors/admins: own facility.
+drop policy if exists p3_visits_asha_all on public.asha_visits;
 create policy p3_visits_asha_all on public.asha_visits for all to authenticated
   using (asha_id = auth.uid()) with check (asha_id = auth.uid() and public.p1_is_my_asha_patient(patient_id));
+drop policy if exists p3_visits_patient_select on public.asha_visits;
 create policy p3_visits_patient_select on public.asha_visits for select to authenticated
   using (public.p1_is_own_patient(patient_id));
+drop policy if exists p3_visits_facility_select on public.asha_visits;
 create policy p3_visits_facility_select on public.asha_visits for select to authenticated
   using (public.p1_my_role() in ('doctor', 'admin') and exists (
     select 1 from public.patients pt where pt.id = asha_visits.patient_id and pt.facility_id = public.p1_my_facility()));
 
+drop policy if exists p3_alerts_asha_select on public.risk_alerts;
 create policy p3_alerts_asha_select on public.risk_alerts for select to authenticated
   using (public.p1_is_my_asha_patient(patient_id));
+drop policy if exists p3_alerts_asha_insert on public.risk_alerts;
 create policy p3_alerts_asha_insert on public.risk_alerts for insert to authenticated
   with check (public.p1_is_my_asha_patient(patient_id) and verified_by = 'phone');
+drop policy if exists p3_alerts_asha_update on public.risk_alerts;
 create policy p3_alerts_asha_update on public.risk_alerts for update to authenticated
   using (public.p1_is_my_asha_patient(patient_id)) with check (public.p1_is_my_asha_patient(patient_id) and verified_by = 'phone');
+drop policy if exists p3_alerts_patient_select on public.risk_alerts;
 create policy p3_alerts_patient_select on public.risk_alerts for select to authenticated
   using (public.p1_is_own_patient(patient_id));
+drop policy if exists p3_alerts_facility_select on public.risk_alerts;
 create policy p3_alerts_facility_select on public.risk_alerts for select to authenticated
   using (public.p1_my_role() in ('doctor', 'admin') and verified_by = 'server' and exists (
     select 1 from public.patients pt where pt.id = risk_alerts.patient_id and pt.facility_id = public.p1_my_facility()));

@@ -8,6 +8,8 @@ import { useRecords } from '@/features/shared/data/recordsStore';
 import { useSession } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
 
+import { pullDoctorInbox } from '@/features/shared/data/serverSync';
+
 import { loadAshaBridge, mergeReferrals } from './ashaBridge';
 
 /** Two columns on tablets and wide web windows. */
@@ -22,7 +24,11 @@ export function useDoctorId() {
   return role === 'admin' ? DEMO_USERS.admin.id : DEMO_IDS.doctor;
 }
 
-/** Referrals and alerts from the records store merged with the ASHA module's store on this device. */
+/**
+ * Referrals and alerts from the records store (which the server inbox feeds:
+ * ASHA referrals synced from the field) merged with the ASHA module's store on
+ * this device (the one-phone demo).
+ */
 export function useInbox(): { items: InboxItem[]; loading: boolean; patientNames: Record<string, string>; reload: () => void } {
   const referrals = useRecords((s) => s.referrals);
   const riskAlerts = useRecords((s) => s.riskAlerts);
@@ -31,7 +37,11 @@ export function useInbox(): { items: InboxItem[]; loading: boolean; patientNames
   const [tick, setTick] = useState(0);
   useEffect(() => {
     let alive = true;
-    loadAshaBridge().then((b) => alive && setBridge(b));
+    // Server first (best effort, offline keeps the local copy), then this device's ASHA store.
+    pullDoctorInbox()
+      .catch(() => undefined)
+      .then(() => loadAshaBridge())
+      .then((b) => alive && setBridge(b));
     return () => {
       alive = false;
     };

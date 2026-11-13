@@ -220,66 +220,88 @@ alter table public.consultations enable row level security;
 alter table public.access_logs   enable row level security;
 
 -- facilities: any signed-in user can read the list
+drop policy if exists p1_facilities_select on public.facilities;
 create policy p1_facilities_select on public.facilities for select to authenticated using (true);
 
 -- profiles: own row (edit name/phone/language; admins are managed by another admin, never by themselves),
 -- ASHA workers and doctors of my facility readable by facility staff
+drop policy if exists p1_profiles_self_update on public.profiles;
 create policy p1_profiles_self_update on public.profiles for update to authenticated
   using (id = auth.uid() and role <> 'admin')
   with check (id = auth.uid() and role = public.p1_my_role() and facility_id is not distinct from public.p1_my_facility());
+drop policy if exists p1_profiles_staff_select on public.profiles;
 create policy p1_profiles_staff_select on public.profiles for select to authenticated
   using (public.p1_my_role() in ('doctor', 'asha') and facility_id is not null and facility_id = public.p1_my_facility());
 
 -- patients: the patient sees and edits their own row; the ASHA sees, registers and edits their caseload
+drop policy if exists p1_patients_patient_select on public.patients;
 create policy p1_patients_patient_select on public.patients for select to authenticated
   using (public.p1_is_own_patient(id));
+drop policy if exists p1_patients_patient_update on public.patients;
 create policy p1_patients_patient_update on public.patients for update to authenticated
   using (public.p1_is_own_patient(id)) with check (public.p1_is_own_patient(id));
+drop policy if exists p1_patients_asha_select on public.patients;
 create policy p1_patients_asha_select on public.patients for select to authenticated
   using (public.p1_is_my_asha_patient(id));
+drop policy if exists p1_patients_asha_insert on public.patients;
 create policy p1_patients_asha_insert on public.patients for insert to authenticated
   with check (public.p1_my_role() = 'asha' and asha_worker_id = auth.uid()
               and (facility_id is null or facility_id = public.p1_my_facility()));
+drop policy if exists p1_patients_asha_update on public.patients;
 create policy p1_patients_asha_update on public.patients for update to authenticated
   using (public.p1_is_my_asha_patient(id)) with check (asha_worker_id = auth.uid());
 
 -- vitals: patient reads own; ASHA reads/writes for their caseload; doctors go through P4's patient access
+drop policy if exists p1_vitals_patient_select on public.vitals;
 create policy p1_vitals_patient_select on public.vitals for select to authenticated
   using (public.p1_is_own_patient(patient_id));
+drop policy if exists p1_vitals_patient_insert on public.vitals;
 create policy p1_vitals_patient_insert on public.vitals for insert to authenticated
   with check (public.p1_is_own_patient(patient_id) and source in ('self', 'device'));
+drop policy if exists p1_vitals_asha_select on public.vitals;
 create policy p1_vitals_asha_select on public.vitals for select to authenticated
   using (public.p1_is_my_asha_patient(patient_id));
+drop policy if exists p1_vitals_asha_insert on public.vitals;
 create policy p1_vitals_asha_insert on public.vitals for insert to authenticated
   with check (public.p1_is_my_asha_patient(patient_id) and source = 'asha_visit' and recorded_by = auth.uid());
+drop policy if exists p1_vitals_doctor_select on public.vitals;
 create policy p1_vitals_doctor_select on public.vitals for select to authenticated
   using (public.p1_my_role() in ('doctor', 'admin') and exists (
     select 1 from public.patients pt where pt.id = vitals.patient_id and pt.facility_id = public.p1_my_facility()));
 
 -- prescriptions: the patient reads their own and adds scanned ones
+drop policy if exists p1_prescriptions_patient_select on public.prescriptions;
 create policy p1_prescriptions_patient_select on public.prescriptions for select to authenticated
   using (public.p1_is_own_patient(patient_id));
+drop policy if exists p1_prescriptions_patient_insert on public.prescriptions;
 create policy p1_prescriptions_patient_insert on public.prescriptions for insert to authenticated
   with check (public.p1_is_own_patient(patient_id) and source = 'scan' and prescribed_by is null);
 
 -- dose logs: the patient's own
+drop policy if exists p1_dose_logs_patient_all on public.dose_logs;
 create policy p1_dose_logs_patient_all on public.dose_logs for all to authenticated
   using (public.p1_is_own_patient(patient_id)) with check (public.p1_is_own_patient(patient_id));
+drop policy if exists p1_dose_logs_doctor_select on public.dose_logs;
 create policy p1_dose_logs_doctor_select on public.dose_logs for select to authenticated
   using (public.p1_my_role() = 'doctor' and exists (
     select 1 from public.patients pt where pt.id = dose_logs.patient_id and pt.facility_id = public.p1_my_facility()));
 
 -- referrals: the ASHA creates and follows their own; the patient sees theirs
+drop policy if exists p1_referrals_asha_select on public.referrals;
 create policy p1_referrals_asha_select on public.referrals for select to authenticated
   using (from_asha_id = auth.uid());
+drop policy if exists p1_referrals_asha_insert on public.referrals;
 create policy p1_referrals_asha_insert on public.referrals for insert to authenticated
   with check (public.p1_my_role() = 'asha' and from_asha_id = auth.uid() and public.p1_is_my_asha_patient(patient_id));
+drop policy if exists p1_referrals_asha_update on public.referrals;
 create policy p1_referrals_asha_update on public.referrals for update to authenticated
   using (from_asha_id = auth.uid() and status = 'pending') with check (from_asha_id = auth.uid());
+drop policy if exists p1_referrals_patient_select on public.referrals;
 create policy p1_referrals_patient_select on public.referrals for select to authenticated
   using (public.p1_is_own_patient(patient_id));
 
 -- consultations: the patient reads their own
+drop policy if exists p1_consultations_patient_select on public.consultations;
 create policy p1_consultations_patient_select on public.consultations for select to authenticated
   using (public.p1_is_own_patient(patient_id));
 

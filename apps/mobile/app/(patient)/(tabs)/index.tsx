@@ -20,6 +20,8 @@ import {
   type IconName,
   type TileTint,
 } from '@/features/shared/ui';
+import { demoPatientId } from '@/features/shared/data/recordsStore';
+import { pullPatientRecords, usePullWhileOpen } from '@/features/shared/data/serverSync';
 
 type ServiceId = 'chat' | 'voice' | 'prescription' | 'nutrition' | 'hospitalMap' | 'qrCard' | 'bloodBanks' | 'reports';
 
@@ -57,6 +59,7 @@ function call108() {
  * Analytics preview (steps & oxygen), AI assistant banner, and reminders.
  */
 export default function PatientHome() {
+  usePullWhileOpen(() => pullPatientRecords(demoPatientId), 'patient-records');
   const { t } = useTranslation('patient');
   const theme = useTheme();
   const user = useCurrentUser();
