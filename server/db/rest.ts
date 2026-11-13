@@ -22,7 +22,10 @@ export class DbError extends Error {
   }
 }
 
-const readEnv = (k: string) => (typeof process !== 'undefined' ? process.env[k] : undefined) || undefined;
+import { readEnv as readAnyEnv } from '../speech/config.ts';
+
+// Node (process.env) or Deno / Supabase Edge Functions (Deno.env); empty counts as unset.
+const readEnv = (k: string) => readAnyEnv(k) || undefined;
 
 export interface RestConfig {
   /** Base URL of the project (…supabase.co) or of a bare PostgREST server. */
@@ -39,7 +42,7 @@ export function restConfigFromEnv(): RestConfig | null {
   const key = readEnv('SUPABASE_SERVICE_ROLE_KEY');
   if (!url || !key) return null;
   // SUPABASE_REST_PATH= (empty) points at a bare PostgREST, as in the local integration test.
-  const restPath = typeof process !== 'undefined' && process.env.SUPABASE_REST_PATH !== undefined ? process.env.SUPABASE_REST_PATH : '/rest/v1';
+  const restPath = readAnyEnv('SUPABASE_REST_PATH') ?? '/rest/v1';
   return { url, key, restPath };
 }
 

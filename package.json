@@ -27,7 +27,8 @@
     "db:seed": "node server/scripts/dbSeed.ts",
     "db:migrate": "node server/scripts/dbMigrate.ts",
     "review:clinical": "node scripts/clinical-review.mjs",
-    "data:blood-banks": "node server/scripts/importBloodBanks.ts"
+    "data:blood-banks": "node server/scripts/importBloodBanks.ts",
+    "deploy:server": "node scripts/deploy-server.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
