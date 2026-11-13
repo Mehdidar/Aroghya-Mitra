@@ -195,3 +195,61 @@ describe('ChatHistoryStore', () => {
     assert.deepEqual(await new ChatHistoryStore(s).load(), []);
   });
 });
+
+describe('guided symptom check in the chat', () => {
+  const user = (content: string) => ({ role: 'user' as const, content });
+  const bot = (content: string) => ({ role: 'assistant' as const, content });
+  const chipsOf = (events: ChatEvent[]) => (events.find((e) => e.type === 'chips') as Extract<ChatEvent, { type: 'chips' }>).chips;
+
+  it('a stated symptom gets a question with answer chips, not a list of diseases', async () => {
+    const { deps, prompts } = fakeDeps();
+    const events = await collect(streamChatReply({ message: 'I have a cough', history: [], language: 'en' }, deps));
+    assert.deepEqual(chipsOf(events), ['Less than 1 week', '1 to 2 weeks', 'More than 2 weeks']);
+    assert.match(prompts[0][0].content, /ask exactly this one question[\s\S]*How long have you had the cough\?/);
+    assert.doesNotMatch(prompts[0][0].content, /Tuberculosis/);
+  });
+
+  it('after the answers, the prompt carries the possible causes from the rules', async () => {
+    const { deps, prompts } = fakeDeps();
+    const history = [user('I have a cough'), bot('How long?'), user('Less than 1 week'), bot('Breathing?'), user('No'), bot('Blood?'), user('No'), bot('Fever?'), user('No')];
+    const events = await collect(streamChatReply({ message: 'Yes', history, language: 'en' }, deps));
+    assert.match(prompts[0][0].content, /SYMPTOM CHECK RESULT[\s\S]*Common cold/);
+    assert.match(prompts[0][0].content, /not a diagnosis/);
+    assert.equal((events[0] as Extract<ChatEvent, { type: 'sources' }>).sources[0].id, 'cough-cold');
+  });
+
+  it('a yes to a danger-sign question shows the emergency banner with no AI call', async () => {
+    const { deps, prompts } = fakeDeps();
+    const history = [user('mujhe khansi hai'), bot('Kitne din se?'), user('1 to 2 weeks')];
+    const events = await collect(streamChatReply({ message: 'haan', history, language: 'hi' }, { ...deps, translate: async (text) => text }));
+    assert.equal(prompts.length, 0);
+    const e = events[0] as Extract<ChatEvent, { type: 'emergency' }>;
+    assert.equal(e.type, 'emergency');
+    assert.deepEqual(e.categories, ['breathing']);
+    assert.equal(e.contacts[0].number, '108');
+  });
+
+  it('a question about a topic does not start a check', async () => {
+    const { deps, prompts } = fakeDeps();
+    await collect(streamChatReply({ message: 'How do I make ORS at home?', history: [], language: 'en' }, deps));
+    assert.doesNotMatch(prompts[0][0].content, /SYMPTOM CHECK/);
+  });
+
+  it('after a result, follow-up chat about the same symptom is free chat', async () => {
+    const { deps, prompts } = fakeDeps();
+    const history = [user('I have a cough'), bot('?'), user('Less than 1 week'), bot('?'), user('No'), bot('?'), user('No'), bot('?'), user('No'), bot('?'), user('Yes'), bot('It could be a cold...')];
+    await collect(streamChatReply({ message: 'thanks, I still have a cough at night', history, language: 'en' }, deps));
+    assert.doesNotMatch(prompts[0][0].content, /SYMPTOM CHECK/);
+  });
+
+  it('translates answers in other languages before reading them', async () => {
+    const { deps, prompts } = fakeDeps();
+    const en: Record<string, string> = { 'ನನಗೆ ಕೆಮ್ಮು ಇದೆ': 'I have a cough', 'ಮೂರು ವಾರಗಳಿಂದ': 'for three weeks' };
+    await collect(streamChatReply({ message: 'ಮೂರು ವಾರಗಳಿಂದ', history: [user('ನನಗೆ ಕೆಮ್ಮು ಇದೆ'), bot('?')], language: 'kn' }, {
+      ...deps,
+      translate: async (text, from, to, o) => (from === 'kn' && to === 'en' ? en[text] ?? text : deps.translate!(text, from, to, o)),
+    }));
+    assert.match(prompts[0][0].content, /difficulty breathing/); // duration read as 3 weeks; next question is breathing
+  });
+});
+

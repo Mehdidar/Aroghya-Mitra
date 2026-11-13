@@ -8,6 +8,7 @@ const root = resolve(import.meta.dirname, '..');
 const read = (p) => readFileSync(resolve(root, p), 'utf8');
 const { RED_FLAG_TERMS } = await import(resolve(root, 'packages/patient-ai/safety/redFlagTerms.ts'));
 const { KNOWLEDGE_BASE } = await import(resolve(root, 'server/ai/chat/knowledge.ts'));
+const { SYMPTOM_RULES } = await import(resolve(root, 'packages/patient-ai/triage/symptomCheck.ts'));
 
 // Hand-written (checked against rules.ts) where the code is not a single helper call.
 const OVERRIDE = {
@@ -115,6 +116,29 @@ ${box} — notes: ______________________________________________
 
 ---
 
+## 2b. Guided symptom check in the chat (${Object.keys(SYMPTOM_RULES).length} symptoms)
+
+When a patient says they have one of these symptoms, the assistant asks these
+questions one at a time (tap-to-answer), then names the **possible** causes
+below, always as "this can happen with…, only a doctor or test can confirm".
+A "yes" to a danger-sign question stops the check and shows the 108 banner.
+Source: \`packages/patient-ai/triage/symptomCheck.ts\`.
+
+${Object.values(SYMPTOM_RULES).map((r, i) => `### 2b.${i + 1} ${r.label}
+
+| # | Question | Answers | Asked when | Danger sign |
+|---|---|---|---|---|
+${r.questions.map((q, j) => `| ${j + 1} | ${esc(q.text)} | ${q.options.join(' / ')} | ${q.askWhen ?? 'always'} | ${q.emergencyIfYes ? 'yes → 108' : ''} |`).join('\n')}
+
+**Decision rules:**
+
+${r.reviewSummary.map((line) => `- ${line}`).join('\n')}
+
+${box} — notes: ______________________________________________
+`).join('\n')}
+
+---
+
 ## 3. Emergency phrases (show "Call 108" instantly)
 
 If a patient types or says any of these, the app shows the emergency banner
@@ -139,4 +163,4 @@ Reviewed by: ______________________  Registration no.: ______________
 Signature: ______________________  Date: ______________
 `;
 writeFileSync(resolve(root, 'docs/CLINICAL_REVIEW.md'), md);
-console.log(`docs/CLINICAL_REVIEW.md: ${rules.length} rules, ${KNOWLEDGE_BASE.length} summaries, ${Object.keys(RED_FLAG_TERMS).length} emergency categories`);
+console.log(`docs/CLINICAL_REVIEW.md: ${rules.length} rules, ${KNOWLEDGE_BASE.length} summaries, ${Object.keys(SYMPTOM_RULES).length} symptom checks, ${Object.keys(RED_FLAG_TERMS).length} emergency categories`);

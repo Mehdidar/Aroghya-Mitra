@@ -3,12 +3,18 @@
  *
  *   emergency → (first-aid steps)            no AI call at all
  *   sources → delta* → chips → done          normal reply, streamed
+ *
+ * Symptom check: when the patient says they have a cough, fever or diarrhoea,
+ * the reply asks one fixed question per turn (chips are the answers), then
+ * names the possible causes the answers match (packages/patient-ai/triage).
+ * A danger-sign "yes" ends the check with the emergency event.
  *   error                                     with a retryable flag
  *
  * The phone runs the same red-flag check first for an instant banner; the server
  * repeats it (plus a translated English check for languages without term lists).
  */
-import { detectRedFlags, type EmergencyContact, type RedFlagCategory } from '../../../packages/patient-ai/safety/redFlags.ts';
+import { detectRedFlags, EMERGENCY_CONTACTS, type EmergencyContact, type RedFlagCategory } from '../../../packages/patient-ai/safety/redFlags.ts';
+import { describeForPrompt, runCheck, symptomForDoc, type CheckOutcome, type SymptomId } from '../../../packages/patient-ai/triage/symptomCheck.ts';
 import { LANGUAGE_CAPABILITIES, type AppLanguage } from '../../speech/languageCapabilities.ts';
 import { SarvamError } from '../../speech/errors.ts';
 import type { ChatMessage } from '../../speech/types.ts';
@@ -104,14 +110,37 @@ export async function* streamChatReply(input: ChatRequestInput, deps: ChatDeps, 
     return;
   }
 
-  // 2. Approved content found above.
-  const docs = hits.map((h) => h.doc);
+  // 2. Guided symptom check, if one is running.
+  let check: CheckOutcome | null = null;
+  try {
+    check = await findSymptomCheck(input, message, lang, index, deps, opts.signal);
+  } catch (e) {
+    if (opts.signal?.aborted) throw e;
+  }
+  if (check?.kind === 'emergency') {
+    yield {
+      type: 'emergency',
+      categories: [check.category],
+      contacts: [EMERGENCY_CONTACTS.ambulance, EMERGENCY_CONTACTS.national],
+      steps: await translateAll(check.steps, lang, deps, opts.signal),
+      sources: [],
+    };
+    yield { type: 'done' };
+    return;
+  }
+
+  // 3. Approved content found above (plus the documents a check result points to).
+  let docs = hits.map((h) => h.doc);
+  if (check?.kind === 'result') {
+    const linked = check.result.possibilities.map((p) => KNOWLEDGE_BASE.find((d) => d.id === p.docId)).filter((d): d is KnowledgeDoc => !!d);
+    docs = [...new Map([...linked, ...docs].map((d) => [d.id, d])).values()].slice(0, 3);
+  }
   yield { type: 'sources', sources: docs.map(toRef) };
 
-  // 3. Stream the reply.
+  // 4. Stream the reply.
   const cap = LANGUAGE_CAPABILITIES[lang];
   const messages: ChatMessage[] = [
-    { role: 'system', content: chatSystemPrompt(docs, { languageName: cap.englishName, mode: input.mode ?? 'text' }) },
+    { role: 'system', content: chatSystemPrompt(docs, { languageName: cap.englishName, mode: input.mode ?? 'text', symptomCheck: check ? describeForPrompt(check) : undefined }) },
     ...trimHistory(input.history).map((t) => ({ role: t.role, content: t.content })),
     { role: 'user', content: message },
   ];
@@ -132,8 +161,8 @@ export async function* streamChatReply(input: ChatRequestInput, deps: ChatDeps, 
     return;
   }
 
-  // 4. Suggestion chips from the retrieved content (no extra AI call).
-  const chips = [...new Set(docs.flatMap((d) => d.followUps))].slice(0, 3);
+  // 5. Chips: the answers to the check's question, else follow-ups from the retrieved content (no extra AI call).
+  const chips = check?.kind === 'ask' ? check.question.options : [...new Set(docs.flatMap((d) => d.followUps))].slice(0, 3);
   yield { type: 'chips', chips: await translateAll(chips.length ? chips : DEFAULT_CHIPS, lang, deps, opts.signal) };
   yield { type: 'done' };
 }
@@ -168,4 +197,72 @@ async function translateAll(texts: string[], lang: AppLanguage, deps: ChatDeps, 
     if (signal?.aborted) throw e;
     return texts; // English is better than nothing, especially for emergency steps.
   }
+}
+
+// ---------------------------------------------------------------- symptom check
+
+/** Languages the check reads directly (English, Hindi, Hinglish). Others are translated to English first. */
+const CHECK_READS: AppLanguage[] = ['en', 'hi'];
+const QUESTION_CUE = /\?|^\s*(?:what|how|why|when|where|which|who|is|are|can|could|should|does|do|tell me|explain|kya|kaise|kyon|kyun|kab|kahan|क्या|कैसे|क्यों|कब|कहाँ)\b/iu;
+const toEnglishCache = new Map<string, string>();
+
+async function toEnglish(texts: string[], lang: AppLanguage, deps: ChatDeps, signal?: AbortSignal): Promise<string[]> {
+  if (CHECK_READS.includes(lang) || !deps.translate) return texts;
+  return Promise.all(
+    texts.map(async (t) => {
+      const key = `${lang}\u0000${t}`;
+      const hit = toEnglishCache.get(key);
+      if (hit !== undefined) return hit;
+      try {
+        const en = await deps.translate!(t, lang, 'en', { signal });
+        if (toEnglishCache.size >= PHRASE_CACHE_LIMIT) toEnglishCache.delete(toEnglishCache.keys().next().value!);
+        toEnglishCache.set(key, en);
+        return en;
+      } catch (e) {
+        if (signal?.aborted) throw e;
+        return t;
+      }
+    }),
+  );
+}
+
+/**
+ * Re-derive the check from the user's turns: it starts at a turn that states a
+ * symptom (not a question about one), runs until it has a result, and a new
+ * check starts only for a different symptom. Returns the outcome for the
+ * current turn, or null when no check is running.
+ */
+export async function findSymptomCheck(
+  input: ChatRequestInput,
+  message: string,
+  lang: AppLanguage,
+  index: KnowledgeIndex,
+  deps: ChatDeps,
+  signal?: AbortSignal,
+): Promise<CheckOutcome | null> {
+  const turns = [...input.history.filter((t) => t.role === 'user').map((t) => t.content), message].slice(-10);
+  const symptoms = turns.map((t) => (QUESTION_CUE.test(t.trim()) ? null : symptomForDoc(index.search(t, { limit: 1 })[0]?.doc.id)));
+  const first = symptoms.findIndex((x) => x !== null);
+  if (first < 0) return null;
+  const english = [...turns.slice(0, first), ...(await toEnglish(turns.slice(first), lang, deps, signal))];
+  const last = turns.length - 1;
+
+  let symptom: SymptomId | null = null;
+  let start = -1;
+  let finished: SymptomId | null = null;
+  for (let i = first; i <= last; i++) {
+    if (symptom === null) {
+      const sym = symptoms[i];
+      if (sym === null || sym === finished || QUESTION_CUE.test(english[i].trim())) continue;
+      symptom = sym;
+      start = i;
+    }
+    const outcome = runCheck(symptom, english.slice(start, i + 1));
+    if (i === last) return outcome;
+    if (outcome.kind !== 'ask') {
+      finished = symptom;
+      symptom = null;
+    }
+  }
+  return null;
 }
