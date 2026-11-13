@@ -7,3 +7,4 @@ export * from './doctor/referrals.ts';
 export * from './bloodbank/types.ts';
 export * from './bloodbank/service.ts';
 export * from './bloodbank/geo.ts';
+export * from './bloodbank/remote.ts';

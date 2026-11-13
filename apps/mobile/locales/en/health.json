@@ -105,6 +105,8 @@
   "blood": {
     "title": "Blood banks",
     "mockBanner": "Stock levels and phone numbers are demo data. e-RaktKosh is not connected.",
+    "directoryBanner": "Blood banks from the official national directory. Stock is not listed: call before you go.",
+    "stockUnknown": "Call to check stock",
     "group": "Blood group",
     "component": "Component",
     "nearYou": "Sorted by distance from you",

@@ -1,16 +1,71 @@
 {
+  "appName": "Aroghya Mitra",
+  "tagline": "تُہُنٛد صحتُک ساتھی",
   "tabs": {
+    "home": "گَرٕ",
+    "records": "ریکارڈ",
+    "assistant": "مددگار",
+    "profile": "پروفائل",
+    "dashboard": "ڈیش بورڈ",
+    "patients": "بیمار",
+    "inbox": "اِن باکس",
     "health": "صحت",
     "reminders": "یاد دہانی",
     "referrals": "حوالہ",
     "admin": "ایڈمن"
   },
+  "roles": {
+    "patient": "بیمار",
+    "asha": "ASHA کارکن",
+    "doctor": "ڈاکٹر",
+    "admin": "ایڈمن"
+  },
+  "actions": {
+    "back": "واپس",
+    "continue": "جٲری تھٲوِو",
+    "signOut": "سائن آؤٹ",
+    "search": "ژھانٛڈِو",
+    "notifications": "اطلاع",
+    "seeAll": "سٲری وُچھِو"
+  },
+  "demo": {
+    "badge": "ڈیمو",
+    "signedInAs": "{{name}} · {{role}} سٕنٛدِ طور سائن اِن",
+    "note": "ڈیمو موڈ: یتھ فونس پؠٹھ چھُ صرف نمونہٕ ڈیٹا۔"
+  },
+  "language": {
+    "label": "زبان",
+    "change": "زبان بدلٲوِو"
+  },
+  "placeholder": {
+    "comingSoon": "جلدٕ یِوان",
+    "body": "یہِ اسکرین بنِ اگلہِ مرحلس منٛز۔",
+    "owner": "بناوان: {{owner}}"
+  },
+  "doctor": {
+    "dashboardTitle": "صُبح بخیر، {{name}}",
+    "dashboardSub": "بیمارٕ سُنٛد QR ہیلتھ کارڈ اسکین کرِو تہٕ تٔمۍ سُنٛد ریکارڈ مُچراوِو۔",
+    "scanQr": "QR اسکین کرِو",
+    "scanQrHint": "بیمارٕ سُنٛد ہیلتھ کارڈ پرنہٕ خٲطرٕ چھُ کیمرا مُچراوان",
+    "todayPatients": "اَزٕکۍ بیمار",
+    "pendingReferrals": "باقی حوالہٕ",
+    "patientsTitle": "درج بیمار",
+    "inboxTitle": "حوالہٕ اِن باکس",
+    "adminNote": "ایڈمن رولہٕ خٲطرٕ یِن ایڈمن ٹول یتہِ نظرِ۔"
+  },
   "profile": {
+    "title": "پروفائل",
+    "language": "ایپٕچ زبان",
+    "account": "اکاؤنٹ",
+    "phone": "فون",
     "accessibility": "رسائی",
     "textSize": "حرفن ہُند سایز",
     "highContrastOn": "ہائی کنٹراسٹ: آن",
     "highContrastOff": "ہائی کنٹراسٹ: آف",
     "readAloud": "یہ اسکرین پرِو",
     "stopReading": "پرُن روکیو"
+  },
+  "dev": {
+    "title": "کمپونینٹ گیلری"
   }
 }

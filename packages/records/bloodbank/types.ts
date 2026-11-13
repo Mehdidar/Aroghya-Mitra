@@ -67,6 +67,8 @@ export interface BloodBankResult {
   distanceKm: number | null;
   /** Newest update among the bank's stock rows. */
   lastUpdated: string | null;
+  /** No stock is reported for this bank (official directory listing): show "call to check stock". */
+  stockUnknown: boolean;
   /** Older than the staleness threshold: show the time prominently. */
   isStale: boolean;
   source: DataSource;

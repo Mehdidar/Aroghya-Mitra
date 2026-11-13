@@ -8,6 +8,8 @@ import {
   BLOOD_COMPONENTS,
   BLOOD_GROUPS,
   createBloodBankService,
+  RemoteBloodBankProvider,
+  type BloodBankPayload,
   directionsUrl,
   formatDistance,
   formatUpdatedAgo,
@@ -18,10 +20,12 @@ import {
   type LatLng,
 } from '@am/records';
 
+import { apiJson } from '@/features/shared/services/api';
 import { useTheme } from '@/features/shared/theme';
 import { Card, EmptyState, ErrorState, Heading, Icon, IconButton, Pill, Screen, SecondaryButton, Skeleton, Text } from '@/features/shared/ui';
 
-const service = createBloodBankService();
+// Real banks from the official directory when the server has them imported; otherwise the labelled demo banks.
+const service = createBloodBankService(new RemoteBloodBankProvider(() => apiJson<BloodBankPayload>('/blood-banks', undefined, { timeoutMs: 8000 }).catch(() => null)));
 
 async function deviceLocation(): Promise<LatLng | null> {
   try {
@@ -60,7 +64,10 @@ function Chip({ label, selected, onPress, testID }: { label: string; selected: b
   );
 }
 
-/** Blood bank finder over the mock Bengaluru data. Stock and phone numbers are demo values, and say so. */
+/**
+ * Blood bank finder. With the official directory imported (npm run data:blood-banks) it lists real
+ * banks and says stock must be checked by phone; otherwise it shows demo banks and labels them.
+ */
 export default function BloodBanksScreen() {
   const { t } = useTranslation('health');
   const theme = useTheme();
@@ -109,7 +116,9 @@ export default function BloodBanksScreen() {
         <View style={{ flexDirection: 'row', gap: theme.space[2], alignItems: 'flex-start' }}>
           <Icon name="information-circle" size={theme.sizes.icon.sm} color={theme.colors.status.warning.icon} />
           <Text variant="bodySmall" tone="secondary" style={{ flex: 1 }}>
-            {t('blood.mockBanner')}
+            {service.source === 'mock'
+              ? t('blood.mockBanner')
+              : t('blood.directoryBanner')}
           </Text>
         </View>
       </Card>
@@ -162,9 +171,15 @@ export default function BloodBanksScreen() {
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', gap: theme.space[2], flexWrap: 'wrap' }}>
-                  <Pill label={t('blood.units', { count: r.unitsAvailable })} tone={r.unitsAvailable > 0 ? 'success' : 'danger'} icon="water" />
-                  <Pill label={t(r.isStale ? 'blood.stale' : 'blood.updated', { ago: formatUpdatedAgo(r.lastUpdated, now) })} tone={r.isStale ? 'warning' : 'neutral'} icon="time-outline" />
-                  <Pill label={t('blood.demoNumber')} tone="warning" icon="flask-outline" />
+                  {r.stockUnknown ? (
+                    <Pill label={t('blood.stockUnknown')} tone="neutral" icon="call-outline" />
+                  ) : (
+                    <>
+                      <Pill label={t('blood.units', { count: r.unitsAvailable })} tone={r.unitsAvailable > 0 ? 'success' : 'danger'} icon="water" />
+                      <Pill label={t(r.isStale ? 'blood.stale' : 'blood.updated', { ago: formatUpdatedAgo(r.lastUpdated, now) })} tone={r.isStale ? 'warning' : 'neutral'} icon="time-outline" />
+                    </>
+                  )}
+                  {!r.bank.phoneVerified ? <Pill label={t('blood.demoNumber')} tone="warning" icon="flask-outline" /> : null}
                 </View>
                 <View style={{ flexDirection: 'row', gap: theme.space[2] }}>
                   {r.bank.phone ? <SecondaryButton label={t('blood.call')} icon="call-outline" onPress={() => void Linking.openURL(telUrl(r.bank.phone!))} style={{ flex: 1 }} /> : null}

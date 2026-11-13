@@ -1,1 +1,192 @@
-{}
+{
+  "back": "واپس",
+  "retry": "بیٚیہِ کوشش کرِو",
+  "cancel": "منسوخ کرِو",
+  "none": "کانٛہہ نہٕ",
+  "demoNote": "ڈیمو ڈیٹا: یتہِ چھِ سٲری بیمار، حوالہٕ تہٕ نمبر فرضی۔",
+  "dashboard": {
+    "patientsToday": "اَزٕکۍ بیمار",
+    "openReferrals": "باقی حوالہٕ",
+    "highRisk": "زیادٕ خطرٕچ اطلاع",
+    "followUps": "فالو اپ واجب",
+    "recentReferrals": "تازٕ حوالہٕ",
+    "seeAll": "سٲری وُچھِو",
+    "quick": "فوری کام",
+    "openDemoPatient": "{{name}} مُچراوِو (ڈیمو بیمار)"
+  },
+  "risk": {
+    "high": "زیادٕ خطرٕ",
+    "medium": "درمیانہٕ خطرٕ"
+  },
+  "status": {
+    "pending": "باقی",
+    "seen": "وُچھمُت",
+    "accepted": "قبول کوٚرمُت",
+    "closed": "بنٛد"
+  },
+  "actions": {
+    "mark_seen": "وُچھمُت نِشان کرِو",
+    "accept": "قبول کرِو",
+    "close": "بنٛد کرِو"
+  },
+  "inbox": {
+    "title": "حوالہٕ اِن باکس",
+    "subtitle": "{{count}} باقی",
+    "new": "نوٚو",
+    "refresh": "ASHA ایپہِ پؠٹھٕ تازٕ کرِو",
+    "open": "{{name}} مُچراوِو",
+    "referredOn": "حوالہٕ تاریخ {{date}}",
+    "emptyTitle": "کانٛہہ باقی حوالہٕ چھُنہٕ",
+    "emptyBody": "تُہنٛدِ مرکزٕ کۍ ASHA حوالہٕ یِن یتہِ نظرِ۔"
+  },
+  "patients": {
+    "title": "بیمار",
+    "count": "{{count}} درج",
+    "search": "ناو، فون یا id سٕتۍ ژھانٛڈِو",
+    "register": "بیمار درج کرِو",
+    "emptyTitle": "کانٛہہ بیمار نہٕ",
+    "emptyBody": "شروع کرنہٕ خٲطرٕ اکھ بیمار درج کرِو۔",
+    "emptySearch": "اَتھ ژھانٛڈِ سٕتۍ میلان کانٛہہ بیمار نہٕ۔"
+  },
+  "sex": {
+    "male": "مرد",
+    "female": "زنانہٕ",
+    "other": "بیاکھ"
+  },
+  "patient": {
+    "age": "{{age}} ؤری",
+    "unknown": "نامعلوم بیمار",
+    "notFound": "بیمار میوٚل نہٕ",
+    "notFoundBody": "یہِ ریکارڈ چھُنہٕ یتھ ڈیوائسس پؠٹھ۔",
+    "openedViaQr": "QR اسکینہٕ ذٔریعہٕ مُچرومُت",
+    "highRiskOpen": "{{count}} باقی زیادٕ خطرٕچ اطلاع",
+    "bloodGroup": "بلڈ گروپ {{group}}",
+    "asha": "ASHA: {{name}}",
+    "noAsha": "کانٛہہ ASHA مقرر نہٕ",
+    "allergies": "الرجی",
+    "conditions": "پرٲنۍ بیمٲری",
+    "latestVitals": "تازٕ وائٹلز",
+    "noVitals": "وۄنۍ تام چھُنہٕ کانٛہہ وائٹلز درج۔",
+    "referrals": "حوالہٕ",
+    "noReferrals": "کانٛہہ حوالہٕ نہٕ۔",
+    "prescriptions": "نسخہٕ",
+    "noPrescriptions": "وۄنۍ تام کانٛہہ نسخہٕ نہٕ۔",
+    "consultations": "مشورٕ",
+    "noConsultations": "وۄنۍ تام کانٛہہ مشورٕ نہٕ۔",
+    "alerts": "خطرٕچ اطلاع",
+    "noAlerts": "کانٛہہ خطرٕچ اطلاع نہٕ۔"
+  },
+  "vitals": {
+    "bp": "BP {{s}}/{{d}} mmHg",
+    "hr": "دِلٕچ دھڑکن {{v}} bpm",
+    "weight": "وزن {{v}} kg",
+    "spo2": "SpO₂ {{v}}%",
+    "recorded": "{{date}} · {{source}}",
+    "source": {
+      "asha_visit": "ASHA ملاقات",
+      "consultation": "مشورٕ",
+      "self": "پانہٕ درج کوٚرمُت",
+      "device": "ڈیوائس"
+    }
+  },
+  "rx": {
+    "source": {
+      "doctor": "ڈاکٹرُن نسخہٕ",
+      "scan": "اسکین کوٚرمُت نسخہٕ"
+    },
+    "days": "{{n}} دۄہ"
+  },
+  "consultation": {
+    "title": "نوٚو مشورٕ",
+    "new": "نوٚو مشورٕ",
+    "fromReferral": "ASHA حوالہٕ پؠٹھٕ: محفوظ کرنہٕ سٕتۍ گژھِ یہِ قبول",
+    "diagnosis": "تشخیص",
+    "diagnosisHint": "مثلاً حملس دوران ہائی BP",
+    "notes": "نوٹ",
+    "notesHint": "نتیجہٕ، صلاح، خبردٲری…",
+    "labOrders": "لیب ٹیسٹ",
+    "followUp": "فالو اپ تاریخ",
+    "prescription": "نسخہٕ",
+    "addMedicine": "دوا جوڑِو",
+    "medicineN": "دوا {{n}}",
+    "removeMedicine": "دوا ہٹٲوِو",
+    "medName": "دوا",
+    "dose": "خوراک",
+    "durationDays": "دۄہ",
+    "timesOfDay": "دۄہس منٛز وقت",
+    "instructions": "ہدایت",
+    "instructionsHint": "کھینہٕ پَتہٕ، آبس سٕتۍ…",
+    "save": "مشورٕ محفوظ کرِو",
+    "errorEmpty": "تشخیص یا نوٹ جوڑِو۔",
+    "errorDate": "فالو اپ تاریخ گژھِ YYYY-MM-DD آسٕنۍ۔",
+    "errorSlots": "پرتھ دوا خٲطرٕ ژارِو کم از کم اکھ وقت۔",
+    "untitled": "مشورٕ",
+    "labs": "لیب: {{labs}}",
+    "followUpOn": "فالو اپ {{date}}"
+  },
+  "slots": {
+    "morning": "صُبحٕ",
+    "afternoon": "دۄپہر",
+    "evening": "شام",
+    "night": "رات"
+  },
+  "scan": {
+    "title": "QR ہیلتھ کارڈ اسکین کرِو",
+    "body": "کیمرا کرِو بیمارٕ سٕنٛدِس QR کارڈس کُن، یا کوڈ پیسٹ کرِو۔",
+    "cameraLabel": "کیمرا ویو فائنڈر",
+    "permissionBody": "کارڈ اسکین کرنہٕ خٲطرٕ چھےٚ کیمرا اجازت ضروری۔",
+    "allowCamera": "کیمرا اجازت دِیِو",
+    "pasteLabel": "یا کوڈ پیسٹ کرِو",
+    "open": "ریکارڈ مُچراوِو",
+    "useDemo": "ڈیمو بیمار کارڈ ورتٲوِو",
+    "failedTitle": "یہِ کارڈ آو نہٕ مُچراونہٕ",
+    "error": {
+      "invalid": "یہِ چھُنہٕ صحیح یا موجودٕ ہیلتھ کارڈ۔",
+      "denied": "اجازت نہٕ: بیمارن چھےٚنہٕ پنٕنۍ ہسٹری شیئر کٔرمٕژ۔",
+      "not_found": "یتھ ڈیوائسس پؠٹھ میوٚل نہٕ یتھ کارڈس خٲطرٕ کانٛہہ ریکارڈ۔",
+      "server": "سرور سٕتۍ رابطہٕ گوٚو نہٕ۔ ڈیمو کارڈ ورتٲوِو یا بیٚیہِ کوشش کرِو۔"
+    }
+  },
+  "register": {
+    "title": "بیمار درج کرِو",
+    "name": "پوٗرٕ ناو",
+    "dob": "زٕنٛمٕچ تاریخ",
+    "phone": "موبائل نمبر",
+    "sex": "جِنس",
+    "bloodGroup": "بلڈ گروپ",
+    "area": "علاقہٕ / گام",
+    "conditions": "پرٲنۍ بیمٲری",
+    "conditionsHint": "کاما سٕتۍ الگ، مثلاً شوگر، ہائی BP",
+    "asha": "ASHA کارکن مقرر کرِو",
+    "save": "درج کرِو",
+    "errors": {
+      "name_required": "بیمارٕ سُنٛد ناو لیکھِو۔",
+      "dob_invalid": "صحیح تاریخ لیکھِو (YYYY-MM-DD)۔",
+      "phone_invalid": "صحیح 10 ہندسن ہُند موبائل نمبر لیکھِو۔",
+      "blood_group_invalid": "صحیح بلڈ گروپ ژارِو۔"
+    }
+  },
+  "admin": {
+    "title": "ایڈمن",
+    "subtitleAdmin": "یوزر، تقرری، بلڈ اسٹاک تہٕ تجزیہ",
+    "subtitleDoctor": "ایڈمن ٹول (پروڈکشنس منٛز ڈاکٹرن خٲطرٕ صرف پرنہٕ)",
+    "profile": "پروفائل",
+    "adherence": "دوا پابندی (30 دۄہ)",
+    "adherenceCaption": "{{n}} بیمار 80% کھوتہٕ کم",
+    "pendingApprovals": "باقی منظوری",
+    "analytics": "تجزیہ",
+    "visitsPerAsha": "پرتھ ASHA سٕنٛز ملاقات (30 دۄہ؛ وۄزُل = زیادٕ خطرٕ)",
+    "highRiskByArea": "علاقہٕ وار زیادٕ خطرٕچ اطلاع (وۄزُل = باقی)",
+    "staff": "یوزر",
+    "active": "فعال",
+    "pending": "باقی",
+    "approve": "منظور کرِو",
+    "deactivate": "غیر فعال کرِو",
+    "assignments": "ASHA تقرری",
+    "bloodStock": "بلڈ اسٹاک",
+    "bankError": "بلڈ بینک آو نہٕ لوڈ۔",
+    "demoStock": "ڈیمو اسٹاک، e-RaktKosh نہٕ",
+    "less": "کم یونٹ",
+    "more": "زیادٕ یونٹ"
+  }
+}

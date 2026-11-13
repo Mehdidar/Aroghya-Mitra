@@ -32,7 +32,9 @@ export { BENGALURU_CENTRE };
 
 export function createBloodBankService(provider: BloodBankProvider = new MockBloodBankProvider()): BloodBankService {
   return {
-    source: provider.source,
+    get source() {
+      return provider.source;
+    },
 
     async search(query: BloodBankQuery = {}, now: Date = new Date()) {
       const banks = await provider.listBanks();
@@ -53,7 +55,10 @@ export function createBloodBankService(provider: BloodBankProvider = new MockBlo
           )
           .sort((a, b) => b.units - a.units);
         const unitsAvailable = matchingStock.reduce((n, s) => n + s.units, 0);
-        if (onlyAvailable && unitsAvailable === 0) continue;
+        // A bank with no stock rows at all (official directory, nobody reports its stock) is not
+        // "out of stock": keep it, and the screen says "call to check".
+        const stockUnknown = stock.length === 0 && provider.source !== 'mock';
+        if (onlyAvailable && unitsAvailable === 0 && !stockUnknown) continue;
 
         const lastUpdated = newest(stock);
         results.push({
@@ -63,6 +68,7 @@ export function createBloodBankService(provider: BloodBankProvider = new MockBlo
           distanceKm,
           lastUpdated,
           isStale: lastUpdated === null || now.getTime() - Date.parse(lastUpdated) > STALE_AFTER_HOURS * 3_600_000,
+          stockUnknown,
           source: provider.source,
         });
       }

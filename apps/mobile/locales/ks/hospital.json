@@ -1,1 +1,70 @@
-{}
+{
+  "title": "اسپتالُک نقشہ",
+  "hospitalName": "PHC ہیبل (ڈیمو اسپتال)",
+  "floors": {
+    "ground": "بۄنِم منزِل",
+    "first": "گۄڈنِچ منزِل",
+    "second": "دوٚیِم منزِل"
+  },
+  "places": {
+    "mainEntrance": "بوٚڑ دروازٕ",
+    "emergencyEntrance": "ایمرجنسی دروازٕ",
+    "reception": "ریسیپشن",
+    "pharmacy": "فارمیسی",
+    "lab": "لیب",
+    "emergency": "ایمرجنسی",
+    "lift": "لِفٹ",
+    "stairs": "ہیٖر",
+    "opd": "OPD",
+    "radiology": "ریڈیالوجی",
+    "eyeClinic": "اَچھن ہُند کلینک",
+    "maternity": "میٹرنٹی",
+    "ward": "وارڈ",
+    "vaccination": "ٹیکہٕ کاری"
+  },
+  "start": {
+    "label": "توٚہۍ کتہِ چھِو؟"
+  },
+  "dest": {
+    "label": "توٚہۍ کوت چھِو گژھُن یژھان؟"
+  },
+  "scan": {
+    "button": "دروازٕچ QR اسکین کرِو",
+    "unavailable": "یتہِ چھُنہٕ کیمرا دستیاب",
+    "pickInstead": "اَمہِ بدلہٕ ہیٚرِ پنُن دروازٕ ژارِو۔",
+    "close": "بنٛد کرِو",
+    "permissionTitle": "کیمرا اجازت",
+    "permissionBody": "کیمرا چھُ اسپتالٕکِس دروازس پؠٹھ QR کوڈ پران تاکہ تُہنٛز شروعاتی جاے مقرر گژھِ۔",
+    "allow": "کیمرا اجازت دِیِو",
+    "notEntrance": "یہِ چھُنہٕ دروازُک کوڈ۔ دروازس پؠٹھ Aroghya Mitra نِشان ژھانٛڈِو۔"
+  },
+  "empty": {
+    "title": "منزل ژارِو",
+    "body": "وَتھ تہٕ بولنہٕ وٲلۍ ہدایت یِن یتہِ نظرِ۔"
+  },
+  "summary": {
+    "distance": "{{metres}} m",
+    "minutes": "تقریباً {{count}} منٹ",
+    "floors": "{{count}} منزِل"
+  },
+  "map": {
+    "a11y": "منزِلُک نقشہ، {{floor}}"
+  },
+  "turns": {
+    "left": "کھوٚور",
+    "right": "دٔچھُن",
+    "straight": "سیود"
+  },
+  "steps": {
+    "title": "ہدایت",
+    "readAloud": "زورٕ پرِو",
+    "stop": "روکِو",
+    "corridor": "بٕرانٛڈ",
+    "start": "{{place}} پؠٹھٕ شروع کرِو",
+    "walk": "{{place}} تام {{metres}} m پَکِو",
+    "walkTurn": "{{metres}} m پَکِو، پتہٕ {{place}} پؠٹھ {{turn}} کُن پھیرِو",
+    "lift": "لِفٹ ہیٚتھ {{floor}} گژھِو",
+    "stairs": "ہیٖرِ ہیٚتھ {{floor}} گژھِو",
+    "arrive": "{{metres}} m پَکِو۔ توٚہۍ وٲتِو {{place}}"
+  }
+}
