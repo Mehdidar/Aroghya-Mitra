@@ -166,6 +166,76 @@ Source it summarises: MoHFW, https://www.mohfw.gov.in/
 
 ---
 
+## 2b. Guided symptom check in the chat (3 symptoms)
+
+When a patient says they have one of these symptoms, the assistant asks these
+questions one at a time (tap-to-answer), then names the **possible** causes
+below, always as "this can happen with…, only a doctor or test can confirm".
+A "yes" to a danger-sign question stops the check and shows the 108 banner.
+Source: `packages/patient-ai/triage/symptomCheck.ts`.
+
+### 2b.1 Cough
+
+| # | Question | Answers | Asked when | Danger sign |
+|---|---|---|---|---|
+| 1 | How long have you had the cough? | Less than 1 week / 1 to 2 weeks / More than 2 weeks | always |  |
+| 2 | Do you have difficulty breathing, or are you breathing very fast? | Yes / No | always | yes → 108 |
+| 3 | Is there any blood when you cough? | Yes / No | always | yes → 108 |
+| 4 | Do you have fever? | Yes / No | always |  |
+| 5 | Have you had night sweats, or lost weight without trying? | Yes / No | cough for 1 week or more |  |
+| 6 | Do you also have a runny nose, sneezing or a sore throat? | Yes / No | cough for less than 2 weeks |  |
+| 7 | Do you hear a whistling sound when you breathe, or does the cough get worse with dust, smoke or cold air? | Yes / No | cough for 1 week or more, or no cold signs |  |
+
+**Decision rules:**
+
+- Difficulty or fast breathing, or blood in the cough: stop the check, show the 108 emergency banner.
+- Cough > 2 weeks, or night sweats / weight loss: possible TB (more likely with fever or those signs); also asthma/allergy/smoke cough; free sputum test this week.
+- Cough 1-2 weeks with fever: possible chest infection (bronchitis or pneumonia); doctor in 1-2 days.
+- Shorter cough: common cold (with runny nose/sore throat), flu or other viral infection (with fever), asthma/allergy (with wheeze), else mild viral infection or irritation; home care.
+
+☐ OK ☐ Change — notes: ______________________________________________
+
+### 2b.2 Fever
+
+| # | Question | Answers | Asked when | Danger sign |
+|---|---|---|---|---|
+| 1 | How many days have you had the fever? | 1 to 2 days / 3 to 7 days / More than a week | always |  |
+| 2 | Is there any of these: difficulty breathing, confusion or a fit, very stiff neck, bleeding from gums or nose, severe stomach pain, or vomiting again and again? | Yes / No | always | yes → 108 |
+| 3 | Does the fever come with shivering or chills, and then sweating? | Yes / No | always |  |
+| 4 | Is there severe body or joint pain, or pain behind the eyes? | Yes / No | always |  |
+| 5 | Is there burning or pain when you pass urine? | Yes / No | always |  |
+| 6 | Do you have a cough, runny nose or sore throat? | Yes / No | always |  |
+
+**Decision rules:**
+
+- Breathing difficulty, confusion/fit, stiff neck, bleeding, severe stomach pain or repeated vomiting: stop, show the 108 banner.
+- Chills then sweating: possible malaria; blood test today. Severe body/joint pain or pain behind the eyes: possible dengue/chikungunya; blood test today, fluids, no ibuprofen/aspirin.
+- Burning urine: possible urine infection; doctor. Cough/cold signs: flu or viral infection.
+- More than a week with none of these: possible typhoid or other infection; doctor for tests. Otherwise a common viral fever; see a doctor if it lasts 3 days or more.
+
+☐ OK ☐ Change — notes: ______________________________________________
+
+### 2b.3 Diarrhoea
+
+| # | Question | Answers | Asked when | Danger sign |
+|---|---|---|---|---|
+| 1 | How long have you had loose motions? | Less than 2 days / 2 days to 2 weeks / More than 2 weeks | always |  |
+| 2 | Are there signs of water loss: very little urine, very dry mouth, dizziness, or not able to drink? | Yes / No | always | yes → 108 |
+| 3 | Is there any blood in the stool? | Yes / No | always |  |
+| 4 | Are you vomiting again and again? | Yes / No | always |  |
+| 5 | Do you have fever? | Yes / No | always |  |
+
+**Decision rules:**
+
+- Signs of water loss (little urine, very dry mouth, dizziness, cannot drink): stop, show the 108 banner.
+- Blood in stool: possible dysentery; doctor today. More than 2 weeks: long-lasting diarrhoea; doctor for stool tests.
+- Otherwise stomach infection or food poisoning; ORS; doctor today if vomiting keeps fluids from staying down, in 1-2 days with fever or after 2 days.
+
+☐ OK ☐ Change — notes: ______________________________________________
+
+
+---
+
 ## 3. Emergency phrases (show "Call 108" instantly)
 
 If a patient types or says any of these, the app shows the emergency banner

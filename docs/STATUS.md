@@ -98,6 +98,8 @@ until phone sign-in is switched on, or every call is refused.
 
 ## Needs clinical review before any real use
 
+- `packages/patient-ai/triage/symptomCheck.ts`: the guided symptom check in the chat (cough, fever, diarrhoea). Its questions, danger signs and possible causes are fixed rules, listed in section 2b of CLINICAL_REVIEW.md; all `reviewed: false`.
+
 - `packages/patient-ai/safety/redFlagTerms.ts`: emergency phrases in 15 languages. Odia, Assamese and Kashmiri were added without a native speaker.
 - `server/ai/chat/knowledge.ts`: every health summary is marked `reviewed: false`.
 - `apps/mobile/features/asha/logic/rules.ts`: the 35 risk thresholds have not been signed off.
