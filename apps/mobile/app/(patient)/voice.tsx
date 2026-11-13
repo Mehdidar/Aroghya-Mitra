@@ -1,302 +1,126 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+// Voice assistant: VoiceOrb -> record -> server STT -> chat (voice mode) -> server TTS, device voice on 503.
 import { router } from 'expo-router';
-import { Pressable, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, View } from 'react-native';
 
-import { askHealthAI, type AiChatMessage } from '@/features/shared/services/ai/geminiHealthChat';
-import { usePatientVoice } from '@/features/shared/services/voice/patientVoice';
+import { useAiChat } from '@/features/patient/chat/useAiChat';
+import { EmergencyBanner } from '@/features/patient/chat/EmergencyBanner';
+import { speak, stopSpeaking, type SpokenVia } from '@/features/patient/voice/speech';
+import { useVoiceInput } from '@/features/patient/voice/useVoiceInput';
 import { useSession } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
-import {
-  GlowingMedicalOrb,
-  Icon,
-  Screen,
-  Text,
-} from '@/features/shared/ui';
+import { Card, Heading, IconButton, Pill, Screen, Text, VoiceOrb, type VoiceOrbState } from '@/features/shared/ui';
 
-const SPEECH_TRANSCRIPTS = [
-  '"I see your recent reports, let me explain the results..."',
-  '"Your blood glucose and hemoglobin levels are well within the target range."',
-  '"Based on your symptoms, please stay hydrated and avoid strenuous activity."',
-  '"A copy of this consultation summary has been saved to your health records."',
-];
-
-/**
- * AI Voice Consultation screen matching Image 2.
- * Features live ticking timer, glowing ambient blue orb, real Sarvam STT transcription,
- * real Gemini AI clinical intelligence, and tactile call controls.
- */
 export default function VoiceConsultation() {
+  const { t } = useTranslation('patient');
   const theme = useTheme();
-  const sessionLang = useSession((s) => s.language);
-  const lang = sessionLang === 'hi' ? 'hi' : 'en';
+  const language = useSession((s) => s.language);
+  const [transcript, setTranscript] = useState<string | null>(null);
+  const [reply, setReply] = useState<string | null>(null);
+  const [speaking, setSpeaking] = useState(false);
+  const [via, setVia] = useState<SpokenVia | null>(null);
+  const [demo, setDemo] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+  const startedAt = useRef(Date.now());
+  const voice = useVoiceInput(language);
+  const chat = useAiChat({
+    persist: false,
+    mode: 'voice',
+    demoText: (key) => t(`chat.demo.${key}`),
+    onReply: (m) => {
+      setReply(m.text);
+      setDemo(!!m.demo);
+      setSpeaking(true);
+      void speak(m.text, language, { onDone: () => setSpeaking(false) }).then(setVia);
+    },
+  });
 
-  const [seconds, setSeconds] = useState(739); // Starts at 12:19 (per design Image 2)
-  const [isMuted, setIsMuted] = useState(false);
-  const [isSpeaker, setIsSpeaker] = useState(true);
-  const [currentSpeech, setCurrentSpeech] = useState<string>(SPEECH_TRANSCRIPTS[0]);
-  const [history, setHistory] = useState<AiChatMessage[]>([]);
-  const [isAiThinking, setIsAiThinking] = useState(false);
-
-  const voice = usePatientVoice(lang);
-  const isRecording = voice.state === 'recording';
-  const isTranscribing = voice.state === 'transcribing';
-
-  // Ticking duration timer
   useEffect(() => {
-    const timer = setInterval(() => {
-      setSeconds((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(timer);
+    const id = setInterval(() => setElapsed(Math.floor((Date.now() - startedAt.current) / 1000)), 1000);
+    return () => {
+      clearInterval(id);
+      void stopSpeaking();
+    };
   }, []);
 
-  const formatTime = (totalSeconds: number) => {
-    const mins = Math.floor(totalSeconds / 60);
-    const secs = totalSeconds % 60;
-    return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  };
+  const orbState: VoiceOrbState = voice.state === 'recording' ? 'listening' : voice.state === 'transcribing' || chat.status === 'streaming' ? 'thinking' : speaking ? 'speaking' : 'idle';
 
-  const handleAiQuery = useCallback(
-    async (userText: string) => {
-      if (!userText.trim()) return;
-      setCurrentSpeech(`"${userText}"`);
-      setIsAiThinking(true);
-
-      try {
-        const res = await askHealthAI(userText, history, lang);
-        setCurrentSpeech(`"${res.text}"`);
-        setHistory((prev) => [
-          ...prev,
-          { role: 'user', text: userText },
-          { role: 'model', text: res.text },
-        ]);
-      } catch {
-        setCurrentSpeech('"I heard you. Please tell me more about how you feel."');
-      } finally {
-        setIsAiThinking(false);
-      }
-    },
-    [history, lang]
-  );
-
-  const toggleRecording = useCallback(async () => {
-    if (isRecording) {
-      await voice.stop();
-    } else {
-      await voice.start((transcript) => {
-        if (transcript) {
-          void handleAiQuery(transcript);
-        }
-      });
+  const onOrb = useCallback(async () => {
+    if (speaking) {
+      await stopSpeaking();
+      setSpeaking(false);
+      return;
     }
-  }, [isRecording, voice, handleAiQuery]);
+    if (voice.state === 'recording') return void voice.stop();
+    if (orbState !== 'idle') return;
+    setReply(null);
+    await voice.start((tr) => {
+      setTranscript(tr.text);
+      if (tr.text) void chat.send(tr.text);
+    });
+  }, [chat, orbState, speaking, voice]);
 
-  const handleEndCall = () => {
-    if (isRecording) {
-      voice.stop().catch(() => undefined);
-    }
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
-    }
-  };
-
-  const getSubStatus = () => {
-    if (isRecording) return `Listening... (${voice.seconds}s) Tap to send`;
-    if (isTranscribing) return 'Transcribing with Sarvam AI...';
-    if (isAiThinking) return 'Viora AI is analyzing...';
-    return formatTime(seconds);
-  };
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const ss = String(elapsed % 60).padStart(2, '0');
+  const statusKey = orbState === 'listening' ? 'listening' : orbState === 'thinking' ? 'thinking' : orbState === 'speaking' ? 'speaking' : 'tapToSpeak';
 
   return (
-    <Screen
-      background="hero"
-      testID="screen-voice-consultation"
-      contentStyle={{
-        justifyContent: 'space-between',
-        paddingVertical: 16,
-        paddingHorizontal: 20,
-      }}>
-      {/* Top Header: Title and Live Duration */}
-      <View style={{ alignItems: 'center', gap: 6, marginTop: 12 }}>
-        <Text variant="title" weight="semibold" style={{ color: '#0F172A', fontSize: 18 }}>
-          AI Health Assistant
-        </Text>
-        <Text
-          variant="bodySmall"
-          weight="medium"
-          style={{
-            color: isRecording ? '#EF4444' : isAiThinking ? '#0284C7' : '#64748B',
-          }}>
-          {getSubStatus()}
-        </Text>
-      </View>
-
-      {/* Center Section: Glowing Ambient Orb & Speech Bubble (Image 2) */}
-      <View style={{ alignItems: 'center', justifyContent: 'center', gap: 32 }}>
-        {/* Floating live transcription quotation text */}
-        <View
-          style={{
-            maxWidth: 320,
-            minHeight: 64,
-            justifyContent: 'center',
-            paddingHorizontal: 20,
-            paddingVertical: 14,
-            borderRadius: 24,
-            backgroundColor: 'rgba(255, 255, 255, 0.85)',
-            borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.95)',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.06,
-            shadowRadius: 14,
-          }}>
-          <Text
-            variant="title"
-            weight="semibold"
-            align="center"
-            style={{
-              color: '#0F172A',
-              fontSize: 17,
-              lineHeight: 25,
-            }}>
-            {currentSpeech}
+    <Screen scroll={false} background="hero" testID="screen-voice-consultation">
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[3] }}>
+        <IconButton icon="chevron-back" flipInRTL accessibilityLabel={t('chat.back')} onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
+        <View style={{ flex: 1 }}>
+          <Heading variant="h3">{t('voice.title')}</Heading>
+          <Text variant="caption" tone="secondary" numeric>
+            {`${mm}:${ss}`}
           </Text>
         </View>
-
-        {/* Big Glowing Ambient Orb (Tappable to speak / stop) */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Voice assistant orb"
-          onPress={toggleRecording}
-          style={({ pressed }) => ({
-            alignItems: 'center',
-            justifyContent: 'center',
-            transform: [{ scale: pressed ? 0.96 : 1 }],
-          })}>
-          <GlowingMedicalOrb
-            size={170}
-            variant="voice"
-            pulse={isRecording || isAiThinking}
-          />
-        </Pressable>
-
-        {/* Audio Waveform Bars */}
-        <AudioWaveform active={isRecording} />
-
-        {/* Tap orb prompt hint */}
-        <Text variant="caption" style={{ color: '#64748B' }}>
-          {isRecording ? 'Tap orb when done speaking' : 'Tap glowing orb to speak'}
-        </Text>
+        <IconButton icon="chatbubbles-outline" accessibilityLabel={t('voice.openChat')} onPress={() => router.replace('/assistant')} />
       </View>
 
-      {/* Bottom Call Controls (Image 2) */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 28,
-          marginBottom: 20,
-        }}>
-        {/* Mute Button */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={isMuted ? 'Unmute microphone' : 'Mute microphone'}
-          onPress={() => setIsMuted((prev) => !prev)}
-          style={({ pressed }) => ({
-            width: 64,
-            height: 64,
-            borderRadius: 32,
-            backgroundColor: isMuted ? '#FEE2E2' : 'rgba(255, 255, 255, 0.85)',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderWidth: 1,
-            borderColor: isMuted ? '#FCA5A5' : 'rgba(255, 255, 255, 0.9)',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 3 },
-            shadowOpacity: 0.08,
-            shadowRadius: 8,
-            opacity: pressed ? 0.85 : 1,
-          })}>
-          <Icon
-            name={isMuted ? 'mic-off' : 'mic'}
-            size={26}
-            color={isMuted ? '#DC2626' : '#0F172A'}
-          />
-        </Pressable>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: theme.space[4] }}>
+        <VoiceOrb state={orbState} level={voice.level} onPress={() => void onOrb()} accessibilityLabel={t(`voice.${statusKey}`)} testID="voice-orb" />
+        <Text variant="title" align="center" accessibilityLiveRegion="polite">
+          {t(`voice.${statusKey}`)}
+        </Text>
+        {voice.state === 'recording' ? (
+          <Text variant="caption" tone="secondary" numeric>
+            {t('voice.seconds', { s: voice.seconds, max: voice.maxSeconds })}
+          </Text>
+        ) : null}
+        {voice.error ? (
+          <Pill label={t(`voice.error.${voice.error.kind}`)} tone="warning" icon="alert-circle-outline" />
+        ) : null}
+      </View>
 
-        {/* End Call Button (Red pill circle) */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="End call"
-          onPress={handleEndCall}
-          style={({ pressed }) => ({
-            width: 76,
-            height: 76,
-            borderRadius: 38,
-            backgroundColor: '#EF4444',
-            alignItems: 'center',
-            justifyContent: 'center',
-            shadowColor: '#EF4444',
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.35,
-            shadowRadius: 14,
-            elevation: 6,
-            opacity: pressed ? 0.88 : 1,
-            transform: [{ scale: pressed ? 0.95 : 1 }],
-          })}>
-          <View style={{ transform: [{ rotate: '135deg' }] }}>
-            <Icon name="call" size={32} color="#FFFFFF" />
-          </View>
-        </Pressable>
+      <ScrollView style={{ maxHeight: 280 }} contentContainerStyle={{ gap: theme.space[3] }}>
+        {chat.emergency ? <EmergencyBanner info={chat.emergency} onDismiss={chat.dismissEmergency} /> : null}
+        {transcript !== null ? (
+          <Card radius="xl" padding="md" tone="muted" testID="voice-transcript">
+            <Text variant="caption" tone="tertiary">
+              {t('voice.youSaid')}
+            </Text>
+            <Text>{transcript || t('voice.nothingHeard')}</Text>
+          </Card>
+        ) : null}
+        {reply !== null || chat.status === 'streaming' ? (
+          <Card radius="xl" padding="md" testID="voice-reply">
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[2], marginBottom: theme.space[1] }}>
+              <Text variant="caption" tone="tertiary" style={{ flex: 1 }}>
+                {t('voice.assistantSaid')}
+              </Text>
+              {demo ? <Pill label={t('chat.demoLabel')} tone="warning" icon="flask-outline" /> : null}
+              {via === 'device' ? <Pill label={t('voice.deviceVoice')} tone="neutral" icon="phone-portrait-outline" /> : null}
+            </View>
+            <Text>{reply ?? chat.messages[chat.messages.length - 1]?.text ?? ''}</Text>
+          </Card>
+        ) : null}
+      </ScrollView>
 
-        {/* Keypad / Options Button (Grid of dots) */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Keypad actions"
-          onPress={() => setIsSpeaker((prev) => !prev)}
-          style={({ pressed }) => ({
-            width: 64,
-            height: 64,
-            borderRadius: 32,
-            backgroundColor: isSpeaker ? 'rgba(255, 255, 255, 0.85)' : '#F1F5F9',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.9)',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 3 },
-            shadowOpacity: 0.08,
-            shadowRadius: 8,
-            opacity: pressed ? 0.85 : 1,
-          })}>
-          <Icon name="keypad" size={26} color="#0F172A" />
-        </Pressable>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: theme.space[4], paddingTop: theme.space[3] }}>
+        <IconButton icon={speaking ? 'volume-mute' : 'volume-high'} accessibilityLabel={t('voice.stopSpeaking')} onPress={() => void stopSpeaking().then(() => setSpeaking(false))} />
+        <IconButton icon="call" variant="dark" accessibilityLabel={t('voice.end')} onPress={() => void stopSpeaking().then(() => (router.canGoBack() ? router.back() : router.replace('/')))} testID="end-call" />
       </View>
     </Screen>
-  );
-}
-
-function AudioWaveform({ active = false }: { active?: boolean }) {
-  const bars = active
-    ? [0.7, 1.0, 0.6, 0.95, 0.8, 0.4, 0.85]
-    : [0.3, 0.5, 0.7, 0.45, 0.6, 0.35, 0.2];
-
-  return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, height: 40 }}>
-      {bars.map((val, i) => (
-        <View
-          key={i}
-          style={{
-            width: 4,
-            height: 8 + val * 24,
-            borderRadius: 2,
-            backgroundColor: active ? '#0284C7' : '#94A3B8',
-            opacity: active ? 0.95 : 0.6,
-          }}
-        />
-      ))}
-    </View>
   );
 }

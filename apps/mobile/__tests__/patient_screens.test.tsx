@@ -21,52 +21,45 @@ describe('Patient UI Screens (from Design Images)', () => {
     });
   });
 
-  describe('Records / Report Screen (Image 1 Right)', () => {
-    it('renders heart rate with bpm, blood group, weight, and latest reports', async () => {
+  describe('Health hub (records tab)', () => {
+    it('renders the vitals stat cards, tools and recent reports from the seeded records', async () => {
       await render(wrap(<PatientRecords />));
-      expect(screen.getByText('Heart Rate')).toBeTruthy();
-      expect(screen.getByText('96')).toBeTruthy();
-      expect(screen.getByText('bpm')).toBeTruthy();
-      expect(screen.getByText('Blood Group')).toBeTruthy();
-      expect(screen.getByText('A+')).toBeTruthy();
+      expect(screen.getByText('My health')).toBeTruthy();
+      expect(screen.getByText('Blood group')).toBeTruthy();
       expect(screen.getByText('Weight')).toBeTruthy();
-      expect(screen.getByText('80')).toBeTruthy();
-      expect(screen.getByText('Latest Report')).toBeTruthy();
-      expect(screen.getByText('General Health')).toBeTruthy();
-      expect(screen.getByText('Diabetes')).toBeTruthy();
+      expect(screen.getByText('QR health card')).toBeTruthy();
+      expect(screen.getByText('Recent reports')).toBeTruthy();
     });
   });
 
-  describe('Upload Health Report Screen (Image 4 Right)', () => {
-    it('renders upload dropzone, progress bar, supported reports, and analyze button', async () => {
+  describe('Upload Health Report Screen', () => {
+    it('renders the picker, name field, categories and save button', async () => {
       await render(wrap(<UploadHealthReport />));
       expect(screen.getByText('Upload health report')).toBeTruthy();
-      expect(screen.getByText('Upload your file')).toBeTruthy();
-      expect(screen.getByText('Health report.png')).toBeTruthy();
-      expect(screen.getByText('82%')).toBeTruthy();
-      expect(screen.getByText('Supported reports')).toBeTruthy();
-      expect(screen.getByText('Analyze with AI')).toBeTruthy();
+      expect(screen.getByText('Choose a file')).toBeTruthy();
+      expect(screen.getByText('Report name')).toBeTruthy();
+      expect(screen.getByText('Blood test')).toBeTruthy();
+      expect(screen.getByText('Save report')).toBeTruthy();
     });
   });
 
-  describe('Symptom Checker / Assistant Screen (Image 4 Middle)', () => {
-    it('renders how are you feeling, quick symptom chips, prompt counter, and input', async () => {
+  describe('AI assistant screen', () => {
+    it('renders the welcome card, starter chips and the input', async () => {
       await render(wrap(<PatientAssistant />));
-      expect(screen.getByText('Symptom checker')).toBeTruthy();
-      expect(screen.getByText('How are you feeling?')).toBeTruthy();
-      expect(screen.getByText('Headache')).toBeTruthy();
-      expect(screen.getByText('Fever')).toBeTruthy();
-      expect(screen.getByText('You have 56 prompts left...')).toBeTruthy();
+      expect(await screen.findByText('How are you feeling?')).toBeTruthy();
+      expect(screen.getByText('I have a fever')).toBeTruthy();
+      expect(screen.getByText('Headache since morning')).toBeTruthy();
+      expect(screen.getByTestId('chat-input')).toBeTruthy();
     });
   });
 
-  describe('Voice Consultation Screen (Image 2)', () => {
-    it('renders title, ticking timer, speech transcription, and call controls', async () => {
+  describe('Voice assistant screen', () => {
+    it('renders title, timer, the orb and call controls', async () => {
       await render(wrap(<VoiceConsultation />));
-      expect(screen.getByText('AI Health Assistant')).toBeTruthy();
-      expect(screen.getByText(/12:19|12:20/)).toBeTruthy();
-      expect(screen.getByLabelText('Mute microphone')).toBeTruthy();
-      expect(screen.getByLabelText('End call')).toBeTruthy();
+      expect(screen.getByText('Voice assistant')).toBeTruthy();
+      expect(screen.getByText(/00:0\d/)).toBeTruthy();
+      expect(screen.getByTestId('voice-orb')).toBeTruthy();
+      expect(screen.getByLabelText('End')).toBeTruthy();
     });
   });
 

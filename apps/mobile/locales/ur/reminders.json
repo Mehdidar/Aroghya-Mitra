@@ -1,1 +1,31 @@
-{}
+{
+  "title": "یاد دہانیاں",
+  "subtitle": "آج {{total}} میں سے {{taken}} خوراکیں لیں",
+  "subtitleEmpty": "خوراکیں طے کرنے کے لیے نسخہ اسکین کریں۔",
+  "streak": "مسلسل",
+  "days": "دن",
+  "adherence": "لی گئی",
+  "last7": "پچھلے 7 دن",
+  "taken": "لے لی",
+  "skip": "چھوڑیں",
+  "emptyTitle": "ابھی کوئی یاد دہانی نہیں",
+  "emptyBody": "نسخے کی تصویر لیں، ایپ ہر خوراک پر یاد دلائے گی۔",
+  "noneTodayTitle": "آج کچھ نہیں",
+  "noneTodayBody": "آج کے لیے کوئی خوراک طے نہیں۔",
+  "scanCta": "نسخہ اسکین کریں",
+  "status": {
+    "upcoming": "آگے",
+    "due": "ابھی",
+    "taken": "لے لی",
+    "skipped": "چھوڑی",
+    "missed": "رہ گئی"
+  },
+  "slots": {
+    "morning": "صبح",
+    "afternoon": "دوپہر",
+    "evening": "شام",
+    "night": "رات"
+  },
+  "notifChannel": "دوا کی یاد دہانی",
+  "notifTitle": "دوا کا وقت"
+}

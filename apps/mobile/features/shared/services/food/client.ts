@@ -7,7 +7,6 @@ import { Platform } from 'react-native';
 
 import { mockRecognition } from './mock';
 import { FoodRecognitionSchema, type FoodScanResult } from './types';
-import { classifyFoodWithGemini } from './geminiFoodClassifier';
 
 export type FoodImageInput = { uri: string; mimeType?: string | null; fileName?: string | null };
 
@@ -66,10 +65,6 @@ export async function analyzeFood(image: FoodImageInput, opts: FoodClientOptions
   const platform = opts.platform ?? Platform.OS;
 
   if (!baseUrl) {
-    if (!isMockedTest) {
-      const geminiResult = await classifyFoodWithGemini(image);
-      if (geminiResult) return { recognition: geminiResult, demo: false };
-    }
     return { recognition: mockRecognition(image.uri), demo: true, demoReason: 'unset' };
   }
 
@@ -85,11 +80,7 @@ export async function analyzeFood(image: FoodImageInput, opts: FoodClientOptions
       signal: controller.signal,
     });
   } catch {
-    // Network failure or timeout: if real app, try Gemini vision classifier before falling back to demo
-    if (!isMockedTest) {
-      const geminiResult = await classifyFoodWithGemini(image);
-      if (geminiResult) return { recognition: geminiResult, demo: false };
-    }
+    // Network failure or timeout: the server is unreachable, so use the demo result.
     return { recognition: mockRecognition(image.uri), demo: true, demoReason: 'unreachable' };
   } finally {
     clearTimeout(timer);

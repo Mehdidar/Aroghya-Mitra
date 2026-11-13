@@ -38,5 +38,120 @@
   },
   "profile": {
     "demoNote": "You are using demo mode. Nothing is sent to a server."
+  },
+  "chat": {
+    "title": "AI health assistant",
+    "subtitle": "Answers from reviewed health content. Not a doctor.",
+    "welcomeTitle": "How are you feeling?",
+    "welcomeBody": "Describe a symptom or ask a health question. In an emergency, call 108.",
+    "disclaimer": "General guidance only. For a diagnosis or medicines, see a doctor.",
+    "placeholder": "Type a symptom or question…",
+    "inputLabel": "Message",
+    "send": "Send",
+    "back": "Back",
+    "voice": "Speak instead",
+    "clear": "Clear chat",
+    "thinking": "Thinking…",
+    "sources": "Sources: {{list}}",
+    "demoLabel": "Demo answer · server not reachable",
+    "emergencyTitle": "This could be an emergency",
+    "emergencyBody": "Do not wait for the assistant. Call for help now.",
+    "dismiss": "Dismiss",
+    "call": "Call {{label}} {{number}}",
+    "emergency.ambulance": "ambulance",
+    "emergency.national": "emergency line",
+    "emergency.mentalHealth": "Tele-MANAS",
+    "starters": {
+      "fever": "I have a fever",
+      "headache": "Headache since morning",
+      "bp": "My BP is high",
+      "cough": "Cough for a week"
+    },
+    "demo": {
+      "fever": "Demo answer: rest, drink fluids, and take paracetamol as advised on the pack. See a doctor if the fever is above 102°F, lasts more than 3 days, or comes with a rash, stiff neck or breathing trouble.",
+      "headache": "Demo answer: rest in a quiet room, drink water, and avoid screens. A sudden severe headache, or one with vomiting, weakness or blurred vision, needs a doctor today.",
+      "bp": "Demo answer: sit quietly for 5 minutes and measure again. Readings of 140/90 or more on two occasions, or any reading with headache, chest pain or swelling, need a doctor. In pregnancy, go the same day.",
+      "cough": "Demo answer: warm fluids and steam help most coughs. A cough over 2 weeks, blood in sputum, night sweats or weight loss should be checked for TB at the nearest PHC.",
+      "pregnancy": "Demo answer: keep your antenatal check-ups and iron tablets. Bleeding, severe headache, swelling of face or hands, or reduced baby movements need care today.",
+      "medicine": "Demo answer: take medicines exactly as written on the prescription. Use the Prescription scanner in this app to set reminders, and ask a pharmacist about any doubt.",
+      "general": "Demo answer: the health assistant server is not reachable right now, so this is a sample reply. For anything urgent, call 108 or visit the nearest PHC."
+    }
+  },
+  "voice": {
+    "title": "Voice assistant",
+    "tapToSpeak": "Tap the orb and speak",
+    "listening": "Listening…",
+    "thinking": "Thinking…",
+    "speaking": "Speaking…",
+    "seconds": "{{s}} s of {{max}}",
+    "youSaid": "You said",
+    "nothingHeard": "Nothing was heard. Try again closer to the phone.",
+    "assistantSaid": "Assistant",
+    "deviceVoice": "Phone voice",
+    "stopSpeaking": "Stop speaking",
+    "end": "End",
+    "openChat": "Open text chat",
+    "error": {
+      "permission": "Microphone permission is needed",
+      "stt_unavailable": "Speech service is not available right now",
+      "network": "Could not reach the server",
+      "other": "Something went wrong"
+    }
+  },
+  "prescription": {
+    "title": "Prescription explainer",
+    "intro": "Photograph a prescription to read the medicines and set reminders.",
+    "pickBody": "Flat, well lit, all of the page in the frame.",
+    "takePhoto": "Take a photo",
+    "choose": "Choose from gallery",
+    "permissionCamera": "Camera permission is needed to take a photo.",
+    "permissionLibrary": "Photo access is needed to choose a picture.",
+    "analyzing": "Reading the prescription…",
+    "retake": "Try another photo",
+    "notAPrescription": "This photo does not look like a prescription.",
+    "errorTitle": "Could not read the prescription",
+    "errors": {
+      "bad_image": "The image could not be read. Try a JPEG or PNG photo.",
+      "too_large": "The photo is too large. Try a smaller one.",
+      "server": "The server had a problem. Please try again."
+    },
+    "demoPill": "Demo extraction · the photo was not read",
+    "demoReason": {
+      "no_vision_model": "No vision model is configured on the server, so this is a sample prescription.",
+      "model_unavailable": "The vision model is busy right now, so this is a sample prescription.",
+      "model_error": "The vision model could not read this photo, so this is a sample prescription.",
+      "parse_error": "The model reply could not be understood, so this is a sample prescription.",
+      "unreachable": "The server could not be reached, so this is a sample prescription."
+    },
+    "confirmPharmacist": "Confirm with pharmacist",
+    "looksRight": "Read clearly",
+    "unnamed": "Unnamed medicine",
+    "generic": "Generic: {{name}}",
+    "fields": {
+      "name": "Medicine",
+      "strength": "Strength",
+      "dose": "Dose",
+      "timings": "When",
+      "durationDays": "Days",
+      "instructions": "Instructions"
+    },
+    "slots": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "remove": "Remove this medicine",
+    "noMedicines": "No medicines were found on this prescription.",
+    "disclaimer": "Check every line against the paper prescription. When in doubt, ask the pharmacist before taking a medicine.",
+    "setReminders": "Set reminders",
+    "savedTitle": "Reminders set",
+    "notif": {
+      "granted": "{{n}} notifications scheduled on this phone.",
+      "denied": "Saved. Notifications are off, so open the Reminders tab to see your doses.",
+      "blocked": "Saved. Turn on notifications in Settings to get alerts.",
+      "unsupported": "Saved. This device does not show notifications; open the Reminders tab to see your doses."
+    },
+    "goReminders": "Open reminders"
   }
 }

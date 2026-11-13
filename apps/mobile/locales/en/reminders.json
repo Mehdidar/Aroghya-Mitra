@@ -1,1 +1,32 @@
-{}
+{
+  "title": "Reminders",
+  "subtitle": "{{taken}} of {{total}} doses taken today",
+  "subtitleEmpty": "Scan a prescription to set up your doses.",
+  "streak": "Streak",
+  "days": "days",
+  "adherence": "Taken",
+  "last7": "last 7 days",
+  "taken": "Taken",
+  "skip": "Skip",
+  "emptyTitle": "No reminders yet",
+  "emptyBody": "Photograph a prescription and the app will remind you at each dose.",
+  "noneTodayTitle": "Nothing due today",
+  "noneTodayBody": "Your courses have no doses scheduled for today.",
+  "scanCta": "Scan a prescription",
+  "disclaimer": "Reminders follow the prescription you confirmed. Changing a dose needs your doctor.",
+  "status": {
+    "upcoming": "Upcoming",
+    "due": "Due now",
+    "taken": "Taken",
+    "skipped": "Skipped",
+    "missed": "Missed"
+  },
+  "slots": {
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "night": "Night"
+  },
+  "notifChannel": "Medicine reminders",
+  "notifTitle": "Time for your medicine"
+}
