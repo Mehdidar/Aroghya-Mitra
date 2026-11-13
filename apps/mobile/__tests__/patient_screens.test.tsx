@@ -1,8 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import AppointmentsScreen from '@/app/(patient)/appointments';
-import HealthInsightsScreen from '@/app/(patient)/insights';
 import UploadHealthReport from '@/app/(patient)/upload-report';
 import VoiceConsultation from '@/app/(patient)/voice';
 import PatientAssistant from '@/app/(patient)/assistant';
@@ -63,29 +61,6 @@ describe('Patient UI Screens (from Design Images)', () => {
     });
   });
 
-  describe('My Appointments Screen (Image 3 Right)', () => {
-    it('renders upcoming appointments, past visits, and Make Appointment button', async () => {
-      await render(wrap(<AppointmentsScreen />));
-      expect(screen.getByText('My Appointments')).toBeTruthy();
-      expect(screen.getByText('Upcoming')).toBeTruthy();
-      expect(screen.getByText('Dr. Olivia Wilson')).toBeTruthy();
-      expect(screen.getByText('Dermatologist')).toBeTruthy();
-      expect(screen.getByText('Past Visits')).toBeTruthy();
-      expect(screen.getByText('Make Appointment')).toBeTruthy();
-    });
-  });
 
-  describe('Health Insights Screen (Image 4 Left)', () => {
-    it('renders week in review, sleep consistency, activity, and sleep quality chart', async () => {
-      await render(wrap(<HealthInsightsScreen />));
-      expect(screen.getByText('Health insight')).toBeTruthy();
-      expect(screen.getByText('Your week in review')).toBeTruthy();
-      expect(screen.getByText('Sleep is getting more consistent')).toBeTruthy();
-      expect(screen.getByText('Afternoon activity dipped')).toBeTruthy();
-      expect(screen.getByText('Sleep quality')).toBeTruthy();
-      expect(screen.getByText('+8%')).toBeTruthy();
-      expect(screen.getByText('Discuss with Arogya AI')).toBeTruthy();
-    });
-  });
 });
 

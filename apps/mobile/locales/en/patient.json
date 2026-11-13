@@ -10,7 +10,10 @@
     "appointments": "Upcoming appointments",
     "viewAll": "View all",
     "analytics": "Analytics",
-    "viewAnalytics": "View analytics"
+    "viewAnalytics": "View analytics",
+    "dueNow": "Due now",
+    "dosesDone": "All of today's medicines are done.",
+    "noDoses": "No medicines scheduled. Scan a prescription to set reminders."
   },
   "services": {
     "chat": "Chat",
@@ -166,5 +169,16 @@
       "unsupported": "Saved. This device does not show notifications; open the Reminders tab to see your doses."
     },
     "goReminders": "Open reminders"
+  },
+  "steps": {
+    "title": "Steps today",
+    "ofGoal": "of {{goal}} goal",
+    "distance": "About {{km}} km walked",
+    "goalReached": "Goal reached. Well done!",
+    "week": "Steps this week",
+    "whileOpen": "Counted while Aroghya Mitra is open on this phone.",
+    "unavailable": "Step counting works on your phone.",
+    "denied": "Allow motion access so the phone can count your steps.",
+    "allow": "Allow step counting"
   }
 }

@@ -62,7 +62,10 @@ describe('Patient Home', () => {
     expect(screen.queryByText('Heart rate')).toBeNull();
     expect(screen.queryByText('Weight')).toBeNull();
     expect(screen.getByText('Upcoming reminders')).toBeTruthy();
-    expect(screen.getByText('Metformin 500 mg')).toBeTruthy();
+    // Real doses from the reminder plan (which ones depends on the time of day), never the old placeholder list.
+    expect(screen.queryByText('Metformin 500 mg')).toBeNull();
+    const card = screen.getByTestId('reminders-card');
+    expect(card).toBeTruthy();
   });
 
   it('renders in Urdu', async () => {

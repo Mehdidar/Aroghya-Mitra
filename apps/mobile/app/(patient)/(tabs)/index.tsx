@@ -1,9 +1,8 @@
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Linking, Pressable, ScrollView, View } from 'react-native';
+import { Linking, Pressable, View } from 'react-native';
 
 import { currentPatientId, useCurrentUser } from '@/features/shared/state/session';
-import { demoPatientHome } from '@/features/shared/seed/patientHome';
 import { useTheme } from '@/features/shared/theme';
 import {
   Avatar,
@@ -13,7 +12,6 @@ import {
   IconButton,
   ReadAloud,
   Screen,
-  SearchBar,
   SectionHeader,
   ServiceTile,
   Text,
@@ -21,6 +19,8 @@ import {
   type TileTint,
 } from '@/features/shared/ui';
 import { pullPatientRecords, usePullWhileOpen } from '@/features/shared/data/serverSync';
+import { StepsCard } from '@/features/patient/steps/StepsCard';
+import { useReminders } from '@/features/patient/reminders/useReminders';
 import { VoiceHeroCard } from '@/features/patient/voice/VoiceHeroCard';
 
 type ServiceId = 'chat' | 'voice' | 'prescription' | 'nutrition' | 'hospitalMap' | 'qrCard' | 'bloodBanks' | 'reports';
@@ -54,9 +54,9 @@ function call108() {
 }
 
 /**
- * Patient Home matching Image 1 (left) & Image 3 (middle):
- * Greeting, search, 8 services, Best Medical Services banner, Upcoming Appointments,
- * Analytics preview (steps & oxygen), AI assistant banner, and reminders.
+ * Patient home: greeting, the big voice assistant card, Call 108, the services,
+ * today's real step count, the AI assistant banner and today's reminders.
+ * Only real features and data: no placeholder appointments or invented vitals.
  */
 export default function PatientHome() {
   usePullWhileOpen(() => pullPatientRecords(currentPatientId()), 'patient-records');
@@ -65,7 +65,6 @@ export default function PatientHome() {
   const user = useCurrentUser();
   const name = user?.name ?? 'Rekha Kumari';
   const firstName = name.split(' ')[0];
-  const { reminders } = demoPatientHome;
 
   return (
     <Screen withTabBar testID="screen-patient-home" contentStyle={{ gap: theme.layout.sectionGap - 8 }}>
@@ -80,23 +79,12 @@ export default function PatientHome() {
             {t('home.subtitle')}
           </Text>
         </View>
-        <IconButton
-          icon="search-outline"
-          accessibilityLabel={t('common:actions.search')}
-          onPress={() => router.push('/appointments')}
-        />
-        <IconButton
-          icon="notifications-outline"
-          badge
-          accessibilityLabel={t('common:actions.notifications')}
-          onPress={() => router.push('/appointments')}
-        />
+        <IconButton icon="notifications-outline" accessibilityLabel={t('common:actions.notifications')} onPress={() => router.push('/reminders')} />
       </View>
 
       {/* Big voice assistant button: the first thing on the screen */}
       <VoiceHeroCard />
 
-      <SearchBar placeholder={t('home.searchPlaceholder')} testID="home-search" />
 
       {/* Services Grid (Image 1 left) */}
       <View style={{ gap: theme.space[3] }}>
@@ -134,228 +122,8 @@ export default function PatientHome() {
         </View>
       </View>
 
-      {/* "Get the Best Medical Services" Hero Banner (Image 1 left) */}
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => router.push('/appointments')}
-        style={({ pressed }) => ({
-          borderRadius: 24,
-          padding: 20,
-          backgroundColor: '#CCFBF1',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          overflow: 'hidden',
-          opacity: pressed ? 0.92 : 1,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.04,
-          shadowRadius: 8,
-        })}>
-        <View style={{ flex: 1, gap: 6, paddingRight: 10 }}>
-          <Text variant="title" weight="bold" style={{ color: '#0F766E', fontSize: 18 }}>
-            Get the Best Medical Services
-          </Text>
-          <Text variant="caption" style={{ color: '#115E59', lineHeight: 18 }}>
-            We provide best quality medical service without further cost.
-          </Text>
-          <View
-            style={{
-              alignSelf: 'flex-start',
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 14,
-              backgroundColor: '#0F766E',
-              marginTop: 4,
-            }}>
-            <Text variant="caption" weight="bold" style={{ color: '#FFFFFF' }}>
-              Book Doctor
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            width: 72,
-            height: 72,
-            borderRadius: 36,
-            backgroundColor: '#99F6E4',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Icon name="medkit" size={36} color="#0F766E" />
-        </View>
-      </Pressable>
-
-      {/* Upcoming Appointments (Image 1 left & Image 3 right) */}
-      <View style={{ gap: theme.space[3] }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <SectionHeader title={t('home.appointments')} />
-          <Pressable onPress={() => router.push('/appointments')}>
-            <Text variant="caption" weight="semibold" tone="secondary">
-              {t('home.viewAll')}
-            </Text>
-          </Pressable>
-        </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
-          {/* Card 1: Teal Accent */}
-          <Pressable
-            onPress={() => router.push('/appointments')}
-            style={{
-              width: 250,
-              flexDirection: 'row',
-              borderRadius: 20,
-              backgroundColor: '#0D9488',
-              overflow: 'hidden',
-            }}>
-            <View
-              style={{
-                width: 64,
-                backgroundColor: 'rgba(0, 0, 0, 0.15)',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 2,
-              }}>
-              <Text variant="h2" weight="bold" style={{ color: '#FFFFFF' }}>
-                12
-              </Text>
-              <Text variant="caption" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
-                Tue
-              </Text>
-            </View>
-            <View style={{ flex: 1, padding: 14, gap: 4 }}>
-              <Text variant="caption" style={{ color: '#99F6E4' }}>
-                09:30 AM
-              </Text>
-              <Text variant="bodySmall" weight="bold" style={{ color: '#FFFFFF' }}>
-                Dr. Mim Akhter
-              </Text>
-              <Text variant="caption" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>
-                Depression
-              </Text>
-            </View>
-          </Pressable>
-
-          {/* Card 2: Orange Accent */}
-          <Pressable
-            onPress={() => router.push('/appointments')}
-            style={{
-              width: 250,
-              flexDirection: 'row',
-              borderRadius: 20,
-              backgroundColor: '#EA580C',
-              overflow: 'hidden',
-            }}>
-            <View
-              style={{
-                width: 64,
-                backgroundColor: 'rgba(0, 0, 0, 0.15)',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 2,
-              }}>
-              <Text variant="h2" weight="bold" style={{ color: '#FFFFFF' }}>
-                15
-              </Text>
-              <Text variant="caption" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
-                Fri
-              </Text>
-            </View>
-            <View style={{ flex: 1, padding: 14, gap: 4 }}>
-              <Text variant="caption" style={{ color: '#FED7AA' }}>
-                11:30 AM
-              </Text>
-              <Text variant="bodySmall" weight="bold" style={{ color: '#FFFFFF' }}>
-                Dr. Olivia Wilson
-              </Text>
-              <Text variant="caption" style={{ color: 'rgba(255, 255, 255, 0.75)' }}>
-                Dermatologist
-              </Text>
-            </View>
-          </Pressable>
-        </ScrollView>
-      </View>
-
-      {/* Analytics Preview: Steps & Oxygen level (Image 3 middle) */}
-      <View style={{ gap: theme.space[2] }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <SectionHeader title={t('home.analytics')} />
-          <Pressable onPress={() => router.push('/insights')}>
-            <Text variant="caption" weight="semibold" tone="secondary">
-              {t('home.viewAnalytics')}
-            </Text>
-          </Pressable>
-        </View>
-
-        <View style={{ flexDirection: 'row', gap: 12 }}>
-          {/* Steps Card */}
-          <Pressable
-            onPress={() => router.push('/insights')}
-            style={{
-              flex: 1,
-              backgroundColor: '#FFFFFF',
-              borderRadius: 20,
-              padding: 16,
-              borderWidth: 1,
-              borderColor: '#E2E8F0',
-              gap: 8,
-            }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text variant="caption" tone="secondary">
-                Steps
-              </Text>
-              <Icon name="footsteps-outline" size={16} color="#EA580C" />
-            </View>
-            <Text variant="title" weight="bold" style={{ color: '#0F172A' }}>
-              2,595
-            </Text>
-            <Text variant="caption" tone="tertiary" style={{ fontSize: 11 }}>
-              of 3,000 goal
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 3, height: 26, marginTop: 4 }}>
-              {[0.4, 0.6, 0.5, 0.9, 0.75, 0.85, 0.6].map((v, i) => (
-                <View
-                  key={i}
-                  style={{
-                    flex: 1,
-                    height: v * 26,
-                    borderRadius: 2,
-                    backgroundColor: '#FB923C',
-                  }}
-                />
-              ))}
-            </View>
-          </Pressable>
-
-          {/* Oxygen Level Card */}
-          <Pressable
-            onPress={() => router.push('/insights')}
-            style={{
-              flex: 1,
-              backgroundColor: '#FFFFFF',
-              borderRadius: 20,
-              padding: 16,
-              borderWidth: 1,
-              borderColor: '#E2E8F0',
-              gap: 8,
-            }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text variant="caption" tone="secondary">
-                Oxygen level
-              </Text>
-              <Icon name="pulse-outline" size={16} color="#0284C7" />
-            </View>
-            <Text variant="title" weight="bold" style={{ color: '#0F172A' }}>
-              98%
-            </Text>
-            <Text variant="caption" style={{ color: '#0D9488', fontSize: 11 }}>
-              normal
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', height: 26, marginTop: 4 }}>
-              <Icon name="analytics-outline" size={28} color="#0284C7" />
-            </View>
-          </Pressable>
-        </View>
-      </View>
+      {/* Real step counter from the phone's motion sensor */}
+      <StepsCard />
 
       {/* AI assistant hero banner */}
       <Card tone="inverse" radius="xl" padding="lg" onPress={() => router.push('/assistant')} accessibilityLabel={t('ai.title')} testID="ai-banner">
@@ -389,14 +157,32 @@ export default function PatientHome() {
         </View>
       </Card>
 
-      {/* Reminders */}
-      <Card radius="xl" testID="reminders-card">
-        <SectionHeader title={t('home.reminders')} />
-        {reminders.map((r, i) => (
+      {/* Today's next doses, from the patient's real reminder plan */}
+      <UpcomingDoses />
+    </Screen>
+  );
+}
+
+/** The next doses still to take today (at most three), from the same plan as the Reminders tab. */
+function UpcomingDoses() {
+  const { t, i18n } = useTranslation('patient');
+  const theme = useTheme();
+  const { timeline } = useReminders();
+  const next = timeline.filter((x) => x.status === 'due' || x.status === 'upcoming').slice(0, 3);
+  const time = (d: Date) => new Intl.DateTimeFormat(i18n.language, { hour: 'numeric', minute: '2-digit' }).format(d);
+  return (
+    <Card radius="xl" testID="reminders-card">
+      <SectionHeader title={t('home.reminders')} />
+      {next.length === 0 ? (
+        <Pressable accessibilityRole="button" onPress={() => router.push('/reminders')} style={{ minHeight: theme.sizes.touchMin, justifyContent: 'center' }}>
+          <Text tone="secondary">{timeline.length ? t('home.dosesDone') : t('home.noDoses')}</Text>
+        </Pressable>
+      ) : (
+        next.map((x, i) => (
           <Pressable
-            key={r.id}
+            key={x.dose.id}
             accessibilityRole="button"
-            onPress={() => openService('prescription')}
+            onPress={() => router.push('/reminders')}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -411,28 +197,28 @@ export default function PatientHome() {
                 width: theme.sizes.iconChip,
                 height: theme.sizes.iconChip,
                 borderRadius: theme.radii.sm,
-                backgroundColor: r.medicine ? theme.colors.tile.mint.bg : theme.colors.tile.blue.bg,
+                backgroundColor: x.status === 'due' ? theme.colors.status.warning.bg : theme.colors.tile.mint.bg,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Icon name={r.icon} color={r.medicine ? theme.colors.tile.mint.icon : theme.colors.tile.blue.icon} />
+              <Icon name="medical" color={x.status === 'due' ? theme.colors.status.warning.icon : theme.colors.tile.mint.icon} />
             </View>
             <View style={{ flex: 1 }}>
               <Text variant="bodyStrong" numberOfLines={1}>
-                {r.medicine ?? t(`reminders.${r.timingKey}`)}
+                {x.dose.medicineName}
               </Text>
-              <Text variant="caption" tone="tertiary">
-                {r.medicine ? t(`reminders.${r.timingKey}`) : t('reminders.checkupPlace')}
-              </Text>
+              {x.dose.dose ? (
+                <Text variant="caption" tone="tertiary" numberOfLines={1}>
+                  {x.dose.dose}
+                </Text>
+              ) : null}
             </View>
-            {r.time ? (
-              <Text variant="label" tone="accent" numeric>
-                {r.time}
-              </Text>
-            ) : null}
+            <Text variant="label" tone="accent" numeric>
+              {x.status === 'due' ? t('home.dueNow') : time(x.dose.at)}
+            </Text>
           </Pressable>
-        ))}
-      </Card>
-    </Screen>
+        ))
+      )}
+    </Card>
   );
 }
