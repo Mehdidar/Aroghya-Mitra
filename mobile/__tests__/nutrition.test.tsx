@@ -19,10 +19,19 @@ describe('Nutrition result card', () => {
     await render(wrap(<ResultCard result={{ recognition: MOCK_RESULTS[0], demo: true, demoReason: 'unset' }} />));
     expect(screen.getByText('Masala dosa')).toBeTruthy();
     expect(screen.getByText('Demo result')).toBeTruthy();
-    expect(screen.getByText('Good match')).toBeTruthy();
+    // A demo sample ignores the photo, so it must not claim a match quality or a confidence.
+    expect(screen.queryByText('Good match')).toBeNull();
+    expect(screen.queryByText(/Confidence/)).toBeNull();
     expect(screen.getByLabelText('Energy 302 kcal')).toBeTruthy(); // 168 kcal/100 g x 180 g
     await fireEvent.press(screen.getByLabelText('More'));
     expect(screen.getByLabelText('Energy 344 kcal')).toBeTruthy(); // 205 g
+  });
+
+  it('shows match quality and confidence for a real (non-demo) result', async () => {
+    await render(wrap(<ResultCard result={{ recognition: MOCK_RESULTS[0], demo: false }} />));
+    expect(screen.queryByText('Demo result')).toBeNull();
+    expect(screen.getByText('Good match')).toBeTruthy();
+    expect(screen.getByText(/Confidence/)).toBeTruthy();
   });
 
   it('is honest when the dish is not recognised', async () => {

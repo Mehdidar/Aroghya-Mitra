@@ -3,9 +3,13 @@ import { Pressable, View } from 'react-native';
 
 import { useCurrentUser } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
-import { Heading, Icon, Pill, Screen, StatCard, Text } from '@/features/shared/ui';
+import { Heading, Icon, Pill, Screen, Text } from '@/features/shared/ui';
 
-/** Doctor/Admin dashboard placeholder (P4 replaces): the big "Scan QR" action plus quick stats. */
+/**
+ * Doctor/Admin dashboard: the big "Scan QR" action. Patient and referral counts come back once
+ * the dashboard is wired to P4's features/doctor/dashboard.ts over real records; hard-coded
+ * numbers were removed so the screen never shows invented figures.
+ */
 export default function DoctorDashboard() {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -38,10 +42,6 @@ export default function DoctorDashboard() {
           {t('doctor.scanQr')}
         </Text>
       </Pressable>
-      <View style={{ flexDirection: 'row', gap: theme.space[3], flexWrap: 'wrap' }}>
-        <StatCard label={t('doctor.todayPatients')} value="12" icon="people" />
-        <StatCard label={t('doctor.pendingReferrals')} value="3" icon="mail-unread" />
-      </View>
       {user?.role === 'admin' ? (
         <Text variant="caption" tone="tertiary">
           {t('doctor.adminNote')}

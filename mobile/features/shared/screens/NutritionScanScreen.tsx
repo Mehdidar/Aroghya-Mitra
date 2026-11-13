@@ -195,14 +195,27 @@ export function ResultCard({ result }: { result: FoodScanResult }) {
           </Text>
         </View>
       ) : (
-        <ItemDetails key={`${item.name}-${item.estimatedGrams}`} item={item} reliable={r.reliable} source={r.source} notes={r.notes} />
+        <ItemDetails key={`${item.name}-${item.estimatedGrams}`} item={item} reliable={r.reliable} source={r.source} notes={r.notes} demo={demo} />
       )}
       <Feedback />
     </Card>
   );
 }
 
-function ItemDetails({ item, reliable, source, notes }: { item: FoodItem; reliable: boolean; source: 'vision-llm' | 'dishdetect'; notes: string | null }) {
+function ItemDetails({
+  item,
+  reliable,
+  source,
+  notes,
+  demo,
+}: {
+  item: FoodItem;
+  reliable: boolean;
+  source: 'vision-llm' | 'dishdetect';
+  notes: string | null;
+  /** A canned sample that ignores the photo: never show match quality or confidence for it. */
+  demo: boolean;
+}) {
   const { t } = useTranslation('nutrition');
   const theme = useTheme();
   const [grams, setGrams] = useState(clampPortion(item.estimatedGrams));
@@ -216,10 +229,12 @@ function ItemDetails({ item, reliable, source, notes }: { item: FoodItem; reliab
           {item.name}
         </Heading>
         {item.localName ? <Text tone="secondary">{item.localName}</Text> : null}
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2], marginTop: theme.space[2] }}>
-          <Pill label={reliable ? t('confident') : t('uncertain')} tone={reliable ? 'success' : 'warning'} icon={reliable ? 'checkmark-circle' : 'help-circle'} />
-          <Pill label={t('confidence', { value: Math.round(item.confidence * 100) })} tone="neutral" icon="analytics-outline" />
-        </View>
+        {demo ? null : (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2], marginTop: theme.space[2] }}>
+            <Pill label={reliable ? t('confident') : t('uncertain')} tone={reliable ? 'success' : 'warning'} icon={reliable ? 'checkmark-circle' : 'help-circle'} />
+            <Pill label={t('confidence', { value: Math.round(item.confidence * 100) })} tone="neutral" icon="analytics-outline" />
+          </View>
+        )}
       </View>
 
       {known ? (
