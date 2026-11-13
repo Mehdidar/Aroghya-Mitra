@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseStructured } from '../extractStructured';
-import { FoodAnalysis } from '../food/schema';
-import { DEFAULT_PORTION_GRAMS, FallbackFoodRecognizer, mapDishDetect, type FoodRecognition, type FoodRecognizer } from '../food/FoodRecognizer';
+import { parseStructured } from '../extractStructured.ts';
+import { FoodAnalysis } from '../food/schema.ts';
+import { DEFAULT_PORTION_GRAMS, FallbackFoodRecognizer, mapDishDetect, type FoodRecognition, type FoodRecognizer } from '../food/FoodRecognizer.ts';
 
 const image = { bytes: new Uint8Array([0xff, 0xd8]), mimeType: 'image/jpeg' };
 

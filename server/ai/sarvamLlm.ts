@@ -1,5 +1,5 @@
-import type { SarvamClient } from '../speech/sarvamClient';
-import type { LlmCall } from './extractStructured';
+import type { SarvamClient } from '../speech/sarvamClient.ts';
+import type { LlmCall } from './extractStructured.ts';
 
 /** Adapter: Sarvam chat as an LlmCall for extractStructured. Low temperature for extraction. */
 export function sarvamLlm(client: SarvamClient, opts: { model?: string; temperature?: number; maxTokens?: number } = {}): LlmCall {

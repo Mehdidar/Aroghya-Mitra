@@ -3,8 +3,8 @@
  * (DishDetect India, the FastAPI service in api/main.py) can replace the vision
  * LLM without touching the app.
  */
-import { FOOD_ANALYSIS_SYSTEM, FOOD_SCHEMA_HINT } from './prompts';
-import type { FoodAnalysis, FoodItem } from './schema';
+import { FOOD_ANALYSIS_SYSTEM, FOOD_SCHEMA_HINT } from './prompts.ts';
+import type { FoodAnalysis, FoodItem } from './schema.ts';
 
 export interface FoodImage {
   bytes: Uint8Array;
@@ -30,11 +30,12 @@ export type VisionCall = (image: FoodImage, prompt: { system: string; user: stri
 
 export class VisionLlmFoodRecognizer implements FoodRecognizer {
   readonly id: string;
-  constructor(
-    private readonly vision: VisionCall,
-    private readonly parse: (raw: string) => FoodAnalysis,
-    id = 'vision-llm',
-  ) {
+  private readonly vision: VisionCall;
+  private readonly parse: (raw: string) => FoodAnalysis;
+
+  constructor(vision: VisionCall, parse: (raw: string) => FoodAnalysis, id = 'vision-llm') {
+    this.vision = vision;
+    this.parse = parse;
     this.id = id;
   }
 
@@ -70,11 +71,15 @@ interface DishDetectResponse {
  */
 export class DishDetectFoodRecognizer implements FoodRecognizer {
   readonly id = 'dishdetect';
-  constructor(
-    private readonly baseUrl: string,
-    private readonly apiKey?: string,
-    private readonly fetchImpl: typeof fetch = globalThis.fetch.bind(globalThis),
-  ) {}
+  private readonly baseUrl: string;
+  private readonly apiKey?: string;
+  private readonly fetchImpl: typeof fetch;
+
+  constructor(baseUrl: string, apiKey?: string, fetchImpl: typeof fetch = globalThis.fetch.bind(globalThis)) {
+    this.baseUrl = baseUrl;
+    this.apiKey = apiKey;
+    this.fetchImpl = fetchImpl;
+  }
 
   async recognize(image: FoodImage, opts: { signal?: AbortSignal } = {}): Promise<FoodRecognition> {
     const form = new FormData();
@@ -127,7 +132,12 @@ export function mapDishDetect(r: DishDetectResponse): FoodRecognition {
  */
 export class FallbackFoodRecognizer implements FoodRecognizer {
   readonly id: string;
-  constructor(private readonly primary: FoodRecognizer, private readonly fallback: FoodRecognizer) {
+  private readonly primary: FoodRecognizer;
+  private readonly fallback: FoodRecognizer;
+
+  constructor(primary: FoodRecognizer, fallback: FoodRecognizer) {
+    this.primary = primary;
+    this.fallback = fallback;
     this.id = `${primary.id}>${fallback.id}`;
   }
 

@@ -1,4 +1,4 @@
-import type { KnowledgeDoc } from './knowledge';
+import type { KnowledgeDoc } from './knowledge.ts';
 
 export interface PromptOptions {
   assistantName?: string;

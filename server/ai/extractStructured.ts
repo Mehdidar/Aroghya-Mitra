@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { parseJsonLoose } from './json';
+import { parseJsonLoose } from './json.ts';
 
 export interface LlmMessage {
   role: 'system' | 'user' | 'assistant';

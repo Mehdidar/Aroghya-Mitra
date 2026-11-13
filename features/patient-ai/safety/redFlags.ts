@@ -14,9 +14,9 @@ import {
   NEGATORS_BEFORE,
   RED_FLAG_TERMS,
   type RedFlagCategory,
-} from './redFlagTerms';
+} from './redFlagTerms.ts';
 
-export type { RedFlagCategory } from './redFlagTerms';
+export type { RedFlagCategory } from './redFlagTerms.ts';
 
 export interface EmergencyContact {
   number: string;

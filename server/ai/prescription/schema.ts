@@ -6,7 +6,7 @@
  * "Tablet", "after food") and strict on output.
  */
 import { z } from 'zod';
-import { DOSE_SLOTS, parseDurationDays } from './frequency';
+import { DOSE_SLOTS, parseDurationDays } from './frequency.ts';
 
 /** Below this confidence a field is shown as "Confirm with pharmacist". */
 export const CONFIRM_THRESHOLD = 0.75;

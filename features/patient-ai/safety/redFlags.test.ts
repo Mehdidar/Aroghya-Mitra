@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { detectRedFlags } from './redFlags';
+import { detectRedFlags } from './redFlags.ts';
 
 const flagged = (text: string) => detectRedFlags(text).categories;
 

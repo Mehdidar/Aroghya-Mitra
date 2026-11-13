@@ -1,9 +1,9 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseDurationDays, parseFrequency } from '../prescription/frequency';
-import { parsePrescription, DISAGREEMENT_CONFIDENCE } from '../prescription/parse';
-import { fieldsToConfirm, CONFIRM_THRESHOLD } from '../prescription/schema';
-import { ExtractionError } from '../extractStructured';
+import { parseDurationDays, parseFrequency } from '../prescription/frequency.ts';
+import { parsePrescription, DISAGREEMENT_CONFIDENCE } from '../prescription/parse.ts';
+import { fieldsToConfirm, CONFIRM_THRESHOLD } from '../prescription/schema.ts';
+import { ExtractionError } from '../extractStructured.ts';
 
 const f = (value: unknown, confidence = 0.95) => ({ value, confidence });
 

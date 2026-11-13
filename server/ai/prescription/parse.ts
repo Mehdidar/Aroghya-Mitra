@@ -1,6 +1,6 @@
-import { parseStructured } from '../extractStructured';
-import { parseFrequency, type DoseSlot } from './frequency';
-import { ExtractedPrescription, type ExtractedMedicine } from './schema';
+import { parseStructured } from '../extractStructured.ts';
+import { parseFrequency, type DoseSlot } from './frequency.ts';
+import { ExtractedPrescription, type ExtractedMedicine } from './schema.ts';
 
 /** Confidence given to a field when the model and the deterministic parser disagree. */
 export const DISAGREEMENT_CONFIDENCE = 0.5;

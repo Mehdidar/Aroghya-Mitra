@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { APP_LANGUAGES, LANGUAGE_CAPABILITIES, fromSarvamCode, translateModelFor, ttsStrategy } from '../languageCapabilities';
-import { SentenceStream, splitSentences, splitText } from '../textChunks';
-import { parseWav, pcm16BytesFor } from '../wav';
+import { APP_LANGUAGES, LANGUAGE_CAPABILITIES, fromSarvamCode, translateModelFor, ttsStrategy } from '../languageCapabilities.ts';
+import { SentenceStream, splitSentences, splitText } from '../textChunks.ts';
+import { parseWav, pcm16BytesFor } from '../wav.ts';
 
 describe('languageCapabilities', () => {
   it('has no Bulbul voice for Urdu or Kashmiri', () => {

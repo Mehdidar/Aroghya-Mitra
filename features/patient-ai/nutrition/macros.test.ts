@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { energySplit, gramsForMultiplier, macrosForPortion, mealTotals, progress, snapMultiplier } from './macros';
+import { energySplit, gramsForMultiplier, macrosForPortion, mealTotals, progress, snapMultiplier } from './macros.ts';
 
 const roti = { kcal: 297, proteinG: 9.8, carbsG: 54, fatG: 3.7 };
 const dal = { kcal: 120, proteinG: 6, carbsG: 15, fatG: 4 };

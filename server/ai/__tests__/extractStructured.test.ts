@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { z } from 'zod';
-import { extractStructured, ExtractionError, type LlmMessage } from '../extractStructured';
-import { parseJsonLoose } from '../json';
+import { extractStructured, ExtractionError, type LlmMessage } from '../extractStructured.ts';
+import { parseJsonLoose } from '../json.ts';
 
 describe('parseJsonLoose', () => {
   it('handles fences, prose and trailing commas', () => {

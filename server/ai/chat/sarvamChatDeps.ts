@@ -1,6 +1,6 @@
-import type { SarvamClient } from '../../speech/sarvamClient';
-import { LANGUAGE_CAPABILITIES, translateModelFor } from '../../speech/languageCapabilities';
-import type { ChatDeps } from './chatService';
+import type { SarvamClient } from '../../speech/sarvamClient.ts';
+import { LANGUAGE_CAPABILITIES, translateModelFor } from '../../speech/languageCapabilities.ts';
+import type { ChatDeps } from './chatService.ts';
 
 /** Wire the chat service to Sarvam: sarvam-105b-conversations for replies, Mayura / Sarvam-Translate for MT. */
 export function sarvamChatDeps(client: SarvamClient): ChatDeps {

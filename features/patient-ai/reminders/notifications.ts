@@ -11,7 +11,7 @@
  * system prompt only appears once a notification channel exists, so the
  * channel is created first. iOS: alert, sound and badge are requested explicitly.
  */
-import type { NotificationPlan } from './schedule';
+import type { NotificationPlan } from './schedule.ts';
 
 export const DOSE_CHANNEL_ID = 'dose-reminders';
 export const DOSE_CATEGORY_ID = 'dose-reminder';

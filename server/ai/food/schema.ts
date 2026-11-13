@@ -3,7 +3,7 @@
  * so the app's portion slider can recalculate without another model call.
  */
 import { z } from 'zod';
-import { Confidence } from '../prescription/schema';
+import { Confidence } from '../prescription/schema.ts';
 
 const NonNegative = z.preprocess((v) => (typeof v === 'string' ? Number(v) : v), z.number().nonnegative().finite());
 

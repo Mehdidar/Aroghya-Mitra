@@ -1,5 +1,5 @@
 /** Dose timeline statuses, adherence rate and streak. Pure functions over the dose log. */
-import { addDays, toDateKey, type Dose } from './schedule';
+import { addDays, toDateKey, type Dose } from './schedule.ts';
 
 export type DoseLogStatus = 'taken' | 'skipped';
 

@@ -8,7 +8,7 @@
  * So we schedule individual DATE triggers for the next few days and re-plan
  * whenever the app opens or a reminder fires.
  */
-import { DOSE_SLOTS, type DoseSlot, type MealRelation } from '../types';
+import { DOSE_SLOTS, type DoseSlot, type MealRelation } from '../types.ts';
 
 export interface ReminderMedicine {
   id: string;

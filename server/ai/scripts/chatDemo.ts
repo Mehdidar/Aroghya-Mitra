@@ -1,11 +1,11 @@
 /**
  * Live run of the chat service against Sarvam.
- *   SARVAM_API_KEY=... npx tsx server/ai/scripts/chatDemo.ts
+ *   SARVAM_API_KEY=... node server/ai/scripts/chatDemo.ts
  */
-import { createSarvamClientFromEnv } from '../../speech/config';
-import { streamChatReply } from '../chat/chatService';
-import { sarvamChatDeps } from '../chat/sarvamChatDeps';
-import type { AppLanguage } from '../../speech/languageCapabilities';
+import { createSarvamClientFromEnv } from '../../speech/config.ts';
+import { streamChatReply } from '../chat/chatService.ts';
+import { sarvamChatDeps } from '../chat/sarvamChatDeps.ts';
+import type { AppLanguage } from '../../speech/languageCapabilities.ts';
 
 const CASES: { language: AppLanguage; message: string }[] = [
   { language: 'hi', message: 'मेरे बच्चे को दस्त हो रहे हैं, क्या करूं?' },

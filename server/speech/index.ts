@@ -1,7 +1,7 @@
-export * from './errors';
-export * from './languageCapabilities';
-export * from './sarvamClient';
-export * from './config';
-export * from './textChunks';
-export * from './wav';
-export type * from './types';
+export * from './errors.ts';
+export * from './languageCapabilities.ts';
+export * from './sarvamClient.ts';
+export * from './config.ts';
+export * from './textChunks.ts';
+export * from './wav.ts';
+export type * from './types.ts';

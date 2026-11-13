@@ -8,13 +8,13 @@
  * The phone runs the same red-flag check first for an instant banner; the server
  * repeats it (plus a translated English check for languages without term lists).
  */
-import { detectRedFlags, type EmergencyContact, type RedFlagCategory } from '../../../features/patient-ai/safety/redFlags';
-import { LANGUAGE_CAPABILITIES, type AppLanguage } from '../../speech/languageCapabilities';
-import { SarvamError } from '../../speech/errors';
-import type { ChatMessage } from '../../speech/types';
-import { KNOWLEDGE_BASE, type KnowledgeDoc } from './knowledge';
-import { chatSystemPrompt, trimHistory } from './prompt';
-import { KnowledgeIndex } from './retrieval';
+import { detectRedFlags, type EmergencyContact, type RedFlagCategory } from '../../../features/patient-ai/safety/redFlags.ts';
+import { LANGUAGE_CAPABILITIES, type AppLanguage } from '../../speech/languageCapabilities.ts';
+import { SarvamError } from '../../speech/errors.ts';
+import type { ChatMessage } from '../../speech/types.ts';
+import { KNOWLEDGE_BASE, type KnowledgeDoc } from './knowledge.ts';
+import { chatSystemPrompt, trimHistory } from './prompt.ts';
+import { KnowledgeIndex } from './retrieval.ts';
 
 export type ChatEvent =
   | { type: 'emergency'; categories: RedFlagCategory[]; contacts: EmergencyContact[]; steps: string[]; sources: SourceRef[] }

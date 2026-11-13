@@ -1,17 +1,17 @@
 /**
  * Live check of every Sarvam API we use, with timings.
  *
- *   SARVAM_API_KEY=... npx tsx server/speech/scripts/smoke.ts [outDir]
+ *   SARVAM_API_KEY=... node server/speech/scripts/smoke.ts [outDir]
  *
  * TTS output is fed back into STT (REST and realtime socket), so no sample audio file is needed.
  */
 import { mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createSarvamClientFromEnv } from '../config';
-import { base64ToBytes } from '../sarvamClient';
-import { SarvamError } from '../errors';
-import { parseWav, pcm16BytesFor } from '../wav';
+import { createSarvamClientFromEnv } from '../config.ts';
+import { base64ToBytes } from '../sarvamClient.ts';
+import { SarvamError } from '../errors.ts';
+import { parseWav, pcm16BytesFor } from '../wav.ts';
 
 const HINDI = 'नमस्ते, मुझे दो दिन से बुखार और सिरदर्द है। मुझे क्या करना चाहिए?';
 const ENGLISH = 'Take one tablet after food, twice a day, for five days.';

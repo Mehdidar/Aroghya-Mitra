@@ -24,7 +24,13 @@ const KEY = 'patient-ai/chat-history/v1';
 export const MAX_STORED_MESSAGES = 200;
 
 export class ChatHistoryStore {
-  constructor(private readonly storage: KeyValueStorage, private readonly key = KEY) {}
+  private readonly storage: KeyValueStorage;
+  private readonly key: string;
+
+  constructor(storage: KeyValueStorage, key = KEY) {
+    this.storage = storage;
+    this.key = key;
+  }
 
   async load(): Promise<StoredMessage[]> {
     try {

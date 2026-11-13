@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { SarvamClient } from '../sarvamClient';
-import { SarvamError, classifyHttpError, parseRetryAfter } from '../errors';
+import { SarvamClient } from '../sarvamClient.ts';
+import { SarvamError, classifyHttpError, parseRetryAfter } from '../errors.ts';
 
 type Call = { url: string; init: RequestInit };
 

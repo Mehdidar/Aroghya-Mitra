@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { addDays, courseEndDate, doseTime, expandDoses, parseHHMM, planNotifications, toDateKey, type ReminderMedicine } from './schedule';
-import { adherenceRate, adherenceStreak, buildTimeline, type DoseLogEntry } from './adherence';
-import { ACTION_SKIP, ACTION_TAKEN, doseActionsFromResponse, ensureNotificationPermission, syncReminders, type NotificationsModule, type PermissionResponse } from './notifications';
+import { addDays, courseEndDate, doseTime, expandDoses, parseHHMM, planNotifications, toDateKey, type ReminderMedicine } from './schedule.ts';
+import { adherenceRate, adherenceStreak, buildTimeline, type DoseLogEntry } from './adherence.ts';
+import { ACTION_SKIP, ACTION_TAKEN, doseActionsFromResponse, ensureNotificationPermission, syncReminders, type NotificationsModule, type PermissionResponse } from './notifications.ts';
 
 // All dates are built from local components, so the tests pass in any time zone.
 const at = (d: number, h: number, m = 0) => new Date(2026, 10, d, h, m); // November 2026

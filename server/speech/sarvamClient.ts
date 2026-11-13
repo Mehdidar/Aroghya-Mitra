@@ -11,9 +11,9 @@ import {
   SarvamError,
   sarvamErrorFromResponse,
   sarvamErrorFromWsClose,
-} from './errors';
-import { readSseData } from './sse';
-import { splitText } from './textChunks';
+} from './errors.ts';
+import { readSseData } from './sse.ts';
+import { splitText } from './textChunks.ts';
 import type {
   CallOptions,
   ChatRequest,
@@ -29,7 +29,7 @@ import type {
   TranscribeResult,
   TranslateRequest,
   TranslateResult,
-} from './types';
+} from './types.ts';
 
 export const SARVAM_DEFAULTS = {
   baseUrl: 'https://api.sarvam.ai',
@@ -465,9 +465,17 @@ function dropUndefined<T extends Record<string, unknown>>(obj: T): Partial<T> {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as Partial<T>;
 }
 
-function toBase64(bytes: Uint8Array): string {
-  return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString('base64');
+/** Portable base64 (Node, Deno / Supabase Edge Functions, browsers): no Buffer. */
+export function bytesToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const CHUNK = 0x8000; // stay under the argument limit of String.fromCharCode
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(binary);
 }
+
+const toBase64 = bytesToBase64;
 
 function extensionFor(mime: string): string {
   if (/mpeg|mp3/.test(mime)) return 'mp3';
@@ -479,5 +487,8 @@ function extensionFor(mime: string): string {
 }
 
 export function base64ToBytes(b64: string): Uint8Array {
-  return new Uint8Array(Buffer.from(b64, 'base64'));
+  const binary = atob(b64);
+  const out = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
+  return out;
 }
