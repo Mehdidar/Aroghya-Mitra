@@ -1,10 +1,14 @@
 {
   "appName": "ఆరోగ్య మిత్ర",
+  "tagline": "మీ ఆరోగ్య తోడు",
   "tabs": {
     "home": "హోమ్",
     "records": "రికార్డులు",
     "assistant": "సహాయకుడు",
     "profile": "ప్రొఫైల్",
+    "dashboard": "డాష్‌బోర్డ్",
+    "patients": "రోగులు",
+    "inbox": "ఇన్‌బాక్స్",
     "health": "ఆరోగ్యం",
     "reminders": "రిమైండర్లు",
     "referrals": "రిఫరల్స్",
@@ -17,18 +21,51 @@
     "admin": "నిర్వాహకుడు"
   },
   "actions": {
+    "back": "వెనక్కి",
+    "continue": "కొనసాగించు",
     "signOut": "సైన్ అవుట్",
-    "continue": "కొనసాగించు"
+    "search": "వెతకండి",
+    "notifications": "నోటిఫికేషన్లు",
+    "seeAll": "అన్నీ చూడండి"
+  },
+  "demo": {
+    "badge": "డెమో",
+    "signedInAs": "{{name}} · {{role}}గా సైన్ ఇన్ అయ్యారు",
+    "note": "డెమో మోడ్: ఈ ఫోన్‌లో ఉన్నది నమూనా డేటా మాత్రమే."
   },
   "language": {
-    "label": "భాష"
+    "label": "భాష",
+    "change": "భాష మార్చండి"
+  },
+  "placeholder": {
+    "comingSoon": "త్వరలో వస్తుంది",
+    "body": "ఈ స్క్రీన్ తర్వాతి దశలో సిద్ధమవుతుంది.",
+    "owner": "{{owner}} తయారు చేస్తున్నారు"
+  },
+  "doctor": {
+    "dashboardTitle": "శుభోదయం, {{name}}",
+    "dashboardSub": "రోగి చరిత్ర తెరవడానికి వారి QR ఆరోగ్య కార్డును స్కాన్ చేయండి.",
+    "scanQr": "QR స్కాన్",
+    "scanQrHint": "రోగి ఆరోగ్య కార్డును చదవడానికి కెమెరా తెరుస్తుంది",
+    "todayPatients": "ఈరోజు రోగులు",
+    "pendingReferrals": "పెండింగ్ రిఫరల్స్",
+    "patientsTitle": "నమోదైన రోగులు",
+    "inboxTitle": "రిఫరల్ ఇన్‌బాక్స్",
+    "adminNote": "అడ్మిన్ పాత్రకు నిర్వహణ సాధనాలు ఇక్కడ కనిపిస్తాయి."
   },
   "profile": {
+    "title": "ప్రొఫైల్",
+    "language": "యాప్ భాష",
+    "account": "ఖాతా",
+    "phone": "ఫోన్",
     "accessibility": "అందుబాటు",
     "textSize": "అక్షర పరిమాణం",
     "highContrastOn": "హై కాంట్రాస్ట్: ఆన్",
     "highContrastOff": "హై కాంట్రాస్ట్: ఆఫ్",
     "readAloud": "ఈ స్క్రీన్‌ను చదివి వినిపించు",
     "stopReading": "చదవడం ఆపు"
+  },
+  "dev": {
+    "title": "కాంపోనెంట్ గ్యాలరీ"
   }
 }

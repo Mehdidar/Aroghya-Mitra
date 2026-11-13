@@ -57,25 +57,72 @@
     "age": "{{age}} سال",
     "unknown": "نامعلوم مریض",
     "notFound": "مریض نہیں ملا",
-    "latestVitals": "تازہ وائٹلز",
-    "referrals": "ریفرلز",
-    "prescriptions": "نسخے",
-    "consultations": "مشاورتیں",
-    "alerts": "خطرے کے الرٹ",
+    "notFoundBody": "یہ ریکارڈ اس ڈیوائس پر نہیں ہے۔",
+    "openedViaQr": "QR اسکین سے کھولا گیا",
+    "highRiskOpen": "{{count}} کھلے زیادہ خطرے کے الرٹ",
+    "bloodGroup": "بلڈ گروپ {{group}}",
+    "asha": "ASHA: {{name}}",
+    "noAsha": "کوئی ASHA مقرر نہیں",
     "allergies": "الرجی",
     "conditions": "پرانی بیماریاں",
-    "openedViaQr": "QR اسکین سے کھولا گیا"
+    "latestVitals": "تازہ وائٹلز",
+    "noVitals": "ابھی کوئی وائٹلز درج نہیں۔",
+    "referrals": "ریفرلز",
+    "noReferrals": "کوئی ریفرل نہیں۔",
+    "prescriptions": "نسخے",
+    "noPrescriptions": "ابھی کوئی نسخہ نہیں۔",
+    "consultations": "مشاورتیں",
+    "noConsultations": "ابھی کوئی مشاورت نہیں۔",
+    "alerts": "خطرے کے الرٹ",
+    "noAlerts": "کوئی خطرے کا الرٹ نہیں۔"
+  },
+  "vitals": {
+    "bp": "BP {{s}}/{{d}} mmHg",
+    "hr": "دل کی دھڑکن {{v}} bpm",
+    "weight": "وزن {{v}} kg",
+    "spo2": "SpO₂ {{v}}%",
+    "recorded": "{{date}} · {{source}}",
+    "source": {
+      "asha_visit": "ASHA کا دورہ",
+      "consultation": "مشاورت",
+      "self": "خود درج کیا",
+      "device": "ڈیوائس"
+    }
+  },
+  "rx": {
+    "source": {
+      "doctor": "ڈاکٹر کا نسخہ",
+      "scan": "اسکین کیا گیا نسخہ"
+    },
+    "days": "{{n}} دن"
   },
   "consultation": {
     "title": "نئی مشاورت",
     "new": "نئی مشاورت",
+    "fromReferral": "ASHA ریفرل سے: محفوظ کرنے پر یہ قبول ہو جائے گا",
     "diagnosis": "تشخیص",
+    "diagnosisHint": "مثلاً حمل کا ہائی بلڈ پریشر",
     "notes": "نوٹس",
+    "notesHint": "معائنہ، مشورہ، تنبیہ…",
     "labOrders": "ٹیسٹ",
     "followUp": "فالو اپ تاریخ",
     "prescription": "نسخہ",
     "addMedicine": "دوا شامل کریں",
-    "save": "مشاورت محفوظ کریں"
+    "medicineN": "دوا {{n}}",
+    "removeMedicine": "دوا ہٹائیں",
+    "medName": "دوا",
+    "dose": "خوراک",
+    "durationDays": "دن",
+    "timesOfDay": "دن کے اوقات",
+    "instructions": "ہدایات",
+    "instructionsHint": "کھانے کے بعد، پانی کے ساتھ…",
+    "save": "مشاورت محفوظ کریں",
+    "errorEmpty": "تشخیص یا نوٹ لکھیں۔",
+    "errorDate": "فالو اپ تاریخ YYYY-MM-DD میں ہونی چاہیے۔",
+    "errorSlots": "ہر دوا کے لیے کم از کم ایک وقت چنیں۔",
+    "untitled": "مشاورت",
+    "labs": "ٹیسٹ: {{labs}}",
+    "followUpOn": "فالو اپ {{date}}"
   },
   "slots": {
     "morning": "صبح",
@@ -85,26 +132,61 @@
   },
   "scan": {
     "title": "QR ہیلتھ کارڈ اسکین کریں",
+    "body": "کیمرہ مریض کے QR کارڈ کی طرف کریں، یا کوڈ پیسٹ کریں۔",
+    "cameraLabel": "کیمرہ ویو فائنڈر",
+    "permissionBody": "کارڈ اسکین کرنے کے لیے کیمرے کی اجازت درکار ہے۔",
+    "allowCamera": "کیمرے کی اجازت دیں",
+    "pasteLabel": "یا کوڈ پیسٹ کریں",
     "open": "ریکارڈ کھولیں",
     "useDemo": "ڈیمو مریض کارڈ استعمال کریں",
-    "pasteLabel": "یا کوڈ پیسٹ کریں"
+    "failedTitle": "یہ کارڈ نہیں کھل سکا",
+    "error": {
+      "invalid": "یہ درست یا موجودہ ہیلتھ کارڈ نہیں ہے۔",
+      "denied": "رسائی نہیں ملی: مریض نے اپنی ہسٹری شیئر نہیں کی۔",
+      "not_found": "اس ڈیوائس پر اس کارڈ کا کوئی ریکارڈ نہیں ملا۔",
+      "server": "سرور سے رابطہ نہیں ہو سکا۔ ڈیمو کارڈ استعمال کریں یا دوبارہ کوشش کریں۔"
+    }
   },
   "register": {
     "title": "مریض رجسٹر کریں",
     "name": "پورا نام",
+    "dob": "تاریخ پیدائش",
     "phone": "موبائل نمبر",
-    "save": "رجسٹر کریں"
+    "sex": "جنس",
+    "bloodGroup": "بلڈ گروپ",
+    "area": "علاقہ / گاؤں",
+    "conditions": "پرانی بیماریاں",
+    "conditionsHint": "کوما سے الگ کریں، مثلاً ذیابیطس، ہائی بلڈ پریشر",
+    "asha": "ASHA کارکن مقرر کریں",
+    "save": "رجسٹر کریں",
+    "errors": {
+      "name_required": "مریض کا نام لکھیں۔",
+      "dob_invalid": "درست تاریخ لکھیں (YYYY-MM-DD)۔",
+      "phone_invalid": "درست 10 ہندسوں کا موبائل نمبر لکھیں۔",
+      "blood_group_invalid": "درست بلڈ گروپ چنیں۔"
+    }
   },
   "admin": {
     "title": "ایڈمن",
-    "staff": "صارفین",
+    "subtitleAdmin": "صارفین، تفویض، خون کا ذخیرہ اور تجزیات",
+    "subtitleDoctor": "ایڈمن ٹولز (پروڈکشن میں ڈاکٹروں کے لیے صرف دیکھنے کے لیے)",
+    "profile": "پروفائل",
+    "adherence": "دوا کی پابندی (30 دن)",
+    "adherenceCaption": "{{n}} مریض 80% سے کم",
+    "pendingApprovals": "زیر التوا منظوریاں",
     "analytics": "تجزیات",
-    "bloodStock": "خون کا ذخیرہ",
-    "assignments": "ASHA تفویض",
-    "approve": "منظور",
-    "deactivate": "غیر فعال",
+    "visitsPerAsha": "ہر ASHA کے دورے (30 دن؛ سرخ = زیادہ خطرہ)",
+    "highRiskByArea": "علاقے کے حساب سے زیادہ خطرے کے الرٹ (سرخ = کھلے)",
+    "staff": "صارفین",
     "active": "فعال",
     "pending": "زیر التوا",
-    "profile": "پروفائل"
+    "approve": "منظور",
+    "deactivate": "غیر فعال",
+    "assignments": "ASHA تفویض",
+    "bloodStock": "خون کا ذخیرہ",
+    "bankError": "بلڈ بینک لوڈ نہیں ہو سکا۔",
+    "demoStock": "ڈیمو ذخیرہ، e-RaktKosh نہیں",
+    "less": "کم یونٹ",
+    "more": "زیادہ یونٹ"
   }
 }
