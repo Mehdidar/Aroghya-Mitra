@@ -39,6 +39,17 @@ describe('KnowledgeIndex', () => {
     assert.equal(index.search('cough for 3 weeks and weight loss')[0].doc.id, 'tuberculosis');
     assert.equal(index.search('बीपी कैसे कम करें')[0].doc.id, 'hypertension'); // Hindi keyword, no translation
   });
+  it('treats a plain cough as a common cough, not TB', () => {
+    for (const q of ['I have cough', 'mujhe khansi hai', 'मुझे खांसी है', 'ನನಗೆ ಕೆಮ್ಮು ಇದೆ', 'مجھے کھانسی ہے', 'cough and cold with sore throat']) {
+      const ids = index.search(q).map((h) => h.doc.id);
+      assert.equal(ids[0], 'cough-cold', q);
+      assert.ok(!ids.includes('tuberculosis'), `${q} -> ${ids}`);
+    }
+  });
+  it('still points to TB when its specific signs are described', () => {
+    assert.equal(index.search('cough for 3 weeks with night sweats')[0].doc.id, 'tuberculosis');
+    assert.equal(index.search('losing weight and coughing for weeks')[0].doc.id, 'tuberculosis');
+  });
   it('finds content in every main language without translation, including suffixed words', () => {
     const fever: Record<string, string> = {
       ta: 'எனக்கு காய்ச்சல் இருக்கிறது', bn: 'আমার জ্বর হয়েছে', te: 'నాకు జ్వరం ఉంది', mr: 'मला ताप आला आहे',

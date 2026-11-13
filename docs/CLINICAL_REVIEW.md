@@ -60,7 +60,7 @@ and follow-up.
 
 ---
 
-## 2. Chatbot health summaries (9)
+## 2. Chatbot health summaries (10)
 
 The chatbot may only state medical facts from these summaries. Each one is
 currently marked **not reviewed**.
@@ -139,15 +139,23 @@ Source it summarises: WHO, https://www.who.int/news-room/fact-sheets/detail/diab
 
 ☐ OK ☐ Change — notes: ______________________________________________
 
-### 2.8 Tuberculosis (TB)
+### 2.8 Cough and cold: home care and when to see a doctor
 
-Source it summarises: NTEP, https://tbcindia.gov.in/
+Source it summarises: WHO, https://www.who.int/news-room/fact-sheets/detail/pneumonia
 
-> A cough lasting more than 2 weeks, fever, night sweats or weight loss can be signs of TB. Get tested at a government health centre: TB testing and treatment are free under the National TB Elimination Programme. TB can be cured, but the full course of medicines must be completed even after you feel better.
+> Most coughs and colds are caused by common viral infections and get better on their own in 1 to 2 weeks. Rest, drink plenty of warm fluids, gargle with warm salt water for a sore throat, and use steam if the nose is blocked. Honey in warm water can soothe a cough in adults and children over 1 year. Do not take antibiotics unless a doctor prescribes them. See a doctor if the cough lasts more than 2 weeks (a free TB test is available at government health centres), if fever stays for more than 3 days, or if there is wheezing. Go to a hospital immediately for difficulty breathing, fast breathing in a child, chest pain, coughing up blood, or lips turning blue.
 
 ☐ OK ☐ Change — notes: ______________________________________________
 
-### 2.9 Anaemia
+### 2.9 Tuberculosis (TB)
+
+Source it summarises: NTEP, https://tbcindia.gov.in/
+
+> Coughing for more than 2 weeks, fever, night sweats or weight loss can be signs of TB. A few days of coughing with a cold is usually not TB. Get tested at a government health centre: TB testing and treatment are free under the National TB Elimination Programme. TB can be cured, but the full course of medicines must be completed even after you feel better.
+
+☐ OK ☐ Change — notes: ______________________________________________
+
+### 2.10 Anaemia
 
 Source it summarises: MoHFW, https://www.mohfw.gov.in/
 
