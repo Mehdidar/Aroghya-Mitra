@@ -1,6 +1,6 @@
 {
   "home": {
-    "greeting": "السلام علیکم، {{name}}",
+    "greeting": "آداب، {{name}}",
     "subtitle": "آج آپ کیسا محسوس کر رہی ہیں؟",
     "searchPlaceholder": "دوائیں، رپورٹیں، اسپتال تلاش کریں",
     "services": "خدمات",

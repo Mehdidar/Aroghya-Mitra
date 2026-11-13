@@ -54,7 +54,7 @@ export default function PatientHome() {
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[3] }}>
         <Avatar name={name} />
         <View style={{ flex: 1 }}>
-          <Text variant="title" numberOfLines={1}>
+          <Text variant="title" numberOfLines={2}>
             {t('home.greeting', { name: firstName })}
           </Text>
           <Text variant="caption" tone="tertiary" numberOfLines={1}>
