@@ -16,7 +16,7 @@ import type {
   Referral,
   RiskAlert,
   VitalsReading,
-} from '../../features/records/types.ts';
+} from '../../packages/records/records/types.ts';
 import type { PatientRecordBundle, RecordsRepository } from './repository.ts';
 
 export interface MemoryData {

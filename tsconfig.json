@@ -1,0 +1,56 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "ES2023",
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "@am/shared": [
+        "./packages/shared/index.ts"
+      ],
+      "@am/shared/*": [
+        "./packages/shared/*"
+      ],
+      "@am/patient-ai": [
+        "./packages/patient-ai/index.ts"
+      ],
+      "@am/patient-ai/*": [
+        "./packages/patient-ai/*"
+      ],
+      "@am/records": [
+        "./packages/records/index.ts"
+      ],
+      "@am/records/*": [
+        "./packages/records/*"
+      ],
+      "@/*": [
+        "./apps/mobile/*"
+      ]
+    }
+  },
+  "include": [
+    "server/**/*.ts",
+    "packages/**/*.ts",
+    "scripts/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules",
+    "apps",
+    "ml"
+  ]
+}

@@ -7,9 +7,9 @@
  * In production the same handler runs as a Supabase Edge Function: Deno.serve(createSpeechHandler(...)).
  */
 import { createServer } from 'node:http';
-import { createSarvamClientFromEnv, readEnv } from '../config.ts';
-import { createSpeechHandler } from '../http.ts';
-import { sarvamChatDeps } from '../../ai/chat/sarvamChatDeps.ts';
+import { createSarvamClientFromEnv, readEnv } from '../speech/config.ts';
+import { createSpeechHandler } from '../speech/http.ts';
+import { sarvamChatDeps } from '../ai/chat/sarvamChatDeps.ts';
 
 const sarvam = createSarvamClientFromEnv();
 const handler = createSpeechHandler({ sarvam, chat: sarvamChatDeps(sarvam), appToken: readEnv('P2_PROXY_TOKEN') });

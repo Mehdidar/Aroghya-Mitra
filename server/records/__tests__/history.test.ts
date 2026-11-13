@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ageOn, buildPatientHistory } from '../history.ts';
 import type { PatientRecordBundle } from '../repository.ts';
-import type { DoseLog } from '../../../features/records/types.ts';
+import type { DoseLog } from '../../../packages/records/records/types.ts';
 import { NOW, patient, people } from './fixtures.ts';
 
 const day = (n: number, hour = 4) => new Date(NOW.getTime() - n * 86_400_000 + (hour - 10) * 3_600_000).toISOString();

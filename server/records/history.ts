@@ -5,8 +5,8 @@
  * Built only on the shared types, so anything P2 (prescriptions, dose logs)
  * or P3 (ASHA visits, risk alerts, referrals) writes shows up here unchanged.
  */
-import { REPORT_CATEGORIES } from '../../features/records/types.ts';
-import type { BloodGroup, Patient, RiskAlert, VitalsReading } from '../../features/records/types.ts';
+import { REPORT_CATEGORIES } from '../../packages/records/records/types.ts';
+import type { BloodGroup, Patient, RiskAlert, VitalsReading } from '../../packages/records/records/types.ts';
 import type { PatientRecordBundle } from './repository.ts';
 
 export type StatKey = 'blood_group' | 'weight' | 'heart_rate' | 'blood_pressure' | 'spo2';

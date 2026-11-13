@@ -11,7 +11,7 @@
  *  - asha:    not here; P3 owns ASHA access to their assigned patients
  *  - any deactivated account: nothing
  */
-import type { Profile } from '../../features/records/types.ts';
+import type { Profile } from '../../packages/records/records/types.ts';
 import type { RecordsRepository } from './repository.ts';
 
 export type AccessBasis = 'self' | 'facility' | 'referral' | 'qr_grant' | 'admin_facility';

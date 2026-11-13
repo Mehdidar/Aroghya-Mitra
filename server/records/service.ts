@@ -3,7 +3,7 @@
  * history (granted or denied) writes one AccessLog row; there is no code
  * path that returns a history without logging it.
  */
-import type { AccessLog, AccessMethod, PatientConsent, Profile } from '../../features/records/types.ts';
+import type { AccessLog, AccessMethod, PatientConsent, Profile } from '../../packages/records/records/types.ts';
 import { resolveAccess } from './access.ts';
 import type { AccessBasis, AccessDenial } from './access.ts';
 import { buildPatientHistory } from './history.ts';

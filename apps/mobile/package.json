@@ -13,7 +13,8 @@
     "web": "expo start --web",
     "test": "jest",
     "test:asha": "jest --runTestsByPath features/asha/__tests__/rules.test.ts features/asha/__tests__/transcript.test.ts features/asha/__tests__/store.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "expo lint"
   },
   "dependencies": {
     "@expo-google-fonts/manrope": "^0.4.3",
@@ -75,6 +76,8 @@
     "@types/react": "~19.3.0",
     "jest": "~30.5.2",
     "jest-expo": "~58.0.14",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "eslint": "^9.39.0",
+    "eslint-config-expo": "~58.0.0"
   }
 }

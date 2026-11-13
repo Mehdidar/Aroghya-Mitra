@@ -8,7 +8,7 @@
  * The phone runs the same red-flag check first for an instant banner; the server
  * repeats it (plus a translated English check for languages without term lists).
  */
-import { detectRedFlags, type EmergencyContact, type RedFlagCategory } from '../../../features/patient-ai/safety/redFlags.ts';
+import { detectRedFlags, type EmergencyContact, type RedFlagCategory } from '../../../packages/patient-ai/safety/redFlags.ts';
 import { LANGUAGE_CAPABILITIES, type AppLanguage } from '../../speech/languageCapabilities.ts';
 import { SarvamError } from '../../speech/errors.ts';
 import type { ChatMessage } from '../../speech/types.ts';

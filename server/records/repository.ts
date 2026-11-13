@@ -22,7 +22,7 @@ import type {
   Referral,
   RiskAlert,
   VitalsReading,
-} from '../../features/records/types.ts';
+} from '../../packages/records/records/types.ts';
 
 /** Everything needed to render one patient's history. */
 export interface PatientRecordBundle {

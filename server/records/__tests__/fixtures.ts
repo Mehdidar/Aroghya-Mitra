@@ -1,4 +1,4 @@
-import type { Patient, Profile } from '../../../features/records/types.ts';
+import type { Patient, Profile } from '../../../packages/records/records/types.ts';
 import { MemoryRecordsRepository } from '../memoryRepository.ts';
 
 export const NOW = new Date('2026-11-13T10:00:00.000Z');

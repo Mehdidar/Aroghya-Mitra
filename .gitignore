@@ -1,39 +1,47 @@
-# Virtual Environments
+# Node
+node_modules/
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+npm-debug.log*
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Native build output
+apps/mobile/ios/
+apps/mobile/android/
+*.ipa
+*.apk
+*.aab
+
+# Python (ml/food-classifier)
 venv/
 .venv/
 env/
-
-# Python Cache
 __pycache__/
 *.py[cod]
-*$py.class
+.pytest_cache/
 
-# OS Files
-.DS_Store
-Thumbs.db
-~$*
-
-# Project Specific Ignored Folders
-datasets/
-checkpoints/
-weights/
-logs/
-results*/
-*.log
-MobileNet_V3_Complete/
-german_model_package/
-
-# Large Model Files
+# ML artefacts: too large for git
+ml/food-classifier/datasets/
+ml/food-classifier/checkpoints/
+ml/food-classifier/results/
+ml/food-classifier/weights/
 *.pt
 *.pth
 *.onnx
 *.pb
+*.npz
+*.joblib
 
-# Reports and Analysis (Optional, depending if you want them in git)
-# docs/
-
-# IDE
+# OS / IDE
+.DS_Store
+Thumbs.db
 .vscode/
-
-# Archify output (local tool)
+.idea/
 .archify/
+*.log

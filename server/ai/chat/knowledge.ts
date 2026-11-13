@@ -9,7 +9,7 @@
  * Keywords include Hindi and Hinglish words, so retrieval works even when the
  * query is not translated to English.
  */
-import type { RedFlagCategory } from '../../../features/patient-ai/safety/redFlags.ts';
+import type { RedFlagCategory } from '../../../packages/patient-ai/safety/redFlags.ts';
 
 export interface KnowledgeDoc {
   id: string;

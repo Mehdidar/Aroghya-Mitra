@@ -4,7 +4,7 @@ import { clearPhraseCache, streamChatReply, type ChatDeps, type ChatEvent } from
 import { KNOWLEDGE_BASE } from '../chat/knowledge.ts';
 import { KnowledgeIndex } from '../chat/retrieval.ts';
 import { trimHistory } from '../chat/prompt.ts';
-import { ChatHistoryStore, MAX_STORED_MESSAGES, type KeyValueStorage } from '../../../features/patient-ai/chat/historyStore.ts';
+import { ChatHistoryStore, MAX_STORED_MESSAGES, type KeyValueStorage } from '../../../packages/patient-ai/chat/historyStore.ts';
 import type { ChatMessage } from '../../speech/types.ts';
 
 async function collect(gen: AsyncGenerator<ChatEvent>): Promise<ChatEvent[]> {

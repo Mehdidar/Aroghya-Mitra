@@ -9,7 +9,7 @@
  * Meant to run inside a Supabase Edge Function with the service-role client;
  * the secret comes from the `QR_TOKEN_SECRET` environment variable.
  */
-import type { Profile } from '../../features/records/types.ts';
+import type { Profile } from '../../packages/records/records/types.ts';
 import type { RecordsRepository } from '../records/repository.ts';
 import { logAccess, openPatientHistory } from '../records/service.ts';
 import type { PatientHistory } from '../records/history.ts';
