@@ -1,4 +1,9 @@
-# Aroghya Mitra: mobile app (Expo) · ASHA module (P3)
+# Aroghya Mitra: mobile app (Expo SDK 58)
+
+One Expo app for all four roles. P1 owns the shell (`app/_layout.tsx`, `app/(auth)/`, the
+`app/(patient)/` layout, `features/shared/`, `locales/`); P3's ASHA module is described below.
+
+## ASHA module (P3)
 
 Offline-first app for ASHA workers doing home visits: register households, record vitals
 by typing or by voice (Sarvam speech-to-text, Hindi and English), get an instant risk check,
@@ -12,7 +17,7 @@ cd mobile
 npm install
 cp .env.example .env      # optional: all values are optional
 npx expo start            # press "a" for Android, or scan the QR with Expo Go
-npm test                  # 46 unit tests (rules, voice parsing, store and sync)
+npm test                  # P3's 46 unit tests + the shell and nutrition tests (jest-expo)
 npm run typecheck
 ```
 
@@ -79,6 +84,70 @@ It only fills fields the ASHA has not typed, and the ASHA confirms everything be
 ## Integration notes for the team
 
 - `features/asha/types.ts` is P3's proposal for the shared types. Swap it for P1's re-exports when they land.
-- `app/_layout.tsx` and `app/index.tsx` are minimal placeholders so the module runs on its own. P1's shell replaces them.
+- P1's shell has replaced the placeholder `app/_layout.tsx` and removed `app/index.tsx`. Signing in as ASHA opens `/asha`; a Sign out button sits in the ASHA home header.
 - Pass the signed-in user to the provider: `<AshaProvider user={user}>` in `app/(asha)/_layout.tsx`.
-- `package.json` pins `@react-navigation/*` to 7.0-era versions through `overrides`. Newer 7.x releases drop `query-string`, which expo-router 4 (SDK 52) still imports.
+- The app is on SDK 58, so the old `@react-navigation/*` overrides are gone. Voice recording uses `expo-audio` (expo-av no longer exists).
+
+## How to use the skeleton (P1)
+
+Requirements: Node 24 (`.nvmrc`; Node 25 works with engine warnings). `npm install`, then `npx expo start`.
+
+**Demo roles.** First launch shows onboarding, then the language picker, then the role picker. Pick a
+role and press **Continue in demo mode** (instant), or **Sign in with phone** (demo OTP: any valid
+10-digit number, code `123456`; Supabase is `TODO(Phase B)` in `features/shared/auth/AuthService.ts`).
+The root layout guards the groups with `Stack.Protected`: patient → `(patient)`, ASHA → `(asha)`
+(`/asha`), doctor and admin → `(doctor)`. Profile → **Sign out** (ASHA: header button) returns to the
+role picker. The session `{ role, language, onboarded }` lives in `features/shared/state/session.ts`
+(zustand + AsyncStorage); `useCurrentUser()` gives the demo user (patient: Lakshmi Gowda).
+
+**Add a screen.** Drop a file in your group, e.g. `app/(patient)/chat.tsx` (P2) or
+`app/(patient)/qr-card.tsx` (P4). Files outside `(tabs)/` are pushed above the tab bar, so you never
+edit the tab layout (ask P1 for a new tab). Home's service tiles point at `/service/<id>` placeholders
+until the real screen exists; change the target in `app/(patient)/(tabs)/index.tsx`.
+Build screens from `features/shared/ui` (`Screen`, `Card`, `PrimaryButton`, `Pill`, `ServiceTile`,
+`StatCard`, `IconButton`, `Icon`, `Text`, `EmptyState`, `TextField`, `Slider`, `Skeleton`, `Glass`…).
+See them all at **`/dev/components`** (open `http://localhost:8081/dev/components` on web).
+
+**Use the theme.** `const t = useTheme()` gives `t.colors`, `t.accent` (role accent: patient blue, ASHA
+sage, doctor/admin indigo, chosen from the route group), `t.space`, `t.radii`, `t.sizes`, `t.shadows`,
+`t.typography` and `t.gradient(stops)` for `backgroundImage`. Never hard-code a colour or import
+`palette`. Use `<RoleScope role="admin">` to override the accent for a subtree. High contrast and text
+scale live in `useThemeSettings()` (no settings UI yet).
+
+**Text and translations.** Only use `<Text variant tone>` from `features/shared/ui` (it picks
+Manrope / Noto / Noto Naskh Arabic per script and the right line height). Strings live in
+`locales/<lang>/<namespace>.json` (`common`, `auth`, `patient`, `nutrition` today) and are read with
+`useTranslation('<namespace>')`. To add a namespace, create the JSON for all 7 languages and add the
+imports to `locales/index.ts`. English is the fallback (Kashmiri falls back to Urdu, then English).
+Switch language with `useLanguage().setLanguage(code)`: strings and RTL flip immediately, no reload.
+RTL rules: use `start`/`end`, `marginStart`/`paddingEnd` etc., never `left`/`right`; pass
+`flipInRTL` to directional icons; use `<Text numeric>` for phone numbers, vitals and IDs.
+
+## Nutrition scan (P1 integration, owned by P2)
+
+`app/(patient)/nutrition.tsx` (Home → Nutrition) is a thin route over
+`features/shared/screens/NutritionScanScreen.tsx`, with its client in
+`features/shared/services/food/`. The nutrition analyzer belongs to P2 (`features/patient-ai`): P2
+can move both folders as they are. The app never calls DishDetect or a vision LLM directly; it posts
+the photo (multipart `file`) to `POST {EXPO_PUBLIC_AI_URL}/ai/food` on P2's server and expects P2's
+`FoodRecognition` shape (copied in `services/food/types.ts` until P2's branch merges). With no URL, or
+when the server cannot be reached (30 s timeout), it shows one of three labelled **demo results**
+(masala dosa, chicken biryani, one not-recognised). Portion maths match P2's `macros.ts`.
+
+Requests to P2: build `POST /ai/food`; add a diet tier and ingredients to `FoodRecognition`; add a
+feedback endpoint (the "Wrong dish? Tell us" button is a no-op until then).
+
+### Running with DishDetect (behind P2's server)
+
+From the repo root (the Python project, not `mobile/`):
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements-serve.txt
+# torch and torchvision are installed separately (CPU wheels), see requirements-serve.txt
+.venv/bin/uvicorn api.main:app --host 0.0.0.0 --port 8000
+```
+
+Point P2's server at it (`DishDetectFoodRecognizer` with `http://localhost:8000`), then set
+`EXPO_PUBLIC_AI_URL` to P2's server: `http://<laptop LAN IP>:<port>` for phones, `http://localhost:<port>`
+for web or a simulator. Today DishDetect's Indian dish head is not trained, so most photos come back
+"We couldn't name this dish yet" and every result is marked uncertain; the screen says so.
