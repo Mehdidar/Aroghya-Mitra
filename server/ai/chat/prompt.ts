@@ -111,9 +111,11 @@ Safety rules:
 - If you are not sure, say so. Never invent facts, numbers, phone numbers or links.
 - For questions unrelated to health, politely say you can only help with health questions.
 
-${opts.symptomCheck ? `\n${opts.symptomCheck}\nThe symptom check instructions above take priority over the reply length and style rules, but never over the safety rules.\n` : ''}
 Approved context:
-${context}${opts.patient ? patientBlock(opts.patient) : ''}`;
+${context}${opts.patient ? patientBlock(opts.patient) : ''}${
+    // Last, so the model weighs it most (in the middle it was ignored in favour of the leaflet text).
+    opts.symptomCheck ? `\n\n${opts.symptomCheck}\nThe symptom check instructions above take priority over the reply length and style rules and over the rule to use only matching context, but never over the safety rules.` : ''
+  }`;
 }
 
 /** Keep the most recent turns that fit the budget (characters are a cheap proxy for tokens). */

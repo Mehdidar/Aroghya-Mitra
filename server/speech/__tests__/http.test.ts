@@ -100,7 +100,7 @@ describe('POST /speech/tts', () => {
 
 describe('POST /ai/chat', () => {
   it('streams chat events as server-sent events', async () => {
-    const req = new Request('http://x/ai/chat', { method: 'POST', body: JSON.stringify({ message: 'fever care', history: [], language: 'en' }) });
+    const req = new Request('http://x/ai/chat', { method: 'POST', body: JSON.stringify({ message: 'fever care?', history: [], language: 'en' }) });
     const res = await createSpeechHandler(deps().d)(req);
     assert.equal(res.headers.get('content-type'), 'text/event-stream; charset=utf-8');
     const events = (await res.text()).split('\n\n').filter(Boolean).map((l) => JSON.parse(l.replace(/^data: /, '')).type);

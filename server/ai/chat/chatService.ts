@@ -170,6 +170,16 @@ export async function* streamChatReply(input: ChatRequestInput, deps: ChatDeps, 
     yield { type: 'done' };
     return;
   }
+  if (check?.kind === 'ask') {
+    // The check's next question is a fixed, reviewed text: send it as is (translated), with its answers as chips.
+    // Not through the model: with the leaflet in the prompt it added advice and, after a few turns, skipped the question.
+    const [question, ...answers] = await translateAll([check.question.text, ...check.question.options], lang, deps, opts.signal);
+    yield { type: 'sources', sources: [] };
+    yield { type: 'delta', text: question };
+    yield { type: 'chips', chips: answers };
+    yield { type: 'done' };
+    return;
+  }
 
   // 4. Approved content found above (plus the documents a check result points to).
   let docs = hits.map((h) => h.doc);
@@ -211,8 +221,8 @@ export async function* streamChatReply(input: ChatRequestInput, deps: ChatDeps, 
     return;
   }
 
-  // 6. Chips: the answers to the check's question, else follow-ups from the retrieved content (no extra AI call).
-  const chips = check?.kind === 'ask' ? check.question.options : [...new Set(docs.flatMap((d) => d.followUps))].slice(0, 3);
+  // 6. Chips: follow-ups from the retrieved content (no extra AI call).
+  const chips = [...new Set(docs.flatMap((d) => d.followUps))].slice(0, 3);
   yield { type: 'chips', chips: await translateAll(chips.length ? chips : DEFAULT_CHIPS, lang, deps, opts.signal) };
   yield { type: 'done' };
 }

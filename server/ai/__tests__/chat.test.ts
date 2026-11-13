@@ -140,15 +140,15 @@ describe('streamChatReply', () => {
   });
 
   it('reports a retryable error when the model fails, and when it returns nothing', async () => {
-    const failing = await collect(streamChatReply({ message: 'fever care', history: [], language: 'en' }, fakeDeps(new Error('socket hang up')).deps));
+    const failing = await collect(streamChatReply({ message: 'fever care?', history: [], language: 'en' }, fakeDeps(new Error('socket hang up')).deps));
     assert.deepEqual(failing.at(-1), { type: 'error', message: 'socket hang up', retryable: true });
-    const empty = await collect(streamChatReply({ message: 'fever care', history: [], language: 'en' }, fakeDeps([]).deps));
+    const empty = await collect(streamChatReply({ message: 'fever care?', history: [], language: 'en' }, fakeDeps([]).deps));
     assert.equal(empty.at(-1)!.type, 'error');
   });
 
   it('keeps working when translation is down', async () => {
     const { deps } = fakeDeps();
-    const events = await collect(streamChatReply({ message: 'बुखार में क्या करें', history: [], language: 'hi' }, { ...deps, translate: async () => { throw new Error('down'); } }));
+    const events = await collect(streamChatReply({ message: 'बुखार में क्या करें?', history: [], language: 'hi' }, { ...deps, translate: async () => { throw new Error('down'); } }));
     assert.equal(events.at(-1)!.type, 'done');
     const sources = events[0] as Extract<ChatEvent, { type: 'sources' }>;
     assert.equal(sources.sources[0].id, 'fever-care'); // matched on the Hindi keyword
@@ -156,7 +156,7 @@ describe('streamChatReply', () => {
 
   it('uses the short spoken style in voice mode', async () => {
     const { deps, prompts } = fakeDeps();
-    await collect(streamChatReply({ message: 'fever care', history: [], language: 'en', mode: 'voice' }, deps));
+    await collect(streamChatReply({ message: 'fever care?', history: [], language: 'en', mode: 'voice' }, deps));
     assert.match(prompts[0][0].content, /spoken aloud/);
   });
 });
@@ -199,14 +199,16 @@ describe('ChatHistoryStore', () => {
 describe('guided symptom check in the chat', () => {
   const user = (content: string) => ({ role: 'user' as const, content });
   const bot = (content: string) => ({ role: 'assistant' as const, content });
+  const textOf = (events: ChatEvent[]) => events.filter((e) => e.type === 'delta').map((e) => (e as Extract<ChatEvent, { type: 'delta' }>).text).join('');
   const chipsOf = (events: ChatEvent[]) => (events.find((e) => e.type === 'chips') as Extract<ChatEvent, { type: 'chips' }>).chips;
 
   it('a stated symptom gets a question with answer chips, not a list of diseases', async () => {
     const { deps, prompts } = fakeDeps();
     const events = await collect(streamChatReply({ message: 'I have a cough', history: [], language: 'en' }, deps));
     assert.deepEqual(chipsOf(events), ['Less than 1 week', '1 to 2 weeks', 'More than 2 weeks']);
-    assert.match(prompts[0][0].content, /ask exactly this one question[\s\S]*How long have you had the cough\?/);
-    assert.doesNotMatch(prompts[0][0].content, /Tuberculosis/);
+    // The reviewed question is sent as is, with no AI call, so nothing else (no list of diseases) can be added.
+    assert.equal(prompts.length, 0);
+    assert.equal(textOf(events), 'How long have you had the cough?');
   });
 
   it('after the answers, the prompt carries the possible causes from the rules', async () => {
@@ -245,11 +247,12 @@ describe('guided symptom check in the chat', () => {
   it('translates answers in other languages before reading them', async () => {
     const { deps, prompts } = fakeDeps();
     const en: Record<string, string> = { 'ನನಗೆ ಕೆಮ್ಮು ಇದೆ': 'I have a cough', 'ಮೂರು ವಾರಗಳಿಂದ': 'for three weeks' };
-    await collect(streamChatReply({ message: 'ಮೂರು ವಾರಗಳಿಂದ', history: [user('ನನಗೆ ಕೆಮ್ಮು ಇದೆ'), bot('?')], language: 'kn' }, {
+    const events = await collect(streamChatReply({ message: 'ಮೂರು ವಾರಗಳಿಂದ', history: [user('ನನಗೆ ಕೆಮ್ಮು ಇದೆ'), bot('?')], language: 'kn' }, {
       ...deps,
       translate: async (text, from, to, o) => (from === 'kn' && to === 'en' ? en[text] ?? text : deps.translate!(text, from, to, o)),
     }));
-    assert.match(prompts[0][0].content, /difficulty breathing/); // duration read as 3 weeks; next question is breathing
+    assert.equal(prompts.length, 0);
+    assert.match(textOf(events), /difficulty breathing/); // duration read as 3 weeks; next question is breathing (sent translated)
   });
 });
 
