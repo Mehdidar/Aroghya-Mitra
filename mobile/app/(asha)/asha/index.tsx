@@ -1,17 +1,45 @@
 import { router, Stack } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PatientRow } from '../../../features/asha/components/PatientRow';
-import { Button, Chip, ChipRow, colors } from '../../../features/asha/components/ui';
-import { followUpsDue, latestVisitByPatient } from '../../../features/asha/logic/clinical';
+import { Chip, ChipScroll } from '../../../features/asha/components/ui';
+import { followUpsDue, formatDate, latestVisitByPatient } from '../../../features/asha/logic/clinical';
 import { SEVERITY_RANK } from '../../../features/asha/logic/rules';
 import { useAsha, type SyncStatus } from '../../../features/asha/store/AshaContext';
-import type { PatientCategory } from '../../../features/asha/types';
+import type { Lang, PatientCategory } from '../../../features/asha/types';
+import { useTheme } from '../../../features/shared/theme';
+import {
+  Avatar,
+  EmptyState,
+  Glass,
+  Icon,
+  IconButton,
+  Pill,
+  PrimaryButton,
+  SearchBar,
+  SectionHeader,
+  Text,
+  type IconName,
+  type PillTone,
+} from '../../../features/shared/ui';
 
 const FILTERS: (PatientCategory | 'all' | 'due')[] = ['all', 'due', 'pregnant', 'newborn', 'ncd', 'tb', 'elderly'];
 
+type T = (k: string, p?: Record<string, string | number>) => string;
+
+function todayLabel(lang: Lang): string {
+  try {
+    return new Date().toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+  } catch {
+    return formatDate(new Date().toISOString());
+  }
+}
+
 export default function AshaHome() {
-  const { ready, db, user, lang, setLang, t, sync, syncNow, store } = useAsha();
+  const { ready, db, user, lang, t, sync, syncNow, store } = useAsha();
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>('all');
 
@@ -39,126 +67,220 @@ export default function AshaHome() {
 
   if (!ready) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color={colors.primary} />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.page }}>
+        <ActivityIndicator size="large" color={theme.accent.accent} />
       </View>
     );
   }
 
-  return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <Stack.Screen
-        options={{
-          title: t('app.title'),
-          headerRight: () => (
-            <Pressable onPress={() => setLang(lang === 'hi' ? 'en' : 'hi')} hitSlop={10} accessibilityLabel="Switch language">
-              <Text style={{ color: '#fff', fontWeight: '800', fontSize: 15 }}>{lang === 'hi' ? 'EN' : 'हिं'}</Text>
-            </Pressable>
-          ),
+  const padX = theme.layout.screenPaddingX;
+  // Pale sage -> page: the hero melts into the list background with no seam.
+  const heroBg = theme.gradient([theme.accent.heroGradient[0], theme.accent.heroGradient[1], theme.colors.page], theme.accent.heroGradientLocations);
+
+  const header = (
+    <View style={{ gap: theme.space[4], marginBottom: theme.space[1] }}>
+      {/* Hero */}
+      <View
+        style={{
+          backgroundColor: theme.accent.accentSoft,
+          backgroundImage: heroBg,
+          paddingTop: insets.top + theme.space[4],
+          paddingHorizontal: padX,
+          paddingBottom: theme.space[2],
+          gap: theme.space[4],
         }}
-      />
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[3] }}>
+          <Avatar name={user.name} size="lg" />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text variant="h3" numberOfLines={2} testID="asha-greeting">
+              {t('home.greeting', { name: user.name })}
+            </Text>
+            <Text variant="caption" color={theme.colors.textOnHeroSecondary} numberOfLines={1}>
+              {todayLabel(lang)}
+            </Text>
+          </View>
+          <IconButton
+            icon="person-outline"
+            variant="glass"
+            accessibilityLabel={t('home.openProfile')}
+            onPress={() => router.push('/asha/profile')}
+            testID="asha-profile-button"
+          />
+        </View>
+
+        <SyncPill status={sync} pending={db.outbox.length} t={t} onPress={syncNow} />
+
+        <View style={{ flexDirection: 'row', gap: theme.space[3] }}>
+          <StatTile n={highRisk} label={t('home.highRisk')} icon="warning-outline" danger onPress={() => router.push('/asha/alerts')} testID="tile-high-risk" />
+          <StatTile n={due.size} label={t('home.dueToday')} icon="calendar-outline" onPress={() => setFilter('due')} testID="tile-due" />
+          <StatTile n={openReferrals} label={t('home.referrals')} icon="paper-plane-outline" onPress={() => router.push('/asha/referrals')} testID="tile-referrals" />
+        </View>
+      </View>
+
+      <View style={{ paddingHorizontal: padX, gap: theme.space[4] }}>
+        {openAlerts.length ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.push('/asha/alerts')}
+            testID="attention-card"
+            style={({ pressed }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: theme.space[3],
+              padding: theme.layout.cardPadding,
+              borderRadius: theme.radii.lg,
+              backgroundColor: theme.colors.status.danger.bg,
+              borderWidth: theme.highContrast ? 1 : 0,
+              borderColor: theme.colors.status.danger.solid,
+              transform: [{ scale: pressed ? theme.motion.pressScale : 1 }],
+            })}
+          >
+            <View
+              style={{
+                width: theme.sizes.iconChip,
+                height: theme.sizes.iconChip,
+                borderRadius: theme.radii.sm,
+                backgroundColor: theme.colors.status.danger.solid,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Icon name="warning" size={theme.sizes.icon.sm} color={theme.colors.status.onSolid} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text variant="bodyStrong" color={theme.colors.status.danger.fg}>
+                {t('home.attentionTitle')}
+              </Text>
+              <Text variant="caption" color={theme.colors.status.danger.fg}>
+                {t('home.attentionBody', { n: openAlerts.length })}
+              </Text>
+            </View>
+            <Icon name="chevron-forward" size={theme.sizes.icon.sm} color={theme.colors.status.danger.icon} flipInRTL />
+          </Pressable>
+        ) : null}
+
+        <SearchBar placeholder={t('home.search')} value={query} onChangeText={setQuery} testID="asha-search" />
+
+        <ChipScroll>
+          {FILTERS.map((f) => (
+            <Chip
+              key={f}
+              label={f === 'all' ? t('home.all') : f === 'due' ? t('home.dueList') : t(`cat.${f}`)}
+              selected={filter === f}
+              onPress={() => setFilter(f)}
+            />
+          ))}
+        </ChipScroll>
+
+        <SectionHeader title={`${t('home.caseload')} · ${patients.length}`} />
+      </View>
+    </View>
+  );
+
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.page }} testID="screen-asha-home">
+      <Stack.Screen options={{ title: t('app.title') }} />
       <FlatList
         data={patients}
         keyExtractor={(p) => p.id}
-        contentContainerStyle={{ padding: 16, gap: 10, paddingBottom: 100 }}
+        contentContainerStyle={{ paddingBottom: theme.space[6] }}
         keyboardShouldPersistTaps="handled"
-        ListHeaderComponent={
-          <View style={{ gap: 12, marginBottom: 4 }}>
-            <View style={s.headRow}>
-              <Text style={s.greet}>{t('home.greeting', { name: user.name })}</Text>
-              <SyncPill status={sync} pending={db.outbox.length} t={t} onPress={syncNow} />
-            </View>
-            <View style={s.tiles}>
-              <Tile n={highRisk} label={t('home.highRisk')} tone="danger" onPress={() => router.push('/asha/alerts')} />
-              <Tile n={due.size} label={t('home.dueToday')} onPress={() => setFilter('due')} />
-              <Tile n={openReferrals} label={t('home.referrals')} onPress={() => router.push('/asha/referrals')} />
-            </View>
-            {openAlerts.length ? (
-              <Pressable onPress={() => router.push('/asha/alerts')} style={s.alertBanner}>
-                <Text style={s.alertBannerText}>
-                  ⚠ {openAlerts.length} {t('home.alerts')} ›
-                </Text>
-              </Pressable>
-            ) : null}
-            <TextInput
-              value={query}
-              onChangeText={setQuery}
-              placeholder={t('home.search')}
-              placeholderTextColor={colors.muted}
-              style={s.search}
-            />
-            <ChipRow>
-              {FILTERS.map((f) => (
-                <Chip
-                  key={f}
-                  label={f === 'all' ? t('home.all') : f === 'due' ? t('home.dueList') : t(`cat.${f}`)}
-                  selected={filter === f}
-                  onPress={() => setFilter(f)}
-                />
-              ))}
-            </ChipRow>
+        ListHeaderComponent={header}
+        ItemSeparatorComponent={() => <View style={{ height: theme.space[3] }} />}
+        renderItem={({ item }) => (
+          <View style={{ paddingHorizontal: padX }}>
+            <PatientRow patient={item} lastVisit={lastVisit.get(item.id)} lang={lang} />
+          </View>
+        )}
+        ListEmptyComponent={
+          <View style={{ paddingHorizontal: padX }}>
+            <EmptyState icon="people-outline" title={t('home.empty')} />
           </View>
         }
-        renderItem={({ item }) => <PatientRow patient={item} lastVisit={lastVisit.get(item.id)} lang={lang} />}
-        ListEmptyComponent={<Text style={{ color: colors.muted, textAlign: 'center', marginTop: 24 }}>{t('home.empty')}</Text>}
       />
-      <View style={s.fab}>
-        <Button title={t('home.addPatient')} onPress={() => router.push('/asha/patient/new')} />
+      <View
+        style={{
+          paddingHorizontal: padX,
+          paddingTop: theme.space[3],
+          paddingBottom: insets.bottom + theme.space[4],
+          backgroundColor: theme.colors.page,
+          borderTopWidth: 1,
+          borderTopColor: theme.colors.divider,
+        }}
+      >
+        <PrimaryButton label={t('home.addPatientCta')} icon="person-add" onPress={() => router.push('/asha/patient/new')} testID="add-patient" />
       </View>
     </View>
   );
 }
 
-function Tile({ n, label, onPress, tone }: { n: number; label: string; onPress: () => void; tone?: 'danger' }) {
+function StatTile({ n, label, icon, onPress, danger, testID }: { n: number; label: string; icon: IconName; onPress: () => void; danger?: boolean; testID?: string }) {
+  const theme = useTheme();
+  const alarm = danger && n > 0;
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [s.tile, { opacity: pressed ? 0.8 : 1 }]}>
-      <Text style={[s.tileN, tone === 'danger' && n > 0 && { color: colors.danger }]}>{n}</Text>
-      <Text style={s.tileLabel} numberOfLines={2}>
-        {label}
-      </Text>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${label}: ${n}`}
+      onPress={onPress}
+      testID={testID}
+      style={({ pressed }) => ({ flex: 1, transform: [{ scale: pressed ? theme.motion.pressScale : 1 }] })}
+    >
+      <Glass radius="lg" style={{ padding: theme.space[3], gap: theme.space[1], minHeight: theme.sizes.tileMin }}>
+        <Icon name={icon} size={theme.sizes.icon.sm} color={alarm ? theme.colors.status.danger.icon : theme.accent.accentIcon} />
+        <Text variant="h2" weight="bold" numeric color={alarm ? theme.colors.status.danger.fg : theme.colors.textPrimary}>
+          {String(n)}
+        </Text>
+        <Text variant="caption" tone="secondary" numberOfLines={2}>
+          {label}
+        </Text>
+      </Glass>
     </Pressable>
   );
 }
 
-function SyncPill({ status, pending, t, onPress }: { status: SyncStatus; pending: number; t: (k: string, p?: Record<string, string | number>) => string; onPress: () => void }) {
+function SyncPill({ status, pending, t, onPress }: { status: SyncStatus; pending: number; t: T; onPress: () => void }) {
+  const theme = useTheme();
   let label: string;
-  let color: string = colors.primary;
+  let tone: PillTone = 'accent';
+  let icon: IconName = 'cloud-done-outline';
   switch (status.kind) {
     case 'local':
       label = t('sync.noServer');
-      color = colors.muted;
+      icon = 'phone-portrait-outline';
       break;
     case 'offline':
       label = t('sync.offline', { n: pending });
-      color = colors.muted;
+      tone = 'neutral';
+      icon = 'cloud-offline-outline';
       break;
     case 'syncing':
       label = t('sync.running');
+      tone = 'info';
+      icon = 'sync-outline';
       break;
     case 'error':
       label = t('sync.error');
-      color = colors.danger;
+      tone = 'danger';
+      icon = 'alert-circle-outline';
       break;
     default:
       label = pending ? t('sync.waiting', { n: pending }) : t('sync.ok');
+      tone = pending ? 'warning' : 'accent';
+      icon = pending ? 'cloud-upload-outline' : 'cloud-done-outline';
   }
+  const disabled = status.kind === 'local' || status.kind === 'syncing';
   return (
-    <Pressable onPress={onPress} disabled={status.kind === 'local' || status.kind === 'syncing'} style={[s.pill, { borderColor: color }]}>
-      <Text style={{ color, fontSize: 12, fontWeight: '700' }}>{label}</Text>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      onPress={onPress}
+      disabled={disabled}
+      hitSlop={theme.sizes.hitSlop}
+      testID="asha-sync-pill"
+      style={{ alignSelf: 'flex-start', minHeight: theme.sizes.touchMin - 8, justifyContent: 'center' }}
+    >
+      <Pill label={label} tone={tone} icon={icon} style={{ minHeight: 32 }} />
     </Pressable>
   );
 }
-
-const s = StyleSheet.create({
-  headRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
-  greet: { fontSize: 20, fontWeight: '800', color: colors.text, flexShrink: 1 },
-  pill: { borderWidth: 1.5, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 },
-  tiles: { flexDirection: 'row', gap: 10 },
-  tile: { flex: 1, backgroundColor: colors.card, borderRadius: 12, padding: 12, borderWidth: 1, borderColor: colors.border },
-  tileN: { fontSize: 26, fontWeight: '800', color: colors.text },
-  tileLabel: { fontSize: 13, color: colors.muted, fontWeight: '600' },
-  alertBanner: { backgroundColor: colors.risk.critical.bg, borderRadius: 12, padding: 12 },
-  alertBannerText: { color: colors.risk.critical.fg, fontWeight: '800', fontSize: 15 },
-  search: { borderWidth: 1, borderColor: colors.border, borderRadius: 12, padding: 12, fontSize: 16, backgroundColor: '#fff', color: colors.text },
-  fab: { position: 'absolute', left: 16, right: 16, bottom: 20 },
-});
