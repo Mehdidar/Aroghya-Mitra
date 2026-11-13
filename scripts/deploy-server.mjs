@@ -33,6 +33,7 @@ const secrets = {
   AUTH_MODE: env.AUTH_MODE || 'demo',
   PUBLIC_BASE_URL: base,
   ...(env.DISHDETECT_URL && !/localhost|127\.0\.0\.1/.test(env.DISHDETECT_URL) ? { DISHDETECT_URL: env.DISHDETECT_URL } : {}),
+  ...(env.DISHDETECT_API_KEY ? { DISHDETECT_API_KEY: env.DISHDETECT_API_KEY } : {}),
   ...(env.SARVAM_CHAT_MODEL ? { SARVAM_CHAT_MODEL: env.SARVAM_CHAT_MODEL } : {}),
 };
 // The Supabase CLI asks before changing a hosted project; --yes answers for you (npm run deploy:server -- --yes).
