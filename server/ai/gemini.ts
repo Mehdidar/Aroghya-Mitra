@@ -3,12 +3,17 @@
  * cannot do: read a photo (prescriptions, food). Server-side only:
  * GEMINI_API_KEY never reaches the app.
  *
- * generateContent REST, key in the x-goog-api-key header (never the URL).
- * gemini-3.8-flash is the current flash model; 2.0/2.5 return 404 for new keys.
+ * Uses the Interactions API (POST /v1beta/interactions), key in the
+ * x-goog-api-key header (never the URL). As of 2026-11 new keys get an empty
+ * 404 from generateContent and are pointed at Interactions; flash models are
+ * also often at capacity, so a call walks a short model chain and moves on
+ * from 404 / 429 / 5xx. GEMINI_MODEL, when set, is tried first.
  */
 import { readEnv } from '../speech/config.ts';
 
-export const GEMINI_MODEL_DEFAULT = 'gemini-3.8-flash';
+export const GEMINI_MODEL_DEFAULT = 'gemini-3.5-flash';
+/** Tried in order; the first that answers wins. */
+export const GEMINI_MODEL_CHAIN = ['gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'] as const;
 
 export interface GeminiImage {
   bytes: Uint8Array;
@@ -48,32 +53,24 @@ function toBase64(bytes: Uint8Array): string {
   return btoa(bin);
 }
 
-/** One generateContent call. `image` is optional (text-only otherwise). Returns the reply text. */
-export async function geminiGenerate(prompt: { system: string; user: string }, image: GeminiImage | null, opts: GeminiOptions = {}): Promise<string> {
-  const apiKey = opts.apiKey ?? readEnv('GEMINI_API_KEY');
-  if (!apiKey) throw new GeminiError('GEMINI_API_KEY is not set');
-  const model = opts.model ?? readEnv('GEMINI_MODEL') ?? GEMINI_MODEL_DEFAULT;
+interface InteractionResponse {
+  model?: string;
+  steps?: { type?: string; content?: { type?: string; text?: string }[] }[];
+  error?: { message?: string; code?: string };
+}
+
+async function callInteraction(model: string, prompt: { system: string; user: string }, image: GeminiImage | null, apiKey: string, opts: GeminiOptions): Promise<{ text: string; model: string }> {
   const fetchImpl = opts.fetchImpl ?? globalThis.fetch.bind(globalThis);
-  const parts: unknown[] = [];
-  if (image) parts.push({ inline_data: { mime_type: image.mimeType, data: toBase64(image.bytes) } });
-  parts.push({ text: prompt.user });
-  const body = {
-    systemInstruction: { parts: [{ text: prompt.system }] },
-    contents: [{ role: 'user', parts }],
-    generationConfig: {
-      temperature: opts.temperature ?? 0.1,
-      maxOutputTokens: opts.maxOutputTokens ?? 2048,
-      ...(opts.json ? { responseMimeType: 'application/json' } : {}),
-    },
-  };
+  const input: unknown[] = [{ type: 'text', text: prompt.user }];
+  if (image) input.push({ type: 'image', data: toBase64(image.bytes), mime_type: image.mimeType });
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 45_000);
+  const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 60_000);
   let res: Response;
   try {
-    res = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+    res = await fetchImpl('https://generativelanguage.googleapis.com/v1beta/interactions', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ model, system_instruction: prompt.system, input }),
       signal: ctrl.signal,
     });
   } catch (e) {
@@ -83,12 +80,40 @@ export async function geminiGenerate(prompt: { system: string; user: string }, i
   }
   if (!res.ok) {
     const text = await res.text().catch(() => '');
-    throw new GeminiError(`Gemini ${res.status}: ${text.slice(0, 200)}`, res.status, res.status === 429 || res.status >= 500);
+    // 404 here means "this model is not offered to this key": try the next one.
+    throw new GeminiError(`Gemini ${model} ${res.status}: ${text.slice(0, 200)}`, res.status, res.status === 404 || res.status === 429 || res.status >= 500);
   }
-  const json = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-  const text = (json.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? '').join('');
-  if (!text.trim()) throw new GeminiError('Gemini returned no text', res.status);
-  return text;
+  const json = (await res.json()) as InteractionResponse;
+  const text = (json.steps ?? [])
+    .filter((st) => st.type === 'model_output')
+    .flatMap((st) => st.content ?? [])
+    .filter((c) => c.type === 'text')
+    .map((c) => c.text ?? '')
+    .join('');
+  if (!text.trim()) throw new GeminiError(`Gemini ${model} returned no text`, res.status, true);
+  return { text, model: json.model ?? model };
+}
+
+/** One model call with fallback across GEMINI_MODEL_CHAIN. `image` is optional. Returns the reply text. */
+export async function geminiGenerateWithModel(prompt: { system: string; user: string }, image: GeminiImage | null, opts: GeminiOptions = {}): Promise<{ text: string; model: string }> {
+  const apiKey = opts.apiKey ?? readEnv('GEMINI_API_KEY');
+  if (!apiKey) throw new GeminiError('GEMINI_API_KEY is not set');
+  const first = opts.model ?? readEnv('GEMINI_MODEL');
+  const chain = [...new Set([...(first ? [first] : []), ...GEMINI_MODEL_CHAIN])];
+  let last: GeminiError | null = null;
+  for (const model of chain) {
+    try {
+      return await callInteraction(model, prompt, image, apiKey, opts);
+    } catch (e) {
+      if (!(e instanceof GeminiError) || !e.retryable) throw e;
+      last = e;
+    }
+  }
+  throw last ?? new GeminiError('No Gemini model answered', undefined, true);
+}
+
+export async function geminiGenerate(prompt: { system: string; user: string }, image: GeminiImage | null, opts: GeminiOptions = {}): Promise<string> {
+  return (await geminiGenerateWithModel(prompt, image, opts)).text;
 }
 
 /** The VisionCall shape server/ai/food/FoodRecognizer.ts expects. */

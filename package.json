@@ -2,6 +2,7 @@
   "name": "aroghya-mitra",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Aroghya Mitra: one Expo app for patients, ASHA workers and doctors/admins, with a TypeScript server and a Python food-recognition service.",
   "workspaces": [
     "apps/*",

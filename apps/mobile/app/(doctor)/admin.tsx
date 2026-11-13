@@ -10,7 +10,7 @@ import { applyOverrides, facilityBank, useAdmin } from '@/features/doctor/adminS
 import { BarChart } from '@/features/doctor/components/BarChart';
 import { useColumns } from '@/features/doctor/useDoctorData';
 import { useRecords } from '@/features/shared/data/recordsStore';
-import { useCurrentUser } from '@/features/shared/state/session';
+import { useCurrentUser, useSession } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
 import { Avatar, Card, ErrorState, Heading, IconButton, Pill, Screen, SecondaryButton, SectionHeader, Skeleton, StatCard, Text } from '@/features/shared/ui';
 
@@ -36,6 +36,7 @@ export default function AdminScreen() {
   const { t } = useTranslation('doctor');
   const theme = useTheme();
   const user = useCurrentUser();
+  const signOut = useSession((s) => s.signOut);
   const { twoColumn } = useColumns();
   const { staff, stock, setActive, setStock } = useAdmin();
   const patients = useRecords((s) => s.patients);
@@ -75,6 +76,7 @@ export default function AdminScreen() {
           <Text tone="secondary">{user?.role === 'admin' ? t('admin.subtitleAdmin') : t('admin.subtitleDoctor')}</Text>
         </View>
         <IconButton icon="person-circle-outline" accessibilityLabel={t('admin.profile')} onPress={() => router.push('/doctor-profile')} testID="admin-profile" />
+        <IconButton icon="log-out-outline" accessibilityLabel={t('actions.signOut')} onPress={signOut} testID="admin-sign-out" />
       </View>
 
       <View style={{ flexDirection: twoColumn ? 'row' : 'column', gap: theme.space[3] }}>
@@ -172,6 +174,14 @@ export default function AdminScreen() {
       <Text variant="caption" tone="tertiary">
         {t('demoNote')}
       </Text>
+      <View style={{ gap: theme.space[3], marginTop: theme.space[2] }}>
+        <SecondaryButton
+          label={t('actions.signOut')}
+          icon="log-out-outline"
+          onPress={signOut}
+          testID="admin-bottom-sign-out"
+        />
+      </View>
     </Screen>
   );
 }

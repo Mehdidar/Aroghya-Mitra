@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import type { InboxAction, InboxItem } from '@am/records';
 
@@ -29,19 +29,21 @@ export function ReferralCard({
   const th = useTheme();
   const { referral } = item;
   return (
-    <Card radius="xl" padding="lg" onPress={onOpen} accessibilityLabel={t('inbox.open', { name: patientName })} testID={`referral-${referral.id}`}>
+    <Card radius="xl" padding="lg" testID={`referral-${referral.id}`}>
       <View style={{ gap: th.space[3] }}>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: th.space[2], alignItems: 'center' }}>
-          {item.riskLevel === 'high' ? <Pill label={t('risk.high')} tone="danger" icon="warning" /> : item.riskLevel === 'medium' ? <Pill label={t('risk.medium')} tone="warning" icon="alert-circle" /> : null}
-          {item.unread ? <Pill label={t('inbox.new')} tone="accent" icon="mail-unread-outline" /> : <Pill label={t(`status.${referral.status}`)} tone="neutral" icon="time-outline" />}
-        </View>
-        <Text variant="title">{patientName}</Text>
-        <Text variant="bodySmall" tone="secondary">
-          {referral.reason}
-        </Text>
-        <Text variant="caption" tone="tertiary">
-          {t('inbox.referredOn', { date: new Date(referral.createdAt).toLocaleDateString() })}
-        </Text>
+        <Pressable onPress={onOpen} accessibilityRole="button" accessibilityLabel={t('inbox.open', { name: patientName })} style={{ gap: th.space[2] }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: th.space[2], alignItems: 'center' }}>
+            {item.riskLevel === 'high' ? <Pill label={t('risk.high')} tone="danger" icon="warning" /> : item.riskLevel === 'medium' ? <Pill label={t('risk.medium')} tone="warning" icon="alert-circle" /> : null}
+            {item.unread ? <Pill label={t('inbox.new')} tone="accent" icon="mail-unread-outline" /> : <Pill label={t(`status.${referral.status}`)} tone="neutral" icon="time-outline" />}
+          </View>
+          <Text variant="title">{patientName}</Text>
+          <Text variant="bodySmall" tone="secondary">
+            {referral.reason}
+          </Text>
+          <Text variant="caption" tone="tertiary">
+            {t('inbox.referredOn', { date: new Date(referral.createdAt).toLocaleDateString() })}
+          </Text>
+        </Pressable>
         {actions.length ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: th.space[2] }}>
             {actions.map((a) => (
