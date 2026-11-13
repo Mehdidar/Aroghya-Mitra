@@ -66,9 +66,11 @@ export default function PatientHealth() {
 
       <View style={{ gap: theme.space[3] }}>
         <SectionHeader title={t('hub.tools')} />
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[3] }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: theme.space[4] }}>
           {LINKS.map((l) => (
-            <ServiceTile key={l.id} label={t(`hub.links.${l.id}`)} icon={l.icon} tint={l.tint} onPress={() => router.push(l.href)} style={{ width: '47%', flexGrow: 1 }} testID={`hub-link-${l.id}`} />
+            <View key={l.id} style={{ width: '33.333%', paddingHorizontal: theme.space[1] }}>
+              <ServiceTile label={t(`hub.links.${l.id}`)} icon={l.icon} tint={l.tint} onPress={() => router.push(l.href)} testID={`hub-link-${l.id}`} />
+            </View>
           ))}
         </View>
       </View>
