@@ -35,8 +35,10 @@ const secrets = {
   ...(env.DISHDETECT_URL && !/localhost|127\.0\.0\.1/.test(env.DISHDETECT_URL) ? { DISHDETECT_URL: env.DISHDETECT_URL } : {}),
   ...(env.SARVAM_CHAT_MODEL ? { SARVAM_CHAT_MODEL: env.SARVAM_CHAT_MODEL } : {}),
 };
+// The Supabase CLI asks before changing a hosted project; --yes answers for you (npm run deploy:server -- --yes).
+const confirmed = process.argv.includes('--yes') ? ['--yes'] : [];
 const run = (args) => {
-  const r = spawnSync('npx', ['--yes', 'supabase', ...args], { cwd: root, stdio: 'inherit', env: { ...env } });
+  const r = spawnSync('npx', ['--yes', 'supabase', ...args, ...confirmed], { cwd: root, stdio: 'inherit', env: { ...env } });
   if (r.status !== 0) process.exit(r.status ?? 1);
 };
 // Secrets go through a temporary file so they never appear in the process list.
@@ -45,12 +47,12 @@ const file = join(dir, 'secrets.env');
 try {
   writeFileSync(file, Object.entries(secrets).map(([k, v]) => `${k}=${v}`).join('\n'), { mode: 0o600 });
   console.log(`Setting ${Object.keys(secrets).length} secrets on project ${ref} …`);
-  run(['secrets', 'set', '--project-ref', ref, '--env-file', file]);
+  run(['secrets', 'set', `--remote=${ref}`, '--env-file', file]);
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }
 console.log('Deploying the server as the Edge Function "api" …');
-run(['functions', 'deploy', 'api', '--project-ref', ref, '--no-verify-jwt']);
+run(['functions', 'deploy', 'api', `--remote=${ref}`, '--no-verify-jwt']);
 const health = await fetch(`${base}/health`).then((r) => r.json()).catch((e) => ({ error: String(e) }));
 console.log('\nHealth check:', JSON.stringify(health));
 console.log(`\nDone. In apps/mobile/.env set:\n  EXPO_PUBLIC_API_URL=${base}\n  EXPO_PUBLIC_AI_URL=${base}\nthen restart Expo. Phones then work anywhere, not only on your Wi-Fi.`);

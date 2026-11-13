@@ -18,8 +18,9 @@ import { extraRoutes } from '../../../server/scripts/routes.ts';
 const handler = createAppHandler({ routes: extraRoutes() });
 
 Deno.serve((req) => {
-  // Strip the function prefix so '/qr/issue' matches whether called locally or through Supabase.
+  // Strip the function prefix so '/qr/issue' matches whether called locally (/functions/v1/api/…)
+  // or on Supabase's hosted runtime, which hands the function '/api/…'.
   const url = new URL(req.url);
-  const stripped = url.pathname.replace(/^\/functions\/v1\/api/, '');
+  const stripped = url.pathname.replace(/^(\/functions\/v1)?\/api(?=\/|$)/, '');
   return handler(new Request(`${url.origin}${stripped || '/'}${url.search}`, req));
 });
