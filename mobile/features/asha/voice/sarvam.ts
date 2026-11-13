@@ -27,7 +27,10 @@ export async function transcribe(fileUri: string, lang: Lang): Promise<string> {
   form.append('language_code', LANG_CODE[lang]);
 
   const url = config.sttProxyUrl || 'https://api.sarvam.ai/speech-to-text';
-  const headers: Record<string, string> = config.sttProxyUrl ? {} : { 'api-subscription-key': config.sarvamApiKey };
+  const headers: Record<string, string> = {};
+  if (config.sarvamApiKey) {
+    headers['api-subscription-key'] = config.sarvamApiKey;
+  }
 
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 45_000);

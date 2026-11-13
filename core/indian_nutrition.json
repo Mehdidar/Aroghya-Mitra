@@ -1,0 +1,2204 @@
+{
+ "_comment": "Per-100 g values AS SERVED, curated for every dish in core/indian_taxonomy.json. Built from IFCT 2017 (NIN) ingredient composition and standard household recipes; recipe-to-recipe variance (oil, ghee, sugar) is easily +/-25%, so core/nutrition.py labels these \"estimated\", never \"verified\". portion_g is a typical single serving and the household measure it corresponds to. allergens: dairy, egg, gluten, nuts, peanut, sesame, soy, fish, shellfish, poppy. tags feed core/diet.py.",
+ "source": "Curated estimate: IFCT 2017 (NIN) ingredient values + standard recipes",
+ "per": "100 g",
+ "adhirasam": {
+  "kcal": 400,
+  "protein_g": 4.0,
+  "carbs_g": 62,
+  "fat_g": 15,
+  "fiber_g": 1.5,
+  "sugars_g": 32,
+  "sodium_mg": 20,
+  "portion_g": 50,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "sesame"
+  ],
+  "tags": [
+   "deep_fried",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "aloo_gobi": {
+  "kcal": 110,
+  "protein_g": 2.5,
+  "carbs_g": 13,
+  "fat_g": 5.5,
+  "fiber_g": 3.0,
+  "sugars_g": 2.5,
+  "sodium_mg": 320,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [],
+  "tags": [],
+  "onion_garlic": false
+ },
+ "aloo_matar": {
+  "kcal": 115,
+  "protein_g": 3.0,
+  "carbs_g": 14,
+  "fat_g": 5.0,
+  "fiber_g": 3.0,
+  "sugars_g": 3.0,
+  "sodium_mg": 330,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "aloo_methi": {
+  "kcal": 125,
+  "protein_g": 3.0,
+  "carbs_g": 14,
+  "fat_g": 6.5,
+  "fiber_g": 3.5,
+  "sugars_g": 1.5,
+  "sodium_mg": 320,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "aloo_shimla_mirch": {
+  "kcal": 115,
+  "protein_g": 2.5,
+  "carbs_g": 14,
+  "fat_g": 5.5,
+  "fiber_g": 3.0,
+  "sugars_g": 2.5,
+  "sodium_mg": 310,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [],
+  "tags": [],
+  "onion_garlic": false
+ },
+ "aloo_tikki": {
+  "kcal": 190,
+  "protein_g": 3.5,
+  "carbs_g": 26,
+  "fat_g": 8.0,
+  "fiber_g": 3.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 380,
+  "portion_g": 120,
+  "portion": "2 tikkis",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "snack"
+  ],
+  "onion_garlic": true
+ },
+ "anarsa": {
+  "kcal": 410,
+  "protein_g": 5.0,
+  "carbs_g": 60,
+  "fat_g": 17,
+  "fiber_g": 1.5,
+  "sugars_g": 30,
+  "sodium_mg": 20,
+  "portion_g": 40,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "poppy"
+  ],
+  "tags": [
+   "deep_fried",
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "ariselu": {
+  "kcal": 400,
+  "protein_g": 4.0,
+  "carbs_g": 62,
+  "fat_g": 15,
+  "fiber_g": 1.5,
+  "sugars_g": 32,
+  "sodium_mg": 20,
+  "portion_g": 50,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "sesame"
+  ],
+  "tags": [
+   "deep_fried",
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "avial": {
+  "kcal": 120,
+  "protein_g": 2.5,
+  "carbs_g": 9,
+  "fat_g": 8.5,
+  "fiber_g": 3.5,
+  "sugars_g": 3.0,
+  "sodium_mg": 300,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [],
+  "onion_garlic": false
+ },
+ "baingan_bharta": {
+  "kcal": 95,
+  "protein_g": 2.0,
+  "carbs_g": 9,
+  "fat_g": 6.0,
+  "fiber_g": 3.5,
+  "sugars_g": 4.0,
+  "sodium_mg": 320,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "bandar_laddu": {
+  "kcal": 420,
+  "protein_g": 7.0,
+  "carbs_g": 60,
+  "fat_g": 17,
+  "fiber_g": 2.0,
+  "sugars_g": 40,
+  "sodium_mg": 30,
+  "portion_g": 40,
+  "portion": "1 laddu",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "deep_fried",
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "basundi": {
+  "kcal": 200,
+  "protein_g": 6.0,
+  "carbs_g": 22,
+  "fat_g": 10,
+  "fiber_g": 0.0,
+  "sugars_g": 20,
+  "sodium_mg": 60,
+  "portion_g": 120,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "bhatura": {
+  "kcal": 380,
+  "protein_g": 8.0,
+  "carbs_g": 48,
+  "fat_g": 17,
+  "fiber_g": 1.5,
+  "sugars_g": 2.0,
+  "sodium_mg": 400,
+  "portion_g": 70,
+  "portion": "1 bhatura",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "refined_flour"
+  ],
+  "onion_garlic": false
+ },
+ "bhel_puri": {
+  "kcal": 220,
+  "protein_g": 5.0,
+  "carbs_g": 38,
+  "fat_g": 6.0,
+  "fiber_g": 3.0,
+  "sugars_g": 6.0,
+  "sodium_mg": 500,
+  "portion_g": 120,
+  "portion": "1 plate",
+  "allergens": [
+   "gluten",
+   "peanut"
+  ],
+  "tags": [
+   "snack"
+  ],
+  "onion_garlic": true
+ },
+ "bhindi_masala": {
+  "kcal": 110,
+  "protein_g": 2.5,
+  "carbs_g": 10,
+  "fat_g": 7.0,
+  "fiber_g": 4.0,
+  "sugars_g": 3.0,
+  "sodium_mg": 320,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "biryani": {
+  "kcal": 180,
+  "protein_g": 9.0,
+  "carbs_g": 22,
+  "fat_g": 6.5,
+  "fiber_g": 1.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 420,
+  "portion_g": 300,
+  "portion": "1 plate",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "boondi": {
+  "kcal": 380,
+  "protein_g": 8.0,
+  "carbs_g": 48,
+  "fat_g": 18,
+  "fiber_g": 2.0,
+  "sugars_g": 18,
+  "sodium_mg": 250,
+  "portion_g": 50,
+  "portion": "1 small bowl",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "deep_fried",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "butter_chicken": {
+  "kcal": 200,
+  "protein_g": 13,
+  "carbs_g": 6,
+  "fat_g": 14,
+  "fiber_g": 1.0,
+  "sugars_g": 4.0,
+  "sodium_mg": 450,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "chak_hao_kheer": {
+  "kcal": 150,
+  "protein_g": 4.0,
+  "carbs_g": 24,
+  "fat_g": 4.5,
+  "fiber_g": 1.0,
+  "sugars_g": 14,
+  "sodium_mg": 50,
+  "portion_g": 150,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "cham_cham": {
+  "kcal": 260,
+  "protein_g": 7.0,
+  "carbs_g": 38,
+  "fat_g": 9.0,
+  "fiber_g": 0.0,
+  "sugars_g": 30,
+  "sodium_mg": 40,
+  "portion_g": 50,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "chana_masala": {
+  "kcal": 150,
+  "protein_g": 7.0,
+  "carbs_g": 20,
+  "fat_g": 5.0,
+  "fiber_g": 6.0,
+  "sugars_g": 3.0,
+  "sodium_mg": 400,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "chapati": {
+  "kcal": 265,
+  "protein_g": 9.0,
+  "carbs_g": 50,
+  "fat_g": 3.5,
+  "fiber_g": 7.0,
+  "sugars_g": 1.0,
+  "sodium_mg": 250,
+  "portion_g": 40,
+  "portion": "1 chapati",
+  "allergens": [
+   "gluten"
+  ],
+  "tags": [],
+  "onion_garlic": false
+ },
+ "chhena_kheeri": {
+  "kcal": 190,
+  "protein_g": 7.0,
+  "carbs_g": 24,
+  "fat_g": 8.0,
+  "fiber_g": 0.0,
+  "sugars_g": 18,
+  "sodium_mg": 60,
+  "portion_g": 120,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "chicken_65": {
+  "kcal": 260,
+  "protein_g": 18,
+  "carbs_g": 12,
+  "fat_g": 15,
+  "fiber_g": 0.8,
+  "sugars_g": 1.5,
+  "sodium_mg": 550,
+  "portion_g": 150,
+  "portion": "1 plate",
+  "allergens": [
+   "dairy",
+   "egg"
+  ],
+  "tags": [
+   "deep_fried"
+  ],
+  "onion_garlic": true
+ },
+ "chicken_biryani": {
+  "kcal": 175,
+  "protein_g": 10,
+  "carbs_g": 21,
+  "fat_g": 6.0,
+  "fiber_g": 1.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 420,
+  "portion_g": 300,
+  "portion": "1 plate",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "chicken_curry": {
+  "kcal": 150,
+  "protein_g": 14,
+  "carbs_g": 5,
+  "fat_g": 8.5,
+  "fiber_g": 1.0,
+  "sugars_g": 2.0,
+  "sodium_mg": 420,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "chicken_fry": {
+  "kcal": 230,
+  "protein_g": 20,
+  "carbs_g": 6,
+  "fat_g": 14,
+  "fiber_g": 1.0,
+  "sugars_g": 1.0,
+  "sodium_mg": 480,
+  "portion_g": 150,
+  "portion": "1 plate",
+  "allergens": [],
+  "tags": [
+   "deep_fried"
+  ],
+  "onion_garlic": true
+ },
+ "chicken_kebab": {
+  "kcal": 200,
+  "protein_g": 22,
+  "carbs_g": 3,
+  "fat_g": 11,
+  "fiber_g": 0.5,
+  "sugars_g": 1.5,
+  "sodium_mg": 450,
+  "portion_g": 150,
+  "portion": "4 pieces",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "chicken_razala": {
+  "kcal": 210,
+  "protein_g": 14,
+  "carbs_g": 5,
+  "fat_g": 15,
+  "fiber_g": 0.8,
+  "sugars_g": 2.5,
+  "sodium_mg": 420,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "chicken_tikka": {
+  "kcal": 190,
+  "protein_g": 24,
+  "carbs_g": 3,
+  "fat_g": 9.0,
+  "fiber_g": 0.5,
+  "sugars_g": 1.5,
+  "sodium_mg": 480,
+  "portion_g": 150,
+  "portion": "6 pieces",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "chicken_tikka_masala": {
+  "kcal": 185,
+  "protein_g": 13,
+  "carbs_g": 6,
+  "fat_g": 12,
+  "fiber_g": 1.2,
+  "sugars_g": 4.0,
+  "sodium_mg": 450,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "chikki": {
+  "kcal": 480,
+  "protein_g": 14,
+  "carbs_g": 55,
+  "fat_g": 24,
+  "fiber_g": 4.0,
+  "sugars_g": 38,
+  "sodium_mg": 20,
+  "portion_g": 30,
+  "portion": "1 bar",
+  "allergens": [
+   "nuts",
+   "peanut",
+   "sesame"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "chilli_chicken": {
+  "kcal": 220,
+  "protein_g": 17,
+  "carbs_g": 12,
+  "fat_g": 12,
+  "fiber_g": 1.0,
+  "sugars_g": 4.0,
+  "sodium_mg": 700,
+  "portion_g": 150,
+  "portion": "1 plate",
+  "allergens": [
+   "egg",
+   "gluten",
+   "soy"
+  ],
+  "tags": [
+   "deep_fried"
+  ],
+  "onion_garlic": true
+ },
+ "crab_curry": {
+  "kcal": 130,
+  "protein_g": 12,
+  "carbs_g": 6,
+  "fat_g": 7.0,
+  "fiber_g": 1.2,
+  "sugars_g": 2.0,
+  "sodium_mg": 500,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [
+   "shellfish"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "daal_baati_churma": {
+  "kcal": 330,
+  "protein_g": 9.0,
+  "carbs_g": 44,
+  "fat_g": 14,
+  "fiber_g": 5.0,
+  "sugars_g": 8.0,
+  "sodium_mg": 300,
+  "portion_g": 300,
+  "portion": "2 baati with dal and churma",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": true
+ },
+ "daal_puri": {
+  "kcal": 300,
+  "protein_g": 9.0,
+  "carbs_g": 40,
+  "fat_g": 12,
+  "fiber_g": 4.0,
+  "sugars_g": 1.0,
+  "sodium_mg": 350,
+  "portion_g": 60,
+  "portion": "1 puri",
+  "allergens": [
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried"
+  ],
+  "onion_garlic": false
+ },
+ "dal_makhani": {
+  "kcal": 150,
+  "protein_g": 7.0,
+  "carbs_g": 15,
+  "fat_g": 7.0,
+  "fiber_g": 5.0,
+  "sugars_g": 2.0,
+  "sodium_mg": 400,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "dal_tadka": {
+  "kcal": 115,
+  "protein_g": 6.0,
+  "carbs_g": 15,
+  "fat_g": 3.5,
+  "fiber_g": 4.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 380,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "dharwad_pedha": {
+  "kcal": 400,
+  "protein_g": 9.0,
+  "carbs_g": 55,
+  "fat_g": 17,
+  "fiber_g": 0.0,
+  "sugars_g": 42,
+  "sodium_mg": 80,
+  "portion_g": 30,
+  "portion": "1 pedha",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "doodhpak": {
+  "kcal": 160,
+  "protein_g": 4.5,
+  "carbs_g": 23,
+  "fat_g": 5.5,
+  "fiber_g": 0.3,
+  "sugars_g": 15,
+  "sodium_mg": 50,
+  "portion_g": 150,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "dosa": {
+  "kcal": 170,
+  "protein_g": 4.0,
+  "carbs_g": 28,
+  "fat_g": 4.5,
+  "fiber_g": 1.5,
+  "sugars_g": 0.5,
+  "sodium_mg": 300,
+  "portion_g": 110,
+  "portion": "1 plain dosa",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "fermented"
+  ],
+  "onion_garlic": false
+ },
+ "double_ka_meetha": {
+  "kcal": 320,
+  "protein_g": 6.0,
+  "carbs_g": 42,
+  "fat_g": 15,
+  "fiber_g": 1.0,
+  "sugars_g": 28,
+  "sodium_mg": 150,
+  "portion_g": 100,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "gluten",
+   "nuts"
+  ],
+  "tags": [
+   "deep_fried",
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "dum_aloo": {
+  "kcal": 140,
+  "protein_g": 3.0,
+  "carbs_g": 16,
+  "fat_g": 7.5,
+  "fiber_g": 2.5,
+  "sugars_g": 3.0,
+  "sodium_mg": 350,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": false
+ },
+ "egg_curry": {
+  "kcal": 140,
+  "protein_g": 8.0,
+  "carbs_g": 6,
+  "fat_g": 9.5,
+  "fiber_g": 1.0,
+  "sugars_g": 2.5,
+  "sodium_mg": 400,
+  "portion_g": 200,
+  "portion": "1 bowl (2 eggs)",
+  "allergens": [
+   "egg"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "fish_biryani": {
+  "kcal": 170,
+  "protein_g": 10,
+  "carbs_g": 21,
+  "fat_g": 5.5,
+  "fiber_g": 1.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 430,
+  "portion_g": 300,
+  "portion": "1 plate",
+  "allergens": [
+   "dairy",
+   "fish",
+   "shellfish"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "fish_curry": {
+  "kcal": 130,
+  "protein_g": 14,
+  "carbs_g": 5,
+  "fat_g": 6.0,
+  "fiber_g": 1.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 450,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [
+   "fish"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "fish_fry": {
+  "kcal": 210,
+  "protein_g": 20,
+  "carbs_g": 8,
+  "fat_g": 11,
+  "fiber_g": 0.5,
+  "sugars_g": 0.5,
+  "sodium_mg": 480,
+  "portion_g": 120,
+  "portion": "1 piece",
+  "allergens": [
+   "fish",
+   "gluten"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "gajar_ka_halwa": {
+  "kcal": 250,
+  "protein_g": 5.0,
+  "carbs_g": 32,
+  "fat_g": 12,
+  "fiber_g": 2.5,
+  "sugars_g": 26,
+  "sodium_mg": 60,
+  "portion_g": 100,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "ghevar": {
+  "kcal": 450,
+  "protein_g": 5.0,
+  "carbs_g": 55,
+  "fat_g": 24,
+  "fiber_g": 0.5,
+  "sugars_g": 32,
+  "sodium_mg": 40,
+  "portion_g": 60,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "gluten",
+   "nuts"
+  ],
+  "tags": [
+   "deep_fried",
+   "refined_flour",
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "gulab_jamun": {
+  "kcal": 330,
+  "protein_g": 5.0,
+  "carbs_g": 50,
+  "fat_g": 13,
+  "fiber_g": 0.5,
+  "sugars_g": 38,
+  "sodium_mg": 60,
+  "portion_g": 80,
+  "portion": "2 pieces",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "idli": {
+  "kcal": 130,
+  "protein_g": 4.0,
+  "carbs_g": 27,
+  "fat_g": 0.5,
+  "fiber_g": 1.5,
+  "sugars_g": 0.5,
+  "sodium_mg": 250,
+  "portion_g": 100,
+  "portion": "2 idlis",
+  "allergens": [],
+  "tags": [
+   "fermented",
+   "steamed"
+  ],
+  "onion_garlic": false
+ },
+ "imarti": {
+  "kcal": 400,
+  "protein_g": 6.0,
+  "carbs_g": 68,
+  "fat_g": 12,
+  "fiber_g": 1.0,
+  "sugars_g": 45,
+  "sodium_mg": 30,
+  "portion_g": 50,
+  "portion": "2 pieces",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "deep_fried",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "jalebi": {
+  "kcal": 390,
+  "protein_g": 3.0,
+  "carbs_g": 68,
+  "fat_g": 12,
+  "fiber_g": 0.5,
+  "sugars_g": 48,
+  "sodium_mg": 30,
+  "portion_g": 50,
+  "portion": "2 jalebis",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "refined_flour",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "kachori": {
+  "kcal": 390,
+  "protein_g": 8.0,
+  "carbs_g": 40,
+  "fat_g": 22,
+  "fiber_g": 3.0,
+  "sugars_g": 2.0,
+  "sodium_mg": 450,
+  "portion_g": 60,
+  "portion": "1 kachori",
+  "allergens": [
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "refined_flour",
+   "snack"
+  ],
+  "onion_garlic": true
+ },
+ "kadai_paneer": {
+  "kcal": 190,
+  "protein_g": 9.0,
+  "carbs_g": 8,
+  "fat_g": 14,
+  "fiber_g": 2.0,
+  "sugars_g": 4.0,
+  "sodium_mg": 380,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "kadhi_pakoda": {
+  "kcal": 130,
+  "protein_g": 5.0,
+  "carbs_g": 11,
+  "fat_g": 7.5,
+  "fiber_g": 1.5,
+  "sugars_g": 3.0,
+  "sodium_mg": 420,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "deep_fried"
+  ],
+  "onion_garlic": true
+ },
+ "kajjikaya": {
+  "kcal": 420,
+  "protein_g": 5.0,
+  "carbs_g": 58,
+  "fat_g": 19,
+  "fiber_g": 1.5,
+  "sugars_g": 25,
+  "sodium_mg": 40,
+  "portion_g": 50,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "refined_flour",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "kakinada_khaja": {
+  "kcal": 450,
+  "protein_g": 5.0,
+  "carbs_g": 60,
+  "fat_g": 22,
+  "fiber_g": 0.5,
+  "sugars_g": 30,
+  "sodium_mg": 40,
+  "portion_g": 40,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "refined_flour",
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "kalakand": {
+  "kcal": 330,
+  "protein_g": 10,
+  "carbs_g": 35,
+  "fat_g": 17,
+  "fiber_g": 0.0,
+  "sugars_g": 30,
+  "sodium_mg": 100,
+  "portion_g": 40,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "karela_bharta": {
+  "kcal": 100,
+  "protein_g": 2.5,
+  "carbs_g": 8,
+  "fat_g": 6.5,
+  "fiber_g": 3.5,
+  "sugars_g": 2.0,
+  "sodium_mg": 330,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "keema": {
+  "kcal": 210,
+  "protein_g": 16,
+  "carbs_g": 7,
+  "fat_g": 13,
+  "fiber_g": 1.5,
+  "sugars_g": 2.5,
+  "sodium_mg": 430,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [],
+  "tags": [
+   "red_meat"
+  ],
+  "onion_garlic": true
+ },
+ "kheer": {
+  "kcal": 140,
+  "protein_g": 4.0,
+  "carbs_g": 22,
+  "fat_g": 4.0,
+  "fiber_g": 0.3,
+  "sugars_g": 15,
+  "sodium_mg": 50,
+  "portion_g": 150,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "kofta": {
+  "kcal": 210,
+  "protein_g": 12,
+  "carbs_g": 7,
+  "fat_g": 15,
+  "fiber_g": 1.5,
+  "sugars_g": 3.0,
+  "sodium_mg": 420,
+  "portion_g": 150,
+  "portion": "1 katori (3 kofta)",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "red_meat"
+  ],
+  "onion_garlic": true
+ },
+ "kuzhi_paniyaram": {
+  "kcal": 200,
+  "protein_g": 5.0,
+  "carbs_g": 30,
+  "fat_g": 6.5,
+  "fiber_g": 2.0,
+  "sugars_g": 1.0,
+  "sodium_mg": 320,
+  "portion_g": 120,
+  "portion": "6 paniyaram",
+  "allergens": [
+   "sesame"
+  ],
+  "tags": [
+   "fermented"
+  ],
+  "onion_garlic": true
+ },
+ "lassi": {
+  "kcal": 90,
+  "protein_g": 2.5,
+  "carbs_g": 13,
+  "fat_g": 3.0,
+  "fiber_g": 0.0,
+  "sugars_g": 12,
+  "sodium_mg": 40,
+  "portion_g": 250,
+  "portion": "1 glass (sweet)",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "beverage",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "ledikeni": {
+  "kcal": 330,
+  "protein_g": 6.0,
+  "carbs_g": 48,
+  "fat_g": 13,
+  "fiber_g": 0.5,
+  "sugars_g": 36,
+  "sodium_mg": 50,
+  "portion_g": 50,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "lemon_rice": {
+  "kcal": 180,
+  "protein_g": 4.0,
+  "carbs_g": 30,
+  "fat_g": 5.0,
+  "fiber_g": 1.5,
+  "sugars_g": 0.5,
+  "sodium_mg": 380,
+  "portion_g": 200,
+  "portion": "1 plate",
+  "allergens": [
+   "peanut"
+  ],
+  "tags": [],
+  "onion_garlic": false
+ },
+ "litti_chokha": {
+  "kcal": 230,
+  "protein_g": 8.0,
+  "carbs_g": 34,
+  "fat_g": 7.0,
+  "fiber_g": 5.0,
+  "sugars_g": 2.0,
+  "sodium_mg": 320,
+  "portion_g": 250,
+  "portion": "2 litti with chokha",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "lyangcha": {
+  "kcal": 320,
+  "protein_g": 6.0,
+  "carbs_g": 48,
+  "fat_g": 12,
+  "fiber_g": 0.5,
+  "sugars_g": 36,
+  "sodium_mg": 50,
+  "portion_g": 60,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "maach_jhol": {
+  "kcal": 120,
+  "protein_g": 13,
+  "carbs_g": 5,
+  "fat_g": 5.5,
+  "fiber_g": 1.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 400,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [
+   "fish"
+  ],
+  "tags": [],
+  "onion_garlic": false
+ },
+ "makki_di_roti_sarson_da_saag": {
+  "kcal": 170,
+  "protein_g": 5.0,
+  "carbs_g": 20,
+  "fat_g": 8.0,
+  "fiber_g": 4.0,
+  "sugars_g": 2.0,
+  "sodium_mg": 350,
+  "portion_g": 300,
+  "portion": "1 roti with 1 katori saag",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "malai_kofta": {
+  "kcal": 230,
+  "protein_g": 6.0,
+  "carbs_g": 14,
+  "fat_g": 17,
+  "fiber_g": 2.0,
+  "sugars_g": 5.0,
+  "sodium_mg": 400,
+  "portion_g": 150,
+  "portion": "1 katori (2 kofta)",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "deep_fried",
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "malapua": {
+  "kcal": 350,
+  "protein_g": 5.0,
+  "carbs_g": 48,
+  "fat_g": 15,
+  "fiber_g": 0.8,
+  "sugars_g": 30,
+  "sodium_mg": 60,
+  "portion_g": 60,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "refined_flour",
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "masala_dosa": {
+  "kcal": 165,
+  "protein_g": 3.8,
+  "carbs_g": 25,
+  "fat_g": 5.5,
+  "fiber_g": 2.0,
+  "sugars_g": 1.0,
+  "sodium_mg": 330,
+  "portion_g": 180,
+  "portion": "1 masala dosa",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "fermented"
+  ],
+  "onion_garlic": true
+ },
+ "misi_roti": {
+  "kcal": 300,
+  "protein_g": 11,
+  "carbs_g": 45,
+  "fat_g": 8.0,
+  "fiber_g": 6.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 380,
+  "portion_g": 50,
+  "portion": "1 roti",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "misti_doi": {
+  "kcal": 150,
+  "protein_g": 4.0,
+  "carbs_g": 22,
+  "fat_g": 5.0,
+  "fiber_g": 0.0,
+  "sugars_g": 20,
+  "sodium_mg": 50,
+  "portion_g": 100,
+  "portion": "1 small pot",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "fermented",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "modak": {
+  "kcal": 300,
+  "protein_g": 4.0,
+  "carbs_g": 48,
+  "fat_g": 10,
+  "fiber_g": 2.0,
+  "sugars_g": 24,
+  "sodium_mg": 20,
+  "portion_g": 40,
+  "portion": "1 modak",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "mutton_biryani": {
+  "kcal": 195,
+  "protein_g": 10,
+  "carbs_g": 21,
+  "fat_g": 8.0,
+  "fiber_g": 1.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 430,
+  "portion_g": 300,
+  "portion": "1 plate",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "red_meat",
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "mutton_curry": {
+  "kcal": 200,
+  "protein_g": 16,
+  "carbs_g": 5,
+  "fat_g": 13,
+  "fiber_g": 1.0,
+  "sugars_g": 2.0,
+  "sodium_mg": 430,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [],
+  "tags": [
+   "red_meat"
+  ],
+  "onion_garlic": true
+ },
+ "mysore_pak": {
+  "kcal": 500,
+  "protein_g": 7.0,
+  "carbs_g": 50,
+  "fat_g": 32,
+  "fiber_g": 2.0,
+  "sugars_g": 40,
+  "sodium_mg": 30,
+  "portion_g": 40,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "naan": {
+  "kcal": 300,
+  "protein_g": 9.0,
+  "carbs_g": 50,
+  "fat_g": 7.5,
+  "fiber_g": 2.0,
+  "sugars_g": 3.0,
+  "sodium_mg": 450,
+  "portion_g": 90,
+  "portion": "1 naan",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "refined_flour",
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": false
+ },
+ "navrattan_korma": {
+  "kcal": 180,
+  "protein_g": 5.0,
+  "carbs_g": 14,
+  "fat_g": 12,
+  "fiber_g": 3.0,
+  "sugars_g": 7.0,
+  "sodium_mg": 380,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "omelette": {
+  "kcal": 190,
+  "protein_g": 12,
+  "carbs_g": 3,
+  "fat_g": 14,
+  "fiber_g": 0.5,
+  "sugars_g": 1.5,
+  "sodium_mg": 420,
+  "portion_g": 110,
+  "portion": "2-egg omelette",
+  "allergens": [
+   "dairy",
+   "egg"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "palak_paneer": {
+  "kcal": 160,
+  "protein_g": 8.0,
+  "carbs_g": 6,
+  "fat_g": 12,
+  "fiber_g": 2.5,
+  "sugars_g": 2.0,
+  "sodium_mg": 380,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "paneer_butter_masala": {
+  "kcal": 230,
+  "protein_g": 8.0,
+  "carbs_g": 9,
+  "fat_g": 18,
+  "fiber_g": 1.5,
+  "sugars_g": 5.0,
+  "sodium_mg": 400,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "paneer_tikka": {
+  "kcal": 220,
+  "protein_g": 13,
+  "carbs_g": 6,
+  "fat_g": 16,
+  "fiber_g": 1.5,
+  "sugars_g": 3.0,
+  "sodium_mg": 420,
+  "portion_g": 150,
+  "portion": "6 pieces",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "pav_bhaji": {
+  "kcal": 150,
+  "protein_g": 4.0,
+  "carbs_g": 20,
+  "fat_g": 6.0,
+  "fiber_g": 3.0,
+  "sugars_g": 3.0,
+  "sodium_mg": 450,
+  "portion_g": 300,
+  "portion": "2 pav with bhaji",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": true
+ },
+ "payasam": {
+  "kcal": 160,
+  "protein_g": 3.5,
+  "carbs_g": 26,
+  "fat_g": 5.0,
+  "fiber_g": 0.5,
+  "sugars_g": 16,
+  "sodium_mg": 50,
+  "portion_g": 150,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "pesarattu": {
+  "kcal": 165,
+  "protein_g": 8.0,
+  "carbs_g": 24,
+  "fat_g": 4.0,
+  "fiber_g": 4.0,
+  "sugars_g": 1.0,
+  "sodium_mg": 300,
+  "portion_g": 140,
+  "portion": "1 pesarattu",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "phirni": {
+  "kcal": 150,
+  "protein_g": 4.0,
+  "carbs_g": 23,
+  "fat_g": 4.5,
+  "fiber_g": 0.2,
+  "sugars_g": 16,
+  "sodium_mg": 50,
+  "portion_g": 120,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "pithe": {
+  "kcal": 280,
+  "protein_g": 4.0,
+  "carbs_g": 45,
+  "fat_g": 9.0,
+  "fiber_g": 1.5,
+  "sugars_g": 22,
+  "sodium_mg": 30,
+  "portion_g": 60,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "poha": {
+  "kcal": 150,
+  "protein_g": 3.0,
+  "carbs_g": 24,
+  "fat_g": 5.0,
+  "fiber_g": 2.0,
+  "sugars_g": 2.0,
+  "sodium_mg": 350,
+  "portion_g": 150,
+  "portion": "1 plate",
+  "allergens": [
+   "peanut"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "pongal": {
+  "kcal": 150,
+  "protein_g": 5.0,
+  "carbs_g": 22,
+  "fat_g": 5.0,
+  "fiber_g": 2.0,
+  "sugars_g": 0.5,
+  "sodium_mg": 350,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": false
+ },
+ "poornalu": {
+  "kcal": 330,
+  "protein_g": 7.0,
+  "carbs_g": 55,
+  "fat_g": 9.0,
+  "fiber_g": 3.0,
+  "sugars_g": 28,
+  "sodium_mg": 30,
+  "portion_g": 50,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "deep_fried",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "pootharekulu": {
+  "kcal": 420,
+  "protein_g": 3.0,
+  "carbs_g": 70,
+  "fat_g": 14,
+  "fiber_g": 0.5,
+  "sugars_g": 45,
+  "sodium_mg": 20,
+  "portion_g": 30,
+  "portion": "1 roll",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "prawn_curry": {
+  "kcal": 140,
+  "protein_g": 13,
+  "carbs_g": 6,
+  "fat_g": 7.5,
+  "fiber_g": 1.0,
+  "sugars_g": 2.0,
+  "sodium_mg": 480,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [
+   "shellfish"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "prawn_fry": {
+  "kcal": 200,
+  "protein_g": 20,
+  "carbs_g": 5,
+  "fat_g": 11,
+  "fiber_g": 0.5,
+  "sugars_g": 1.0,
+  "sodium_mg": 520,
+  "portion_g": 120,
+  "portion": "1 plate",
+  "allergens": [
+   "shellfish"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "qubani_ka_meetha": {
+  "kcal": 230,
+  "protein_g": 2.5,
+  "carbs_g": 45,
+  "fat_g": 5.0,
+  "fiber_g": 4.0,
+  "sugars_g": 38,
+  "sodium_mg": 20,
+  "portion_g": 100,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "rabri": {
+  "kcal": 230,
+  "protein_g": 7.0,
+  "carbs_g": 24,
+  "fat_g": 12,
+  "fiber_g": 0.0,
+  "sugars_g": 20,
+  "sodium_mg": 80,
+  "portion_g": 100,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "ras_malai": {
+  "kcal": 220,
+  "protein_g": 8.0,
+  "carbs_g": 24,
+  "fat_g": 10,
+  "fiber_g": 0.0,
+  "sugars_g": 20,
+  "sodium_mg": 70,
+  "portion_g": 100,
+  "portion": "2 pieces",
+  "allergens": [
+   "dairy",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "rasam": {
+  "kcal": 35,
+  "protein_g": 1.2,
+  "carbs_g": 5,
+  "fat_g": 1.2,
+  "fiber_g": 0.8,
+  "sugars_g": 1.5,
+  "sodium_mg": 450,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "rasgulla": {
+  "kcal": 190,
+  "protein_g": 5.0,
+  "carbs_g": 36,
+  "fat_g": 3.0,
+  "fiber_g": 0.0,
+  "sugars_g": 32,
+  "sodium_mg": 40,
+  "portion_g": 80,
+  "portion": "2 pieces",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "rava_kesari": {
+  "kcal": 330,
+  "protein_g": 4.0,
+  "carbs_g": 50,
+  "fat_g": 13,
+  "fiber_g": 1.0,
+  "sugars_g": 30,
+  "sodium_mg": 30,
+  "portion_g": 80,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "gluten",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "rogan_josh": {
+  "kcal": 210,
+  "protein_g": 16,
+  "carbs_g": 4,
+  "fat_g": 15,
+  "fiber_g": 0.8,
+  "sugars_g": 2.0,
+  "sodium_mg": 430,
+  "portion_g": 200,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "red_meat",
+   "rich_dairy_fat"
+  ],
+  "onion_garlic": false
+ },
+ "sambar": {
+  "kcal": 70,
+  "protein_g": 3.5,
+  "carbs_g": 10,
+  "fat_g": 1.8,
+  "fiber_g": 2.5,
+  "sugars_g": 2.0,
+  "sodium_mg": 380,
+  "portion_g": 150,
+  "portion": "1 katori",
+  "allergens": [],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "samosa": {
+  "kcal": 260,
+  "protein_g": 5.0,
+  "carbs_g": 30,
+  "fat_g": 13,
+  "fiber_g": 3.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 420,
+  "portion_g": 100,
+  "portion": "1 large samosa",
+  "allergens": [
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "refined_flour",
+   "snack"
+  ],
+  "onion_garlic": false
+ },
+ "sandesh": {
+  "kcal": 260,
+  "protein_g": 9.0,
+  "carbs_g": 32,
+  "fat_g": 10,
+  "fiber_g": 0.0,
+  "sugars_g": 26,
+  "sodium_mg": 60,
+  "portion_g": 40,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "seekh_kebab": {
+  "kcal": 230,
+  "protein_g": 18,
+  "carbs_g": 4,
+  "fat_g": 16,
+  "fiber_g": 0.8,
+  "sugars_g": 1.0,
+  "sodium_mg": 480,
+  "portion_g": 120,
+  "portion": "2 kebabs",
+  "allergens": [],
+  "tags": [
+   "red_meat"
+  ],
+  "onion_garlic": true
+ },
+ "shankarpali": {
+  "kcal": 450,
+  "protein_g": 6.0,
+  "carbs_g": 58,
+  "fat_g": 22,
+  "fiber_g": 1.0,
+  "sugars_g": 20,
+  "sodium_mg": 150,
+  "portion_g": 40,
+  "portion": "1 small bowl",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "deep_fried",
+   "refined_flour",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "sheer_korma": {
+  "kcal": 220,
+  "protein_g": 6.0,
+  "carbs_g": 30,
+  "fat_g": 9.0,
+  "fiber_g": 1.0,
+  "sugars_g": 22,
+  "sodium_mg": 60,
+  "portion_g": 120,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "gluten",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "sheera": {
+  "kcal": 340,
+  "protein_g": 5.0,
+  "carbs_g": 48,
+  "fat_g": 14,
+  "fiber_g": 1.0,
+  "sugars_g": 28,
+  "sodium_mg": 40,
+  "portion_g": 80,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy",
+   "gluten",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "shrikhand": {
+  "kcal": 230,
+  "protein_g": 6.0,
+  "carbs_g": 30,
+  "fat_g": 9.0,
+  "fiber_g": 0.0,
+  "sugars_g": 28,
+  "sodium_mg": 60,
+  "portion_g": 100,
+  "portion": "1 bowl",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "sohan_halwa": {
+  "kcal": 480,
+  "protein_g": 6.0,
+  "carbs_g": 58,
+  "fat_g": 25,
+  "fiber_g": 1.5,
+  "sugars_g": 40,
+  "sodium_mg": 50,
+  "portion_g": 40,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "gluten",
+   "nuts"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "sohan_papdi": {
+  "kcal": 500,
+  "protein_g": 6.0,
+  "carbs_g": 60,
+  "fat_g": 26,
+  "fiber_g": 1.0,
+  "sugars_g": 45,
+  "sodium_mg": 60,
+  "portion_g": 40,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "sutar_feni": {
+  "kcal": 430,
+  "protein_g": 5.0,
+  "carbs_g": 65,
+  "fat_g": 16,
+  "fiber_g": 0.8,
+  "sugars_g": 35,
+  "sodium_mg": 30,
+  "portion_g": 40,
+  "portion": "1 piece",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [
+   "rich_dairy_fat",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "tamarind_rice": {
+  "kcal": 190,
+  "protein_g": 4.0,
+  "carbs_g": 31,
+  "fat_g": 6.0,
+  "fiber_g": 2.0,
+  "sugars_g": 2.0,
+  "sodium_mg": 420,
+  "portion_g": 200,
+  "portion": "1 plate",
+  "allergens": [
+   "peanut",
+   "sesame"
+  ],
+  "tags": [],
+  "onion_garlic": false
+ },
+ "tandoori_chicken": {
+  "kcal": 170,
+  "protein_g": 25,
+  "carbs_g": 3,
+  "fat_g": 7.0,
+  "fiber_g": 0.5,
+  "sugars_g": 1.5,
+  "sodium_mg": 480,
+  "portion_g": 200,
+  "portion": "2 pieces",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "unni_appam": {
+  "kcal": 330,
+  "protein_g": 4.0,
+  "carbs_g": 50,
+  "fat_g": 13,
+  "fiber_g": 2.0,
+  "sugars_g": 25,
+  "sodium_mg": 20,
+  "portion_g": 60,
+  "portion": "3 pieces",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "deep_fried",
+   "sweet"
+  ],
+  "onion_garlic": false
+ },
+ "upma": {
+  "kcal": 160,
+  "protein_g": 4.0,
+  "carbs_g": 23,
+  "fat_g": 6.0,
+  "fiber_g": 2.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 380,
+  "portion_g": 150,
+  "portion": "1 plate",
+  "allergens": [
+   "dairy",
+   "gluten"
+  ],
+  "tags": [],
+  "onion_garlic": true
+ },
+ "uttapam": {
+  "kcal": 160,
+  "protein_g": 4.5,
+  "carbs_g": 26,
+  "fat_g": 4.0,
+  "fiber_g": 2.0,
+  "sugars_g": 1.5,
+  "sodium_mg": 320,
+  "portion_g": 150,
+  "portion": "1 uttapam",
+  "allergens": [
+   "dairy"
+  ],
+  "tags": [
+   "fermented"
+  ],
+  "onion_garlic": true
+ }
+}

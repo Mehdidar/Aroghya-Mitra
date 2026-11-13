@@ -8,8 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { Image, View } from 'react-native';
 
 import { analyzeFood, FoodScanError, sendFoodFeedback } from '@/features/shared/services/food/client';
-import { DAILY_REFERENCE, clampPortion, hasMacros, macrosForPortion, PORTION_GRAMS } from '@/features/shared/services/food/macros';
-import type { FoodItem, FoodScanResult } from '@/features/shared/services/food/types';
+import { DAILY_REFERENCE, DAILY_REFERENCE_EXTRA, clampPortion, extrasForPortion, hasMacros, macrosForPortion, PORTION_GRAMS } from '@/features/shared/services/food/macros';
+import type { DietCaution, DietInfo, FoodItem, FoodScanResult } from '@/features/shared/services/food/types';
 import { useTheme } from '@/features/shared/theme';
 import {
   Card,
@@ -197,7 +197,7 @@ export function ResultCard({ result }: { result: FoodScanResult }) {
       ) : (
         <ItemDetails key={`${item.name}-${item.estimatedGrams}`} item={item} reliable={r.reliable} source={r.source} notes={r.notes} demo={demo} />
       )}
-      <Feedback />
+      <Feedback requestId={demo ? null : (r.requestId ?? null)} />
     </Card>
   );
 }
@@ -220,7 +220,9 @@ function ItemDetails({
   const theme = useTheme();
   const [grams, setGrams] = useState(clampPortion(item.estimatedGrams));
   const m = macrosForPortion(item.per100g, grams);
+  const extras = extrasForPortion(item.per100g, grams);
   const known = hasMacros(item.per100g);
+  const curated = item.nutrition?.source?.startsWith('Curated') ?? false;
 
   return (
     <View style={{ gap: theme.space[4] }}>
@@ -275,15 +277,20 @@ function ItemDetails({
             <MacroBar label={t('protein')} value={m.proteinG} unit={t('unitG')} frac={m.proteinG / DAILY_REFERENCE.proteinG} color={theme.colors.chart.series[0]} />
             <MacroBar label={t('carbs')} value={m.carbsG} unit={t('unitG')} frac={m.carbsG / DAILY_REFERENCE.carbsG} color={theme.colors.chart.series[4]} />
             <MacroBar label={t('fat')} value={m.fatG} unit={t('unitG')} frac={m.fatG / DAILY_REFERENCE.fatG} color={theme.colors.chart.series[3]} />
+            {extras.fiberG !== undefined ? <ExtraRow label={t('fiber')} value={extras.fiberG} unit={t('unitG')} frac={extras.fiberG / DAILY_REFERENCE_EXTRA.fiberG} /> : null}
+            {extras.sugarsG !== undefined ? <ExtraRow label={t('sugars')} value={extras.sugarsG} unit={t('unitG')} frac={extras.sugarsG / DAILY_REFERENCE_EXTRA.sugarsG} /> : null}
+            {extras.sodiumMg !== undefined ? <ExtraRow label={t('sodium')} value={extras.sodiumMg} unit={t('unitMg')} frac={extras.sodiumMg / DAILY_REFERENCE_EXTRA.sodiumMg} /> : null}
             <Text variant="caption" tone="tertiary">
               {t('per100', { kcal: item.per100g.kcal, protein: item.per100g.proteinG, carbs: item.per100g.carbsG, fat: item.per100g.fatG })}
             </Text>
-            <Pill label={t(source === 'dishdetect' ? 'estimateDishDetect' : 'estimateAi')} tone="info" icon="information-circle" />
+            <Pill label={t(source !== 'dishdetect' ? 'estimateAi' : curated ? 'estimateCurated' : 'estimateDishDetect')} tone="info" icon="information-circle" />
           </View>
         </>
       ) : (
         <Text tone="secondary">{t('noNutrition')}</Text>
       )}
+
+      {item.diet ? <DietSection diet={item.diet} /> : null}
 
       {notes ? (
         <View style={{ gap: theme.space[1] }}>
@@ -293,6 +300,91 @@ function ItemDetails({
           </Text>
         </View>
       ) : null}
+    </View>
+  );
+}
+
+/** A lighter row for fibre, sugar and sodium: the number matters more than the bar. */
+function ExtraRow({ label, value, unit, frac }: { label: string; value: number; unit: string; frac: number }) {
+  const theme = useTheme();
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} accessible accessibilityLabel={`${label} ${value} ${unit}`}>
+      <Text variant="bodySmall" tone="secondary">
+        {label}
+      </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.space[2] }}>
+        <View style={{ width: 56, height: 6, borderRadius: theme.radii.full, backgroundColor: theme.colors.chart.barGhost, overflow: 'hidden' }}>
+          <View style={{ width: `${Math.round(Math.min(1, Math.max(0.02, frac)) * 100)}%`, height: '100%', backgroundColor: theme.colors.chart.series[2] }} />
+        </View>
+        <Text variant="bodySmall" weight="semibold" numeric>
+          {`${value} ${unit}`}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+const TIER_PILL: Record<NonNullable<DietInfo['tier']>, { key: string; tone: 'success' | 'danger' | 'warning'; icon: 'leaf-outline' | 'restaurant-outline' | 'help-circle-outline' }> = {
+  vegan: { key: 'tierVegan', tone: 'success', icon: 'leaf-outline' },
+  vegetarian: { key: 'tierVegetarian', tone: 'success', icon: 'leaf-outline' },
+  non_veg: { key: 'tierNonVeg', tone: 'danger', icon: 'restaurant-outline' },
+  meat_free: { key: 'tierMeatFree', tone: 'warning', icon: 'help-circle-outline' },
+};
+
+const ALLERGEN_KEY: Record<DietInfo['allergens'][number], string> = {
+  dairy: 'allergenDairy',
+  egg: 'allergenEgg',
+  gluten: 'allergenGluten',
+  nuts: 'allergenNuts',
+  peanut: 'allergenPeanut',
+  sesame: 'allergenSesame',
+  soy: 'allergenSoy',
+  fish: 'allergenFish',
+  shellfish: 'allergenShellfish',
+  poppy: 'allergenPoppy',
+};
+
+const cautionKey = (c: DietCaution) =>
+  `caution${{ diabetes: 'Diabetes', hypertension: 'Hypertension', heart: 'Heart', energy_dense: 'EnergyDense' }[c.code]}${c.level === 'high' ? 'High' : 'Moderate'}`;
+
+/** Diet tier, allergens and condition cautions: all derived from the usual recipe, never from the photo. */
+export function DietSection({ diet }: { diet: DietInfo }) {
+  const { t } = useTranslation('nutrition');
+  const theme = useTheme();
+  const tier = diet.tier ? TIER_PILL[diet.tier] : null;
+  return (
+    <View style={{ gap: theme.space[2] }} testID="diet-section">
+      <Text variant="label">{t('diet')}</Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2] }}>
+        {tier ? <Pill label={t(tier.key)} tone={tier.tone} icon={tier.icon} /> : <Pill label={t('tierUnknown')} tone="neutral" icon="help-circle-outline" />}
+        {diet.containsOnionGarlic === false ? <Pill label={t('noOnionGarlic')} tone="neutral" icon="checkmark-circle-outline" /> : null}
+      </View>
+      <Text variant="bodySmall" tone={diet.allergens.length ? 'primary' : 'secondary'} testID="allergens">
+        {diet.allergens.length ? t('contains', { list: diet.allergens.map((a) => t(ALLERGEN_KEY[a])).join(', ') }) : t('noCommonAllergens')}
+      </Text>
+      {diet.containsOnionGarlic === true ? (
+        <Text variant="bodySmall" tone="secondary">
+          {t('hasOnionGarlic')}
+        </Text>
+      ) : null}
+      {diet.cautions.length ? (
+        <View style={{ gap: theme.space[1] }}>
+          <Text variant="bodySmall" weight="semibold">
+            {t('cautions')}
+          </Text>
+          {diet.cautions.map((c) => (
+            <View key={c.code} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: theme.space[2] }} accessible accessibilityLabel={t(cautionKey(c))}>
+              <Icon name={c.level === 'high' ? 'alert-circle' : 'alert-circle-outline'} size={theme.sizes.icon.sm} color={theme.colors.status[c.level === 'high' ? 'danger' : 'warning'].icon} />
+              <Text variant="bodySmall" style={{ flex: 1 }}>
+                {t(cautionKey(c))}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+      <Text variant="caption" tone="tertiary">
+        {t('usualRecipe')}
+      </Text>
     </View>
   );
 }
@@ -314,16 +406,16 @@ function MacroBar({ label, value, unit, frac, color }: { label: string; value: n
   );
 }
 
-function Feedback() {
+function Feedback({ requestId }: { requestId: string | null }) {
   const { t } = useTranslation('nutrition');
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState<null | { sent: boolean }>(null);
   if (done)
     return (
       <Text variant="bodySmall" tone="secondary" accessibilityLiveRegion="polite">
-        {t('thanks')}
+        {t(done.sent ? 'thanks' : 'feedbackNotSent')}
       </Text>
     );
   if (!open) return <SecondaryButton label={t('wrongDish')} icon="chatbox-ellipses-outline" onPress={() => setOpen(true)} testID="wrong-dish" />;
@@ -335,7 +427,7 @@ function Feedback() {
         icon="send"
         disabled={!name.trim()}
         onPress={() => {
-          void sendFoodFeedback(name.trim()).finally(() => setDone(true));
+          void sendFoodFeedback(name.trim(), { requestId }).then(setDone, () => setDone({ sent: false }));
         }}
       />
     </View>

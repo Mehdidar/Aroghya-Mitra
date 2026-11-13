@@ -41,6 +41,24 @@ describe('Nutrition result card', () => {
     expect(screen.queryByText('Good match')).toBeNull();
   });
 
+  it('shows diet tier, allergens, cautions and the extra nutrients for the portion', async () => {
+    await render(wrap(<ResultCard result={{ recognition: MOCK_RESULTS[1], demo: false }} />));
+    expect(screen.getByText('Non-vegetarian')).toBeTruthy();
+    expect(screen.getByText('Contains: dairy, tree nuts')).toBeTruthy();
+    expect(screen.getByText('Usually made with onion or garlic')).toBeTruthy();
+    expect(screen.getByText('High blood pressure: moderately salty')).toBeTruthy();
+    expect(screen.getByText(/Heart or cholesterol/)).toBeTruthy();
+    expect(screen.getByLabelText('Sodium 1050 mg')).toBeTruthy(); // 420 mg/100 g x 250 g
+    expect(screen.getByText(/typical recipe values/)).toBeTruthy();
+  });
+
+  it('says so when the usual recipe has no common allergens, and skips cautions it has none of', async () => {
+    await render(wrap(<ResultCard result={{ recognition: MOCK_RESULTS[0], demo: false }} />));
+    expect(screen.getByText('Vegetarian')).toBeTruthy();
+    expect(screen.getByText('Contains: dairy')).toBeTruthy();
+    expect(screen.queryByText('Take care if you have')).toBeNull();
+  });
+
   it('renders in Hindi', async () => {
     await act(async () => {
       await i18n.changeLanguage('hi');

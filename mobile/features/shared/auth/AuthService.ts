@@ -1,3 +1,5 @@
+import { createClient } from '@supabase/supabase-js';
+import { patientConfig } from '@/features/shared/services/config';
 import type { Role } from '@/features/shared/state/session';
 
 /** Result of a code request: where it went, and whether this is the demo flow. */
@@ -43,24 +45,79 @@ export class DemoAuthService implements AuthService {
 }
 
 /**
- * TODO(Phase B): Supabase phone auth.
- * requestOtp -> supabase.auth.signInWithOtp({ phone: '+91…' })
- * verifyOtp  -> supabase.auth.verifyOtp({ phone, token: code, type: 'sms' }), then read the role
- *               from the users table (RLS) instead of trusting the client's choice.
- * Needs EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY and an SMS provider in Supabase.
+ * Does this Supabase project accept phone OTP sign-in? Reads the public auth settings once.
+ * A project with phone auth switched off (the default) rejects every signInWithOtp call, so
+ * the app would be unusable; instead it drops to demo mode and says so on screen.
  */
-export class SupabaseAuthService implements AuthService {
-  readonly demo = false;
-  async requestOtp(): Promise<OtpRequest> {
-    throw new AuthError('not_configured', 'Supabase auth is not set up yet (Phase B)');
+export async function supabasePhoneAuthEnabled(fetchImpl: typeof fetch = globalThis.fetch.bind(globalThis)): Promise<boolean> {
+  try {
+    const res = await fetchImpl(`${patientConfig.supabaseUrl.replace(/\/$/, '')}/auth/v1/settings`, {
+      headers: { apikey: patientConfig.supabaseAnonKey },
+    });
+    if (!res.ok) return false;
+    const settings = (await res.json()) as { external?: { phone?: boolean } };
+    return settings.external?.phone === true;
+  } catch {
+    return false;
   }
-  async verifyOtp(): Promise<AuthUser> {
-    throw new AuthError('not_configured', 'Supabase auth is not set up yet (Phase B)');
-  }
-  async signOut() {}
 }
 
-/** Demo until Phase B. TODO(Phase B): return new SupabaseAuthService() once Supabase is configured. */
+/** Real Supabase phone OTP auth (Phase B). Falls back to demo codes while the project cannot send SMS. */
+export class SupabaseAuthService implements AuthService {
+  readonly demo = false;
+  private supabase = createClient(patientConfig.supabaseUrl, patientConfig.supabaseAnonKey);
+  private phoneEnabled: Promise<boolean> | null = null;
+  private fallback = new DemoAuthService();
+  /** Numbers that were given a demo code because the project could not send a real one. */
+  private demoNumbers = new Set<string>();
+
+  private async canSendSms(): Promise<boolean> {
+    if (!this.phoneEnabled) this.phoneEnabled = supabasePhoneAuthEnabled();
+    return this.phoneEnabled;
+  }
+
+  async requestOtp(phone10: string): Promise<OtpRequest> {
+    if (!isValidIndianMobile(phone10)) throw new AuthError('invalid_phone');
+    if (!(await this.canSendSms())) {
+      this.demoNumbers.add(phone10);
+      return this.fallback.requestOtp(phone10);
+    }
+    const { error } = await this.supabase.auth.signInWithOtp({
+      phone: '+91' + phone10,
+      options: { channel: 'sms' },
+    });
+    if (error) throw new AuthError('network', error.message);
+    this.demoNumbers.delete(phone10);
+    return { phone: '+91' + phone10, demo: false };
+  }
+
+  async verifyOtp(phone10: string, code: string, role: Role): Promise<AuthUser> {
+    if (!isValidIndianMobile(phone10)) throw new AuthError('invalid_phone');
+    if (this.demoNumbers.has(phone10)) return this.fallback.verifyOtp(phone10, code, role);
+    const { data, error } = await this.supabase.auth.verifyOtp({
+      phone: '+91' + phone10,
+      token: code,
+      type: 'sms',
+    });
+    if (error || !data.user) throw new AuthError('invalid_code', error?.message);
+    const resolvedRole: Role =
+      (data.user.user_metadata?.role as Role | undefined) ?? role;
+    return {
+      id: data.user.id,
+      phone: '+91' + phone10,
+      role: resolvedRole,
+    };
+  }
+
+  async signOut(): Promise<void> {
+    await this.supabase.auth.signOut();
+  }
+}
+
+/** Returns SupabaseAuthService when Supabase is configured, otherwise DemoAuthService. */
 export function getAuthService(): AuthService {
+  if (patientConfig.supabaseUrl && patientConfig.supabaseAnonKey) {
+    return new SupabaseAuthService();
+  }
   return new DemoAuthService();
 }

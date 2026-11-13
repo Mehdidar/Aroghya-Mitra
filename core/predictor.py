@@ -48,6 +48,7 @@ from .models import FoodClassifier
 from .transforms import get_transforms
 from . import taxonomy
 from . import nutrition as _nutrition
+from . import diet as _diet
 
 
 def _pick_device(explicit=None):
@@ -378,6 +379,10 @@ class DietPredictor:
             and not self.baseline_heads
         )
 
+        nutrition_result = (_nutrition.for_dish(dish_name if dish_known else None,
+                                                meta['key_ingredients'])
+                            if self.nutrition else None)
+
         return {
             'dish': {
                 'name': dish_name if dish_known else None,
@@ -398,9 +403,11 @@ class DietPredictor:
                 'tier': lookup_tier,
                 'agreement': agreement,
             },
-            'nutrition': (_nutrition.for_dish(dish_name if dish_known else None,
-                                              meta['key_ingredients'])
-                          if self.nutrition else None),
+            'nutrition': nutrition_result,
+            # Allergens, who the dish suits and condition cautions, judged on
+            # the same nutrients shown above (core/diet.py).
+            'restrictions': _diet.restrictions(dish_name if dish_known else None,
+                                               nutrition_result),
             'alternatives': alternatives,
             'ingredients': meta['key_ingredients'],
             'animal_byproduct': meta['animal_byproduct'],

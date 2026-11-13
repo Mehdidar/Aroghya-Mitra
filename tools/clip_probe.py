@@ -105,6 +105,37 @@ def cached_encode(files, views, head, key):
     return X
 
 
+
+def baseline_metrics(head, test_split, classes):
+    """Accuracy and macro F1 of the fine-tuned head on the SAME test files.
+
+    Scored here rather than read from a metrics file: scripts/evaluate.py
+    writes under results/runs/<run>/test/, and a stale file from another
+    run would make the comparison meaningless.
+    """
+    import torch
+    from torch.utils.data import DataLoader
+    from core.models import FoodClassifier
+    from core.utils import get_device, FoodDataset, get_transforms
+
+    spec = HEADS[head]
+    files, y = test_split
+    device = get_device()
+    model = FoodClassifier(num_classes=len(classes), freeze_backbone=False,
+                           architecture=spec['architecture'], pretrained=False)
+    model.load_state_dict(torch.load(spec['checkpoint'], map_location=device))
+    model = model.to(device).eval()
+    _, tf = get_transforms(spec['img_size'])
+    loader = DataLoader(FoodDataset(files, list(y), tf), batch_size=32, shuffle=False)
+    preds = []
+    with torch.no_grad():
+        for x, _ in loader:
+            preds.append(model(x.to(device)).argmax(1).cpu())
+    pred = torch.cat(preds).numpy()
+    return {'accuracy': accuracy_score(y, pred),
+            'macro': {'f1': f1_score(y, pred, average='macro', zero_division=0)}}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--head', default='dish', choices=sorted(HEADS))
@@ -145,7 +176,7 @@ def main():
     acc = accuracy_score(Y['test'], pred)
     mf1 = f1_score(Y['test'], pred, average='macro', zero_division=0)
 
-    base = json.load(open(os.path.join(METRICS, 'metrics.json')))[args.head]
+    base = baseline_metrics(args.head, split['test'], classes)
     print('=' * 58)
     print(f'{"":28s} {"accuracy":>10} {"macro F1":>10}')
     print('-' * 58)
@@ -156,6 +187,7 @@ def main():
     print(f'{"difference":28s} {d:+9.2f}  points   (n = {len(Y["test"])})')
     print('=' * 58)
 
+    os.makedirs(METRICS, exist_ok=True)
     rep = classification_report(Y['test'], pred, labels=list(range(len(classes))),
                                 target_names=classes, zero_division=0, digits=3)
     with open(os.path.join(METRICS, f'clip_probe_report{suffix}.txt'), 'w') as f:

@@ -10,17 +10,20 @@ models trained there.
 | Piece | State |
 |---|---|
 | Pipeline code (crop, three heads, cross-check, open-set guard, API, camera UI) | Carried over, working |
-| Saudi checkpoints (`checkpoints/pretrained_saudi/`) | Copied in: warm-start for training, stand-in for veg/vegan until retrained |
-| Indian taxonomy (`core/indian_taxonomy.json`) | 43 dishes written: 15 non-veg, 19 vegetarian, 9 vegan |
-| Indian training images | **None yet — this is the next step** |
-| Indian dish / veg / vegan heads | Not trained |
-| Nutrition map (`core/nutrition_map.json`) | Empty; figures fall back to automatic USDA retrieval, labelled "estimated" |
-| Thresholds in `core/config.py` | Inherited from the Saudi sweep; must be re-swept after training |
+| Saudi checkpoints (`checkpoints/pretrained_saudi/`) | Warm-start for the Indian heads |
+| Indian taxonomy (`core/indian_taxonomy.json`) | 120 dishes, each with diet tier, key ingredients, animal byproduct, local name, region |
+| Indian training images (`datasets/raw`, 5,538 photos, 108 dishes) | Cropped with GrabCut; 12 taxonomy dishes still have no photos (samosa, masala_dosa, paneer_tikka, kheer, chicken_biryani, mutton_biryani, baingan_bharta, bhel_puri, chicken_65, malai_kofta, pav_bhaji, rogan_josh) |
+| Indian veg / vegan heads (MobileNetV3) | Trained 2026-11-13: veg 92.2% (n=833), vegan 87.1% (n=482) on held-out test |
+| Indian dish head | MobileNetV3 fine-tune 59.0%; the **CLIP linear probe** (`checkpoints/clip_probe_dish.joblib`) scores **75.9%** on the same 663 test images and is what the predictor serves |
+| Nutrition (`core/indian_nutrition.json`) | Curated per-100 g table for all 120 dishes (IFCT 2017 ingredient values + standard recipes) with a typical portion, allergens and recipe tags; served as "estimated". `core/nutrition_map.json` (USDA) is still empty |
+| Dietary restrictions (`core/diet.py`) | Allergens, who the dish suits (veg / vegan / egg-, dairy-, gluten-, nut-free, no onion-garlic) and cautions for diabetes, high blood pressure, heart and energy density, derived from the taxonomy and the curated table |
+| App endpoint (`POST /ai/food`, `api/food.py`) | The mobile app's FoodRecognition shape: dish, portion, macros + fibre / sugar / sodium, diet block, provenance, `requestId` for `/feedback` |
+| Thresholds in `core/config.py` | Inherited from the Saudi sweep; still to be re-swept on the Indian heads |
 
-The predictor runs today, but only as a demonstration: the veg and vegan heads
-are the Saudi models, no dish is named, every result is marked unreliable, and
-"vegan" is never claimed. The Saudi models have not been measured on Indian
-food.
+The dish head is the weak link: 4,410 training images over 108 classes (21-60
+per dish) overfit the MobileNet badly (95% train, 59% test). The probe on
+frozen CLIP features is far better, as it was in the Saudi project, but the
+real fix is more photographs, starting with the 12 dishes that have none.
 
 ## Setup
 
@@ -106,6 +109,30 @@ only keep the saved probe if it wins here too (delete
 python scripts/predict.py --image photo.jpg
 ./run_app.sh                                  # API + camera UI (expects .venv/)
 ```
+
+### The mobile app
+
+The app (`mobile/`) reads `EXPO_PUBLIC_AI_URL` and posts the photo to
+`POST {url}/ai/food` (multipart field `file`); `EXPO_PUBLIC_AI_KEY`, when set,
+is sent as `x-api-key`. Point it straight at this service, or at the patient-AI
+server, which speaks the same FoodRecognition shape. This service adds, per
+item: `per100g.fiberG / sugarsG / sodiumMg`, a typical `estimatedGrams` with
+its household measure, a `diet` block (tier, allergens, `suitable`, `cautions`
+with codes `diabetes | hypertension | heart | energy_dense` at `high |
+moderate`) and `nutrition.provenance`. The "wrong dish" button posts the
+result's `requestId` to `POST /feedback`, which queues the correction for
+review.
+
+```bash
+DISHDETECT_ENV=dev .venv/bin/uvicorn api.main:app --port 8000
+curl -F file=@photo.jpg http://localhost:8000/ai/food
+curl http://localhost:8000/nutrition/jalebi          # numbers + restrictions, no photo
+```
+
+Nutrition numbers are typical-recipe estimates, not a measurement of the
+plate. To change a figure, edit `core/indian_nutrition.json`; to add a USDA
+mapping with higher provenance, use `core/nutrition_map.json` (it wins over
+the curated table).
 
 ## What is different from the Saudi project
 

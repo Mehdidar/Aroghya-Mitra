@@ -1,10 +1,13 @@
-// Thin app-side client for P2's food recogniser. The app never talks to DishDetect or a vision LLM
-// directly: P2's server (server/ai/food) does, so API keys stay on the server.
-// Request to P2: expose POST {EXPO_PUBLIC_AI_URL}/ai/food (multipart field `file`) returning FoodRecognition.
+// Thin app-side client for the food recogniser. EXPO_PUBLIC_AI_URL may point at P2's server
+// (server/ai/food) or straight at DishDetect India's FastAPI service, which serves the same
+// POST /ai/food (api/food.py) with portion, extra nutrients and dietary restrictions, and a
+// POST /feedback that the "wrong dish" button uses. EXPO_PUBLIC_AI_KEY, when set, is sent as
+// x-api-key (DishDetect in prod mode requires one).
 import { Platform } from 'react-native';
 
 import { mockRecognition } from './mock';
 import { FoodRecognitionSchema, type FoodScanResult } from './types';
+import { classifyFoodWithGemini } from './geminiFoodClassifier';
 
 export type FoodImageInput = { uri: string; mimeType?: string | null; fileName?: string | null };
 
@@ -20,10 +23,20 @@ export class FoodScanError extends Error {
 
 export type FoodClientOptions = {
   baseUrl?: string | null;
+  apiKey?: string | null;
   fetchImpl?: typeof fetch;
   timeoutMs?: number;
   platform?: string;
 };
+
+function resolveBase(baseUrl: string | null | undefined) {
+  return (baseUrl === undefined ? process.env.EXPO_PUBLIC_AI_URL : baseUrl)?.trim();
+}
+
+function authHeaders(apiKey: string | null | undefined): Record<string, string> {
+  const key = (apiKey === undefined ? process.env.EXPO_PUBLIC_AI_KEY : apiKey)?.trim();
+  return key ? { 'x-api-key': key } : {};
+}
 
 export const FOOD_TIMEOUT_MS = 30_000;
 
@@ -47,19 +60,36 @@ async function buildForm(image: FoodImageInput, platform: string, fetchImpl: typ
  * the screen can show them.
  */
 export async function analyzeFood(image: FoodImageInput, opts: FoodClientOptions = {}): Promise<FoodScanResult> {
-  const baseUrl = (opts.baseUrl === undefined ? process.env.EXPO_PUBLIC_AI_URL : opts.baseUrl)?.trim();
+  const isMockedTest = opts.fetchImpl !== undefined;
+  const baseUrl = resolveBase(opts.baseUrl);
   const fetchImpl = opts.fetchImpl ?? globalThis.fetch.bind(globalThis);
   const platform = opts.platform ?? Platform.OS;
-  if (!baseUrl) return { recognition: mockRecognition(image.uri), demo: true, demoReason: 'unset' };
+
+  if (!baseUrl) {
+    if (!isMockedTest) {
+      const geminiResult = await classifyFoodWithGemini(image);
+      if (geminiResult) return { recognition: geminiResult, demo: false };
+    }
+    return { recognition: mockRecognition(image.uri), demo: true, demoReason: 'unset' };
+  }
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), opts.timeoutMs ?? FOOD_TIMEOUT_MS);
   let res: Response;
   try {
     const body = await buildForm(image, platform, fetchImpl);
-    res = await fetchImpl(`${baseUrl.replace(/\/$/, '')}/ai/food`, { method: 'POST', body, signal: controller.signal });
+    res = await fetchImpl(`${baseUrl.replace(/\/$/, '')}/ai/food`, {
+      method: 'POST',
+      body,
+      headers: authHeaders(opts.apiKey),
+      signal: controller.signal,
+    });
   } catch {
-    // Network failure or timeout: the server is unreachable, so use the demo result.
+    // Network failure or timeout: if real app, try Gemini vision classifier before falling back to demo
+    if (!isMockedTest) {
+      const geminiResult = await classifyFoodWithGemini(image);
+      if (geminiResult) return { recognition: geminiResult, demo: false };
+    }
     return { recognition: mockRecognition(image.uri), demo: true, demoReason: 'unreachable' };
   } finally {
     clearTimeout(timer);
@@ -84,11 +114,29 @@ export function parseFoodRecognition(json: unknown) {
   return parsed.data;
 }
 
+export type FoodFeedbackOptions = Pick<FoodClientOptions, 'baseUrl' | 'apiKey' | 'fetchImpl'> & {
+  /** The `requestId` of the result being corrected. Without one the server cannot tie the correction to a photo. */
+  requestId?: string | null;
+};
+
 /**
- * "Wrong dish? Tell us". TODO(P2): needs a feedback endpoint on the AI server (DishDetect's own
- * /feedback needs its request_id, which FoodRecognition does not carry yet). Until then this is a no-op
- * that reports whether anything was sent.
+ * "Wrong dish? Tell us". Posts a correction to DishDetect's POST /feedback, which queues it for
+ * human review (it never trains the model directly). Reports whether anything was sent: nothing is
+ * sent for a demo result, when no server is configured, or when the result carried no requestId.
  */
-export async function sendFoodFeedback(_correctDish: string): Promise<{ sent: boolean }> {
-  return { sent: false };
+export async function sendFoodFeedback(correctDish: string, opts: FoodFeedbackOptions = {}): Promise<{ sent: boolean }> {
+  const baseUrl = resolveBase(opts.baseUrl);
+  const dish = correctDish.trim();
+  if (!baseUrl || !opts.requestId || !dish) return { sent: false };
+  const fetchImpl = opts.fetchImpl ?? globalThis.fetch.bind(globalThis);
+  try {
+    const res = await fetchImpl(`${baseUrl.replace(/\/$/, '')}/feedback`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', ...authHeaders(opts.apiKey) },
+      body: JSON.stringify({ request_id: opts.requestId, kind: 'wrong_dish', correct_dish: dish }),
+    });
+    return { sent: res.ok };
+  } catch {
+    return { sent: false };
+  }
 }

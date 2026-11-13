@@ -18,3 +18,6 @@ export { Avatar } from './Avatar';
 export { SectionHeader } from './SectionHeader';
 export { Slider } from './Slider';
 export { Skeleton } from './Skeleton';
+export { EcgPulseChart } from './EcgPulseChart';
+export { GlowingMedicalOrb } from './GlowingMedicalOrb';
+

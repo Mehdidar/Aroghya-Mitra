@@ -27,6 +27,9 @@ function PhoneForm({ role }: { role: Role }) {
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [sentTo, setSentTo] = useState<string | null>(null);
+  // Demo-code hint: true for the demo service, and also when the real service had to hand out a
+  // demo code because the Supabase project cannot send SMS yet.
+  const [demo, setDemo] = useState(auth.demo);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -35,6 +38,7 @@ function PhoneForm({ role }: { role: Role }) {
     setBusy(true);
     try {
       const r = await auth.requestOtp(phone.replace(/\D/g, ''));
+      setDemo(r.demo);
       setSentTo(r.phone);
     } catch (e) {
       setError(e instanceof AuthError && e.code === 'invalid_phone' ? t('phone.invalidPhone') : String((e as Error).message));
@@ -74,7 +78,7 @@ function PhoneForm({ role }: { role: Role }) {
           <Heading variant="h1">{t('phone.title')}</Heading>
           <Text tone="secondary">{t('phone.body')}</Text>
         </View>
-        {auth.demo ? (
+        {demo ? (
           <Card tone="accent">
             <View style={{ flexDirection: 'row', gap: theme.space[3], alignItems: 'center' }}>
               <Icon name="information-circle" color={theme.accent.accentIcon} />
@@ -108,7 +112,7 @@ function PhoneForm({ role }: { role: Role }) {
             autoComplete="one-time-code"
             textContentType="oneTimeCode"
             maxLength={6}
-            placeholder={auth.demo ? DEMO_OTP : '••••••'}
+            placeholder={demo ? DEMO_OTP : '••••••'}
             value={code}
             onChangeText={(v) => setCode(v.replace(/\D/g, ''))}
             testID="code-input"

@@ -385,5 +385,698 @@
     "rationale": "Puffed rice tossed with chutneys; no dairy.",
     "local_name": "भेल पूरी",
     "region": "Maharashtra"
+  },
+  "adhirasam": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Rice flour, jaggery, cardamom, sesame, deep-fried in oil or ghee",
+    "animal_byproduct": "Dairy (ghee in the dough or for frying)",
+    "rationale": "Rice and jaggery are plant-based, but ghee is commonly worked into the dough or used for frying, which a photograph cannot show. Vegan only when made entirely with oil.",
+    "local_name": "अधिरसम",
+    "region": "Tamil Nadu"
+  },
+  "aloo_matar": {
+    "legacy_diet": "veg",
+    "new_diet": "vegan",
+    "key_ingredients": "Potato, green peas, onion, tomato, ginger, spices, oil",
+    "animal_byproduct": null,
+    "rationale": "Potato and peas in an oil-based onion-tomato gravy. Plant-based as usually made; some restaurant versions add cream or butter.",
+    "local_name": "आलू मटर",
+    "region": "North India"
+  },
+  "aloo_methi": {
+    "legacy_diet": "veg",
+    "new_diet": "vegan",
+    "key_ingredients": "Potato, fresh fenugreek leaves, garlic, cumin, turmeric, oil",
+    "animal_byproduct": null,
+    "rationale": "Dry potato and fenugreek stir-fry cooked in oil.",
+    "local_name": "आलू मेथी",
+    "region": "North India"
+  },
+  "aloo_shimla_mirch": {
+    "legacy_diet": "veg",
+    "new_diet": "vegan",
+    "key_ingredients": "Potato, green capsicum, cumin, turmeric, amchur, oil",
+    "animal_byproduct": null,
+    "rationale": "Dry potato and capsicum stir-fry cooked in oil.",
+    "local_name": "आलू शिमला मिर्च",
+    "region": "North India"
+  },
+  "aloo_tikki": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Mashed potato, peas, spices, breadcrumbs or cornflour, shallow-fried; often topped with curd and chutneys",
+    "animal_byproduct": "Dairy (ghee on the griddle; curd topping as chaat)",
+    "rationale": "The patty is plant-based, but street vendors commonly fry it in ghee and serve it as chaat with sweetened curd. Vegan only when fried in oil and served without curd.",
+    "local_name": "आलू टिक्की",
+    "region": "North India"
+  },
+  "anarsa": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Soaked rice flour, jaggery or sugar, poppy seeds, fried in ghee",
+    "animal_byproduct": "Dairy (ghee for frying)",
+    "rationale": "A rice-and-jaggery sweet traditionally fried in ghee.",
+    "local_name": "अनरसा",
+    "region": "Maharashtra / Bihar"
+  },
+  "ariselu": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Rice flour, jaggery, sesame seeds, cardamom, ghee, deep-fried",
+    "animal_byproduct": "Dairy (ghee in the dough, sometimes for frying)",
+    "rationale": "Rice and jaggery are plant-based, but ghee is usually added to the dough and sometimes used for frying. Vegan only when made entirely with oil.",
+    "local_name": "अरिसेलु",
+    "region": "Andhra Pradesh"
+  },
+  "avial": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Mixed vegetables, grated coconut, curd, green chilli, curry leaves, coconut oil",
+    "animal_byproduct": "Dairy (curd)",
+    "rationale": "Vegetables in a coconut paste that is soured with curd; some versions use raw mango or tamarind instead, but curd is the usual recipe.",
+    "local_name": "अवियल",
+    "region": "Kerala"
+  },
+  "bandar_laddu": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Gram-flour boondi, sugar syrup, ghee, cardamom, cashew",
+    "animal_byproduct": "Dairy (ghee)",
+    "rationale": "Boondi laddu from Bandar (Machilipatnam), made with plenty of ghee.",
+    "local_name": "बंदर लड्डू",
+    "region": "Andhra Pradesh"
+  },
+  "basundi": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Full-fat milk reduced with sugar, cardamom, saffron, nuts",
+    "animal_byproduct": "Dairy (milk)",
+    "rationale": "Milk slowly reduced and sweetened.",
+    "local_name": "बासुंदी",
+    "region": "Maharashtra / Gujarat"
+  },
+  "bhatura": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Refined flour, yoghurt, baking soda, oil for frying",
+    "animal_byproduct": "Dairy (yoghurt in the dough)",
+    "rationale": "The dough is leavened with yoghurt.",
+    "local_name": "भटूरा",
+    "region": "Punjab"
+  },
+  "biryani": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Basmati rice, chicken, mutton or egg, yoghurt, fried onion, saffron, ghee, whole spices",
+    "animal_byproduct": "Poultry, red meat or egg; dairy (ghee, yoghurt)",
+    "rationale": "A merged class of chicken, mutton and egg biryani; every version contains meat or egg. Vegetable biryani is not part of this class.",
+    "local_name": "बिरयानी",
+    "region": "Pan-Indian"
+  },
+  "boondi": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Gram-flour batter pearls, fried; sweet boondi in sugar syrup, savoury boondi spiced, sometimes in curd as raita",
+    "animal_byproduct": "Dairy (ghee for frying sweet boondi; curd in boondi raita)",
+    "rationale": "The class mixes savoury boondi (usually oil-fried and plant-based), sweet boondi (often fried in ghee) and some boondi raita in curd. Not labelled vegan because the photos cannot separate them.",
+    "local_name": "बूंदी",
+    "region": "Pan-Indian"
+  },
+  "chak_hao_kheer": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Manipuri black rice, milk, sugar, cardamom, nuts",
+    "animal_byproduct": "Dairy (milk)",
+    "rationale": "Black-rice pudding cooked in milk; the photos show the purple milk kheer. Vegan only in the rarer coconut-milk version.",
+    "local_name": "चक-हाओ खीर",
+    "region": "Manipur"
+  },
+  "cham_cham": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Chhena (curdled milk), sugar syrup, khoya or coconut coating",
+    "animal_byproduct": "Dairy (chhena, khoya)",
+    "rationale": "An oval sweet made from fresh milk curd.",
+    "local_name": "चमचम",
+    "region": "Bengal"
+  },
+  "chhena_kheeri": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Chhena (curdled milk), milk, sugar, cardamom",
+    "animal_byproduct": "Dairy (chhena, milk)",
+    "rationale": "Milk curd cooked in sweetened milk.",
+    "local_name": "छेना खीरी",
+    "region": "Odisha"
+  },
+  "chicken_curry": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Chicken, onion, tomato, ginger-garlic, garam masala",
+    "animal_byproduct": "Poultry (chicken)",
+    "rationale": "Chicken on the bone in gravy.",
+    "local_name": "चिकन करी",
+    "region": "Pan-Indian"
+  },
+  "chicken_fry": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Chicken, red chilli, ginger-garlic, curry leaves, spices",
+    "animal_byproduct": "Poultry (chicken)",
+    "rationale": "Spiced dry-fried chicken.",
+    "local_name": "चिकन फ्राई",
+    "region": "South India"
+  },
+  "chicken_kebab": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Boneless chicken, yoghurt, ginger-garlic, chilli, spices",
+    "animal_byproduct": "Poultry (chicken); dairy (yoghurt marinade)",
+    "rationale": "Grilled or skewered marinated chicken.",
+    "local_name": "चिकन कबाब",
+    "region": "North India"
+  },
+  "chicken_razala": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Chicken, yoghurt, cashew paste, green chilli, ghee, whole spices",
+    "animal_byproduct": "Poultry (chicken); dairy (yoghurt, ghee)",
+    "rationale": "Chicken in a pale yoghurt and cashew gravy.",
+    "local_name": "चिकन रज़ाला",
+    "region": "Hyderabad / Bengal"
+  },
+  "chikki": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Peanuts or other nuts and seeds, jaggery, a little ghee",
+    "animal_byproduct": "Dairy (a little ghee, often)",
+    "rationale": "Nuts set in jaggery; many recipes add a spoon of ghee to the syrup or the tray, which a photograph cannot show. Vegan only when made without ghee.",
+    "local_name": "चिक्की",
+    "region": "Maharashtra"
+  },
+  "chilli_chicken": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Chicken, cornflour batter, soy sauce, capsicum, onion, green chilli",
+    "animal_byproduct": "Poultry (chicken)",
+    "rationale": "Indo-Chinese fried chicken tossed in a chilli-soy sauce.",
+    "local_name": "चिली चिकन",
+    "region": "Pan-Indian (Indo-Chinese)"
+  },
+  "crab_curry": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Crab, coconut, onion, tomato, tamarind, spices",
+    "animal_byproduct": "Shellfish (crab)",
+    "rationale": "Crab in gravy.",
+    "local_name": "केकड़ा करी",
+    "region": "Coastal India"
+  },
+  "daal_baati_churma": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Wheat baati dipped in ghee, mixed lentil dal, churma of crushed wheat, ghee and jaggery or sugar",
+    "animal_byproduct": "Dairy (ghee, generously)",
+    "rationale": "The baati is soaked in ghee and the churma is bound with ghee.",
+    "local_name": "दाल बाटी चूरमा",
+    "region": "Rajasthan"
+  },
+  "daal_puri": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Wheat or refined flour, spiced lentil filling or lentil paste, oil or ghee",
+    "animal_byproduct": "Dairy (ghee in the dough, sometimes)",
+    "rationale": "Lentil-stuffed fried bread; mostly plant-based, but ghee is often rubbed into the dough and some are served with curd. Vegan only when made with oil.",
+    "local_name": "दाल पूरी",
+    "region": "Bengal / Bihar"
+  },
+  "dharwad_pedha": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Milk, sugar, khoya, ghee, cardamom",
+    "animal_byproduct": "Dairy (milk, khoya, ghee)",
+    "rationale": "Caramelised milk fudge.",
+    "local_name": "धारवाड़ पेढ़ा",
+    "region": "Karnataka"
+  },
+  "doodhpak": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Rice, milk, sugar, saffron, cardamom, nuts",
+    "animal_byproduct": "Dairy (milk)",
+    "rationale": "Rice cooked in reduced milk.",
+    "local_name": "दूधपाक",
+    "region": "Gujarat"
+  },
+  "dosa": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Fermented rice and urad dal batter, oil, ghee or butter",
+    "animal_byproduct": "Dairy (ghee or butter on the griddle)",
+    "rationale": "The batter is plant-based but restaurants commonly cook it in ghee or butter, which a photograph cannot reliably show. Vegan only when made with oil.",
+    "local_name": "डोसा",
+    "region": "South India"
+  },
+  "double_ka_meetha": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Bread fried in ghee, sweetened reduced milk, saffron, nuts",
+    "animal_byproduct": "Dairy (ghee, milk)",
+    "rationale": "Bread fried in ghee and soaked in sweetened milk.",
+    "local_name": "डबल का मीठा",
+    "region": "Hyderabad"
+  },
+  "dum_aloo": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Baby potatoes, yoghurt, Kashmiri chilli, fennel, ginger, cream or oil",
+    "animal_byproduct": "Dairy (yoghurt, often cream)",
+    "rationale": "Kashmiri dum aloo is cooked in a yoghurt gravy and Punjabi versions often add cream.",
+    "local_name": "दम आलू",
+    "region": "Kashmir / Punjab"
+  },
+  "fish_biryani": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Basmati rice, fish or prawns, yoghurt, fried onion, ghee, whole spices",
+    "animal_byproduct": "Fish or shellfish; dairy (ghee, yoghurt)",
+    "rationale": "Rice layered with fish or prawns.",
+    "local_name": "मछली बिरयानी",
+    "region": "Coastal India"
+  },
+  "ghevar": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Refined flour, ghee, milk, sugar syrup, rabri topping, nuts",
+    "animal_byproduct": "Dairy (ghee, milk, rabri)",
+    "rationale": "A ghee-based batter fried into a disc, often topped with rabri.",
+    "local_name": "घेवर",
+    "region": "Rajasthan"
+  },
+  "imarti": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Urad dal batter, sugar syrup, saffron colour, fried in ghee",
+    "animal_byproduct": "Dairy (ghee for frying)",
+    "rationale": "The urad dal batter is plant-based, but imarti is traditionally fried in ghee. Vegan only when fried in oil.",
+    "local_name": "इमरती",
+    "region": "North India"
+  },
+  "kachori": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Refined flour pastry with ghee or oil shortening, spiced lentil or onion filling, fried",
+    "animal_byproduct": "Dairy (ghee in the pastry, often)",
+    "rationale": "The filling is plant-based, but the flaky pastry is often shortened with ghee. Vegan only when made with oil.",
+    "local_name": "कचौरी",
+    "region": "Rajasthan / North India"
+  },
+  "kajjikaya": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Refined flour pastry with ghee, coconut or roasted gram, sugar or jaggery, fried",
+    "animal_byproduct": "Dairy (ghee in the pastry, often in the filling)",
+    "rationale": "A crescent pastry whose dough and filling usually contain ghee.",
+    "local_name": "कज्जिकाया",
+    "region": "Andhra Pradesh / Telangana"
+  },
+  "kakinada_khaja": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Refined flour, ghee, sugar syrup, fried",
+    "animal_byproduct": "Dairy (ghee)",
+    "rationale": "Layered flour dough made with ghee, fried and soaked in syrup.",
+    "local_name": "काकिनाडा खाजा",
+    "region": "Andhra Pradesh"
+  },
+  "kalakand": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Milk, chhena or paneer, sugar, cardamom, pistachio",
+    "animal_byproduct": "Dairy (milk, chhena)",
+    "rationale": "A soft milk-cake made from reduced milk and milk curd.",
+    "local_name": "कलाकंद",
+    "region": "North India"
+  },
+  "karela_bharta": {
+    "legacy_diet": "veg",
+    "new_diet": "vegan",
+    "key_ingredients": "Bitter gourd, onion, green chilli, mustard oil, spices",
+    "animal_byproduct": null,
+    "rationale": "Bitter gourd mashed with onion and mustard oil.",
+    "local_name": "करेला भर्ता",
+    "region": "Bihar / Bengal"
+  },
+  "kofta": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Minced meat balls, onion, tomato or yoghurt gravy, spices; some photos show paneer-potato malai kofta",
+    "animal_byproduct": "Red meat or poultry (minced); dairy (yoghurt or cream)",
+    "rationale": "The dataset class is mostly meat kofta, so it is labelled non-veg; a minority of photos are vegetarian malai kofta, which has its own class.",
+    "local_name": "कोफ्ता",
+    "region": "North India"
+  },
+  "kuzhi_paniyaram": {
+    "legacy_diet": "veg",
+    "new_diet": "vegan",
+    "key_ingredients": "Fermented rice and urad dal batter, onion, green chilli, curry leaves, gingelly oil",
+    "animal_byproduct": null,
+    "rationale": "Savoury dumplings of idli-dosa batter cooked in oil in a pitted pan, as the photos show. The sweet jaggery version is often cooked in ghee and is not this class.",
+    "local_name": "कुझी पनियारम",
+    "region": "Tamil Nadu (Chettinad)"
+  },
+  "ledikeni": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Chhena (curdled milk), khoya, flour, fried, sugar syrup",
+    "animal_byproduct": "Dairy (chhena, khoya)",
+    "rationale": "A fried chhena sweet in syrup, similar to pantua and gulab jamun; the photos show dark fried balls in syrup.",
+    "local_name": "लेडीकेनी",
+    "region": "Bengal"
+  },
+  "lemon_rice": {
+    "legacy_diet": "veg",
+    "new_diet": "vegan",
+    "key_ingredients": "Rice, lemon juice, mustard seed, chana and urad dal, peanuts, curry leaves, turmeric, oil",
+    "animal_byproduct": null,
+    "rationale": "Rice tempered in oil and soured with lemon. Some homes temper in ghee, but oil is the usual recipe.",
+    "local_name": "लेमन राइस",
+    "region": "South India"
+  },
+  "litti_chokha": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Wheat dough balls stuffed with roasted gram flour, dipped in ghee; chokha of roasted aubergine, tomato and potato",
+    "animal_byproduct": "Dairy (ghee)",
+    "rationale": "The litti is traditionally dipped in ghee; the chokha alone is plant-based.",
+    "local_name": "लिट्टी चोखा",
+    "region": "Bihar"
+  },
+  "lyangcha": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Chhena (curdled milk), khoya, flour, fried, sugar syrup",
+    "animal_byproduct": "Dairy (chhena, khoya)",
+    "rationale": "A cylindrical fried chhena sweet in syrup.",
+    "local_name": "लेंगचा",
+    "region": "Bengal"
+  },
+  "maach_jhol": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Fish (rohu or katla), potato, turmeric, cumin, mustard oil",
+    "animal_byproduct": "Fish",
+    "rationale": "Bengali light fish curry.",
+    "local_name": "माछेर झोल",
+    "region": "Bengal"
+  },
+  "makki_di_roti_sarson_da_saag": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Maize-flour flatbread, mustard greens, spinach, ginger, garlic, ghee or white butter",
+    "animal_byproduct": "Dairy (ghee, butter on top)",
+    "rationale": "The saag is tempered in ghee and served with a knob of white butter.",
+    "local_name": "मक्की दी रोटी सरसों दा साग",
+    "region": "Punjab"
+  },
+  "malapua": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Flour, milk or khoya batter, fried in ghee, sugar syrup, often rabri",
+    "animal_byproduct": "Dairy (milk, ghee, rabri)",
+    "rationale": "A milk batter pancake fried in ghee.",
+    "local_name": "मालपुआ",
+    "region": "Bihar / Odisha / Bengal"
+  },
+  "misi_roti": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Gram flour, wheat flour, onion, green chilli, spices, ghee",
+    "animal_byproduct": "Dairy (ghee in the dough or brushed on)",
+    "rationale": "The flour is plant-based but misi roti is usually made with ghee in the dough and brushed with ghee. Vegan only when made with oil.",
+    "local_name": "मिस्सी रोटी",
+    "region": "Punjab / Rajasthan"
+  },
+  "misti_doi": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Milk, caramelised sugar or jaggery, curd culture",
+    "animal_byproduct": "Dairy (milk, yoghurt)",
+    "rationale": "Sweetened set yoghurt.",
+    "local_name": "मिष्टि दोई",
+    "region": "Bengal"
+  },
+  "modak": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Rice flour dough, coconut and jaggery filling, ghee, cardamom; steamed or fried",
+    "animal_byproduct": "Dairy (ghee in the dough and filling)",
+    "rationale": "Rice, coconut and jaggery are plant-based, but ghee is traditionally added to the dough and filling and served on top. Vegan only when made without ghee.",
+    "local_name": "मोदक",
+    "region": "Maharashtra"
+  },
+  "mysore_pak": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Gram flour, sugar, ghee",
+    "animal_byproduct": "Dairy (ghee)",
+    "rationale": "Ghee is a main ingredient.",
+    "local_name": "मैसूर पाक",
+    "region": "Karnataka"
+  },
+  "omelette": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Beaten eggs, onion, green chilli, tomato, coriander, oil or butter",
+    "animal_byproduct": "Egg",
+    "rationale": "An egg dish. Egg counts as non-vegetarian in the Indian convention (FSSAI brown mark), which this taxonomy follows.",
+    "local_name": "ऑमलेट",
+    "region": "Pan-Indian"
+  },
+  "payasam": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Rice, vermicelli or lentils, milk or coconut milk, jaggery or sugar, ghee, cashew, raisins",
+    "animal_byproduct": "Dairy (milk, ghee)",
+    "rationale": "Most payasam is cooked in milk, and even coconut-milk versions fry the nuts in ghee.",
+    "local_name": "पायसम",
+    "region": "South India"
+  },
+  "pesarattu": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Whole green gram batter, ginger, green chilli, onion, oil or ghee",
+    "animal_byproduct": "Dairy (ghee on the griddle, sometimes)",
+    "rationale": "The green gram batter is plant-based, but like dosa it is often cooked or finished with ghee. Vegan only when made with oil.",
+    "local_name": "पेसरट्टू",
+    "region": "Andhra Pradesh"
+  },
+  "phirni": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Ground rice, milk, sugar, cardamom, saffron, nuts",
+    "animal_byproduct": "Dairy (milk)",
+    "rationale": "Ground rice set in sweetened milk.",
+    "local_name": "फिरनी",
+    "region": "North India"
+  },
+  "pithe": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Rice flour, coconut, jaggery or date-palm jaggery, milk, kheer (khoya) filling",
+    "animal_byproduct": "Dairy (milk, khoya, sometimes ghee)",
+    "rationale": "A family of Bengali rice-flour sweets; the photos mix patishapta crepes with kheer filling, puli pithe in milk, and fried or steamed pithe. Many contain milk or khoya.",
+    "local_name": "पिठे",
+    "region": "Bengal"
+  },
+  "pongal": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Rice, moong dal, black pepper, cumin, ginger, cashew, ghee",
+    "animal_byproduct": "Dairy (ghee)",
+    "rationale": "Ven pongal is cooked and tempered with ghee as standard.",
+    "local_name": "पोंगल",
+    "region": "Tamil Nadu"
+  },
+  "poornalu": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Rice and urad dal batter coating, chana dal and jaggery filling, cardamom, fried; often served with ghee",
+    "animal_byproduct": "Dairy (ghee in the filling or served with it)",
+    "rationale": "The batter and filling are plant-based, but ghee is often stirred into the filling or poured over when served. Vegan only when made without ghee.",
+    "local_name": "पूर्णालु",
+    "region": "Andhra Pradesh"
+  },
+  "pootharekulu": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Paper-thin rice-starch sheets, powdered sugar or jaggery, ghee, dry fruits",
+    "animal_byproduct": "Dairy (ghee)",
+    "rationale": "Rice-starch sheets layered with sugar and ghee.",
+    "local_name": "पूतरेकुलु",
+    "region": "Andhra Pradesh"
+  },
+  "prawn_fry": {
+    "legacy_diet": "non_veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Prawns, chilli, turmeric, ginger-garlic, curry leaves",
+    "animal_byproduct": "Shellfish (prawns)",
+    "rationale": "Spiced fried prawns.",
+    "local_name": "झींगा फ्राई",
+    "region": "Coastal India"
+  },
+  "qubani_ka_meetha": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Dried apricots, sugar, apricot kernels; served with fresh cream, malai or custard",
+    "animal_byproduct": "Dairy (cream or custard topping)",
+    "rationale": "The apricot compote itself is plant-based but it is normally served topped with cream, malai or custard. Vegan only when served plain.",
+    "local_name": "क़ुबानी का मीठा",
+    "region": "Hyderabad"
+  },
+  "rabri": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Milk reduced to layers of cream, sugar, cardamom, nuts",
+    "animal_byproduct": "Dairy (milk)",
+    "rationale": "Thickened sweetened milk.",
+    "local_name": "रबड़ी",
+    "region": "North India"
+  },
+  "rasam": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Tamarind, tomato, black pepper, cumin, garlic, toor dal water, ghee or oil tempering",
+    "animal_byproduct": "Dairy (ghee tempering, often)",
+    "rationale": "The broth is plant-based, but the tempering is often ghee, which cannot be seen in a photograph. Vegan only when tempered in oil.",
+    "local_name": "रसम",
+    "region": "South India"
+  },
+  "rava_kesari": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Semolina, sugar, ghee, saffron, cashew, raisins",
+    "animal_byproduct": "Dairy (ghee)",
+    "rationale": "Semolina sweet cooked in ghee.",
+    "local_name": "रवा केसरी",
+    "region": "South India"
+  },
+  "sambar": {
+    "legacy_diet": "veg",
+    "new_diet": "vegan",
+    "key_ingredients": "Toor dal, tamarind, vegetables, sambar powder, mustard seed, curry leaves, oil",
+    "animal_byproduct": null,
+    "rationale": "Lentil and vegetable stew tempered in oil. Plant-based as traditionally made; some kitchens temper in ghee.",
+    "local_name": "सांभर",
+    "region": "South India"
+  },
+  "sandesh": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Chhena (curdled milk), sugar or date-palm jaggery, cardamom",
+    "animal_byproduct": "Dairy (chhena)",
+    "rationale": "Made from fresh milk curd.",
+    "local_name": "संदेश",
+    "region": "Bengal"
+  },
+  "shankarpali": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Refined flour, ghee, milk, sugar, fried",
+    "animal_byproduct": "Dairy (ghee, milk)",
+    "rationale": "The dough is made with ghee and milk.",
+    "local_name": "शंकरपाळी",
+    "region": "Maharashtra / Gujarat"
+  },
+  "sheer_korma": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Vermicelli, milk, sugar, dates, ghee, nuts",
+    "animal_byproduct": "Dairy (milk, ghee)",
+    "rationale": "Vermicelli fried in ghee and cooked in milk.",
+    "local_name": "शीर खुरमा",
+    "region": "Pan-Indian (Eid)"
+  },
+  "sheera": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Semolina, ghee, sugar, milk or water, cardamom, nuts",
+    "animal_byproduct": "Dairy (ghee, often milk)",
+    "rationale": "Semolina roasted in ghee.",
+    "local_name": "शीरा",
+    "region": "Maharashtra / Gujarat"
+  },
+  "shrikhand": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Strained yoghurt, sugar, saffron, cardamom",
+    "animal_byproduct": "Dairy (yoghurt)",
+    "rationale": "Sweetened hung curd.",
+    "local_name": "श्रीखंड",
+    "region": "Maharashtra / Gujarat"
+  },
+  "sohan_halwa": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Sprouted wheat or flour, milk, sugar, ghee, nuts",
+    "animal_byproduct": "Dairy (ghee, milk)",
+    "rationale": "A dense halwa cooked with milk and ghee.",
+    "local_name": "सोहन हलवा",
+    "region": "Punjab / Rajasthan"
+  },
+  "sohan_papdi": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Gram flour, refined flour, sugar, ghee, cardamom",
+    "animal_byproduct": "Dairy (ghee)",
+    "rationale": "Flaky sweet made with flour roasted in ghee.",
+    "local_name": "सोहन पापड़ी",
+    "region": "North India"
+  },
+  "sutar_feni": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Refined flour or rice flour, ghee, powdered sugar, often eaten with milk",
+    "animal_byproduct": "Dairy (ghee, often milk)",
+    "rationale": "Fine threads of dough made with ghee.",
+    "local_name": "सूतर फेणी",
+    "region": "Gujarat"
+  },
+  "tamarind_rice": {
+    "legacy_diet": "veg",
+    "new_diet": "vegan",
+    "key_ingredients": "Rice, tamarind, sesame oil, peanuts, chana and urad dal, curry leaves, jaggery, spices",
+    "animal_byproduct": null,
+    "rationale": "Rice tossed with a tamarind paste cooked in sesame oil. Plant-based as traditionally made; some versions temper in ghee.",
+    "local_name": "इमली चावल",
+    "region": "South India"
+  },
+  "unni_appam": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Rice flour, banana, jaggery, coconut bits, cardamom, fried in ghee or coconut oil",
+    "animal_byproduct": "Dairy (ghee, often)",
+    "rationale": "The batter is plant-based, but unni appam is traditionally fried in ghee or with coconut bits fried in ghee. Vegan only when fried in coconut oil.",
+    "local_name": "उन्नी अप्पम",
+    "region": "Kerala"
+  },
+  "upma": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Semolina, onion, mustard seed, curry leaves, green chilli, oil or ghee",
+    "animal_byproduct": "Dairy (ghee, often)",
+    "rationale": "Semolina and vegetables are plant-based, but upma is often cooked or finished with ghee. Vegan only when made with oil.",
+    "local_name": "उपमा",
+    "region": "South India"
+  },
+  "uttapam": {
+    "legacy_diet": "veg",
+    "new_diet": "non_vegan",
+    "key_ingredients": "Fermented rice and urad dal batter, onion, tomato, chilli, oil, ghee or butter",
+    "animal_byproduct": "Dairy (ghee or butter on the griddle)",
+    "rationale": "The batter and toppings are plant-based, but like dosa it is commonly cooked in ghee or butter. Vegan only when made with oil.",
+    "local_name": "उत्तपम",
+    "region": "South India"
   }
 }

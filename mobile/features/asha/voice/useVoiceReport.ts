@@ -94,3 +94,5 @@ export function useVoiceReport(lang: Lang) {
 
   return { state, seconds, error, audioUri, start, stop, maxSeconds: STT_MAX_SECONDS };
 }
+
+export { STT_MAX_SECONDS } from './sarvam';

@@ -25,8 +25,12 @@ SR Legacy is a corpus of generic American foods and contains few Indian
 composite dishes. Automatic retrieval over it is unreliable -- in the Saudi
 project, searching "shawarma" returned "Marmalade, orange" -- which is why
 dishes should be mapped by hand in core/nutrition_map.json. That map is
-EMPTY for the Indian taxonomy so far, so every nutrition figure this project
-currently shows is an automatic retrieval hit labelled 'estimated'.
+EMPTY for the Indian taxonomy so far. In its place core/indian_nutrition.json
+carries a curated per-100 g table for every taxonomy dish, built from IFCT
+2017 (NIN) ingredient values and standard recipes; it is served as
+'estimated' because a recipe table is not a laboratory analysis of the
+plate. Lookup order: hand-checked USDA map, curated Indian table, then
+automatic retrieval as the last resort.
 
 USDA FoodData Central is a work of the US federal government and is in the
 public domain.
@@ -40,6 +44,7 @@ from .config import ROOT
 
 DATA = os.path.join(ROOT, 'datasets', 'usda', 'nutrition.json')
 MAP = os.path.join(ROOT, 'core', 'nutrition_map.json')
+CURATED = os.path.join(ROOT, 'core', 'indian_nutrition.json')
 
 # Below this the top match is not worth showing at all.
 MATCH_FLOOR = 0.18
@@ -74,6 +79,26 @@ def _hand_map():
         return {}
     with open(MAP) as f:
         return json.load(f)
+
+
+@lru_cache(maxsize=1)
+def _curated_table():
+    if not os.path.exists(CURATED):
+        return {}
+    with open(CURATED) as f:
+        return json.load(f)
+
+
+def curated(dish):
+    """The curated row for a dish (nutrients, portion, allergens, tags) or None."""
+    if not dish:
+        return None
+    row = _curated_table().get(dish)
+    return row if isinstance(row, dict) else None
+
+
+def curated_source():
+    return _curated_table().get('source', 'Curated estimate')
 
 
 def _nutrients(food):
@@ -126,6 +151,26 @@ def for_dish(dish, ingredients=None, k=5):
                 'per': '100 g',
                 'source': 'USDA FoodData Central (SR Legacy)',
             }
+
+    cur = curated(dish)
+    if cur:
+        return {
+            'provenance': 'estimated',
+            'matched': f"{dish.replace('_', ' ')} (curated Indian table)",
+            'fdc_id': None,
+            'note': 'Curated per-100 g estimate for this dish as usually made. '
+                    'Oil, ghee and sugar vary a lot between kitchens, so treat '
+                    'it as a typical value, not a measurement of this plate.',
+            'hand_checked': True,
+            'nutrients': {k: cur[k] for k in FIELDS if k in cur},
+            'portion_g': cur.get('portion_g'),
+            'portion': cur.get('portion'),
+            'allergens': list(cur.get('allergens', [])),
+            'tags': list(cur.get('tags', [])),
+            'onion_garlic': cur.get('onion_garlic'),
+            'per': '100 g',
+            'source': curated_source(),
+        }
 
     query = dish.replace('_', ' ')
     if ingredients:
