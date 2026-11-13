@@ -21,6 +21,7 @@ import {
   type TileTint,
 } from '@/features/shared/ui';
 import { pullPatientRecords, usePullWhileOpen } from '@/features/shared/data/serverSync';
+import { VoiceHeroCard } from '@/features/patient/voice/VoiceHeroCard';
 
 type ServiceId = 'chat' | 'voice' | 'prescription' | 'nutrition' | 'hospitalMap' | 'qrCard' | 'bloodBanks' | 'reports';
 
@@ -91,6 +92,9 @@ export default function PatientHome() {
           onPress={() => router.push('/appointments')}
         />
       </View>
+
+      {/* Big voice assistant button: the first thing on the screen */}
+      <VoiceHeroCard />
 
       <SearchBar placeholder={t('home.searchPlaceholder')} testID="home-search" />
 

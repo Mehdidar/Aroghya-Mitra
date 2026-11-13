@@ -102,6 +102,13 @@
       "stt_unavailable": "Speech service is not available right now",
       "network": "Could not reach the server",
       "other": "Something went wrong"
+    },
+    "heroTitle": "Talk to Aroghya Mitra",
+    "heroBody": "Ask about your health in your own language. Just speak.",
+    "heroCta": "Tap to speak",
+    "samples": {
+      "fever": "I have had fever and cough for two days",
+      "bp": "How do I control high BP at home?"
     }
   },
   "prescription": {

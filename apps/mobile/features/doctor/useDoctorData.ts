@@ -37,11 +37,9 @@ export function useInbox(): { items: InboxItem[]; loading: boolean; patientNames
   const [tick, setTick] = useState(0);
   useEffect(() => {
     let alive = true;
-    // Server first (best effort, offline keeps the local copy), then this device's ASHA store.
-    pullDoctorInbox()
-      .catch(() => undefined)
-      .then(() => loadAshaBridge())
-      .then((b) => alive && setBridge(b));
+    // Show this phone's copy at once; the server's referrals merge into the store when they arrive.
+    void loadAshaBridge().then((b) => alive && setBridge(b));
+    void pullDoctorInbox().catch(() => undefined);
     return () => {
       alive = false;
     };
