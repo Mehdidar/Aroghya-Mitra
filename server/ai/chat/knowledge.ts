@@ -95,11 +95,30 @@ export const KNOWLEDGE_BASE: KnowledgeDoc[] = [
     title: 'High blood pressure',
     source: { org: 'WHO', url: 'https://www.who.int/news-room/fact-sheets/detail/hypertension' },
     reviewed: false,
-    keywords: ['blood pressure', 'bp', 'hypertension', 'high bp', 'salt', 'बीपी', 'रक्तचाप', 'namak', 'இரத்த அழுத்தம்', 'রক্তচাপ', 'రక్తపోటు', 'रक्तदाब', 'બ્લડ પ્રેશર', 'ರಕ್ತದೊತ್ತಡ', 'രക്തസമ്മർദ്ദം', 'ਬਲੱਡ ਪ੍ਰੈਸ਼ਰ', 'بلڈ پریشر'],
+    keywords: ['blood pressure', 'bp', 'hypertension', 'high bp', 'salt', 'pickle', 'pickles', 'achar', 'achaar', 'papad', 'namkeen', 'बीपी', 'रक्तचाप', 'namak', 'இரத்த அழுத்தம்', 'রক্তচাপ', 'రక్తపోటు', 'रक्तदाब', 'બ્લડ પ્રેશર', 'ರಕ್ತದೊತ್ತಡ', 'രക്തസമ്മർദ്ദം', 'ਬਲੱਡ ਪ੍ਰੈਸ਼ਰ', 'بلڈ پریشر'],
     body:
       'High blood pressure often has no symptoms, so check it regularly. Eat less salt (under 5 grams, about one teaspoon, a day in total), eat more vegetables and fruit, be active, avoid tobacco and limit alcohol. ' +
       'If medicine is prescribed, take it every day even when you feel well, and do not stop it without talking to your doctor.',
     followUps: ['How can I lower my BP naturally?', 'How much salt is safe per day?', 'Can I stop BP medicine if I feel fine?'],
+  },
+  {
+    id: 'pregnancy-danger-signs',
+    title: 'Pregnancy danger signs and raised blood pressure',
+    source: { org: 'WHO', url: 'https://www.who.int/publications/i/item/9789241549912' },
+    reviewed: false,
+    keywords: ['pregnancy', 'pregnant', 'antenatal', 'pre-eclampsia', 'preeclampsia', 'eclampsia', 'gestational hypertension', 'baby movement', 'blurred vision', 'garbh', 'garbhavastha', 'गर्भ', 'गर्भावस्था', 'गर्भवती', 'ಗರ್ಭಿಣಿ', 'கர்ப்பம்', 'గర్భం', 'حمل'],
+    body:
+      'Pregnancy with raised blood pressure needs regular pressure checks and the prescribed medicine every day. Pre-eclampsia is a dangerous rise in pressure during pregnancy. ' +
+      'Danger signs that need the hospital the same hour: severe headache, blurred vision, swelling of the face or hands, pain in the upper stomach, fits, bleeding, leaking fluid, or the baby moving less. ' +
+      'Do not start new medicines, including painkillers like ibuprofen, without asking the doctor. Use less salt, keep antenatal check-ups and take iron and calcium tablets as advised.',
+    emergencyFor: ['pregnancy'],
+    emergencySteps: [
+      'Call 108 now, or go to the nearest hospital with a labour room.',
+      'While you wait, lie on your left side.',
+      'Take your antenatal card and your medicines or prescriptions with you.',
+      'Do not take any new medicine until a doctor sees you.',
+    ],
+    followUps: ['What are the danger signs in pregnancy?', 'What should I eat with high BP in pregnancy?', 'Which painkillers are safe in pregnancy?'],
   },
   {
     id: 'diabetes',

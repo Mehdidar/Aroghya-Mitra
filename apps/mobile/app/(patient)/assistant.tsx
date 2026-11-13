@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 
+import { PersonalisedNote, WarningCards } from '@/features/patient/assistant/PersonalisedNote';
 import { useAiChat } from '@/features/patient/chat/useAiChat';
 import { DEMO_CHIP_KEYS } from '@/features/patient/chat/demoReplies';
 import { EmergencyBanner } from '@/features/patient/chat/EmergencyBanner';
@@ -19,6 +20,8 @@ function Bubble({ m }: { m: ChatMessage }) {
   const mine = m.role === 'user';
   return (
     <View style={{ alignItems: mine ? 'flex-end' : 'flex-start', gap: theme.space[1] }} testID={`msg-${m.role}`}>
+      {!mine && m.warnings?.length ? <WarningCards warnings={m.warnings} /> : null}
+      {!mine && m.streaming === false && !m.text && m.emergency ? null : (
       <View
         style={{
           maxWidth: '88%',
@@ -40,6 +43,8 @@ function Bubble({ m }: { m: ChatMessage }) {
           </Text>
         )}
       </View>
+      )}
+      {!mine && m.context && !m.streaming ? <PersonalisedNote context={m.context} demo={m.demo} /> : null}
       {m.demo ? <Pill label={t('chat.demoLabel')} tone="warning" icon="flask-outline" /> : null}
       {m.sources?.length ? (
         <Text variant="caption" tone="tertiary">
@@ -55,7 +60,7 @@ export default function PatientAssistant() {
   const theme = useTheme();
   const [input, setInput] = useState('');
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
-  const chat = useAiChat({ demoText: (key) => t(`chat.demo.${key}`) });
+  const chat = useAiChat({ demoText: (key) => t(`chat.demo.${key}`), personalText: (key, params) => t(key, params) });
 
   useEffect(() => {
     const id = setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 80);

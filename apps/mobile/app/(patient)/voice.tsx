@@ -6,7 +6,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 
+import { warningText } from '@/features/patient/assistant/labels';
+import { PersonalisedNote, WarningCards } from '@/features/patient/assistant/PersonalisedNote';
 import { EmergencyBanner } from '@/features/patient/chat/EmergencyBanner';
+import type { ChatMessage } from '@/features/patient/chat/types';
 import { useAiChat } from '@/features/patient/chat/useAiChat';
 import { PANEL, VoicePanel } from '@/features/patient/voice/VoicePanel';
 import { speak, stopSpeaking, type SpokenVia } from '@/features/patient/voice/speech';
@@ -60,6 +63,7 @@ export default function VoiceConsultation() {
   const orbSize = height < 640 ? 88 : compact ? 104 : 128;
   const [transcript, setTranscript] = useState<string | null>(null);
   const [reply, setReply] = useState<string | null>(null);
+  const [replyMsg, setReplyMsg] = useState<ChatMessage | null>(null);
   const [speaking, setSpeaking] = useState(false);
   const [via, setVia] = useState<SpokenVia | null>(null);
   const [demo, setDemo] = useState(false);
@@ -69,11 +73,17 @@ export default function VoiceConsultation() {
     persist: false,
     mode: 'voice',
     demoText: (key) => t(`chat.demo.${key}`),
+    personalText: (key, params) => t(key, params),
     onReply: (m) => {
-      setReply(m.text);
+      // Safety warnings are spoken first, then the answer.
+      const warnings = (m.warnings ?? []).map((w) => warningText(t, w));
+      const spoken = [...warnings, m.text].filter(Boolean).join(' ');
+      setReply(m.text || warnings.join(' ') || null);
+      setReplyMsg(m);
       setDemo(!!m.demo);
+      if (!spoken) return;
       setSpeaking(true);
-      void speak(m.text, language, { onDone: () => setSpeaking(false) }).then(setVia);
+      void speak(spoken, language, { onDone: () => setSpeaking(false) }).then(setVia);
     },
   });
 
@@ -101,6 +111,7 @@ export default function VoiceConsultation() {
     if (orbState !== 'idle') return;
     feedback.tap();
     setReply(null);
+    setReplyMsg(null);
     await voice.start((tr) => {
       setTranscript(tr.text);
       if (tr.text) void chat.send(tr.text);
@@ -109,6 +120,7 @@ export default function VoiceConsultation() {
 
   const ask = (text: string) => {
     setReply(null);
+    setReplyMsg(null);
     setTranscript(text);
     void chat.send(text);
   };
@@ -150,6 +162,7 @@ export default function VoiceConsultation() {
 
           {/* Live caption */}
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingVertical: theme.space[4], gap: theme.space[3] }} showsVerticalScrollIndicator={false}>
+            {replyMsg?.warnings?.length && replyMsg.text ? <WarningCards warnings={replyMsg.warnings} /> : null}
             {answer && transcript ? (
               <Text variant="bodySmall" align="center" color={PANEL.textSoft} numberOfLines={2} testID="voice-transcript">
                 {`${t('voice.youSaid')}: “${transcript}”`}
@@ -170,6 +183,7 @@ export default function VoiceConsultation() {
                 </Text>
               ) : null}
               {demo ? <Pill label={t('chat.demoLabel')} tone="warning" icon="flask-outline" /> : null}
+              {answer && replyMsg?.context ? <PersonalisedNote context={replyMsg.context} demo={replyMsg.demo} tone="panel" /> : null}
               {via === 'device' ? <Pill label={t('voice.deviceVoice')} tone="neutral" icon="phone-portrait-outline" /> : null}
               {voice.error ? <Pill label={t(`voice.error.${voice.error.kind}`, voice.error.message)} tone="warning" icon="alert-circle-outline" /> : null}
             </View>

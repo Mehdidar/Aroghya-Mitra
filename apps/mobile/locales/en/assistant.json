@@ -1,0 +1,72 @@
+{
+  "personalised": "Personalised for you",
+  "basedOn": "based on: {{list}}",
+  "notPersonalised": "General answer: your health record could not be used for this reply.",
+  "label": {
+    "pregnancy": "pregnancy",
+    "pregnancyWeeks": "pregnancy {{weeks}} wks",
+    "conditions": "health conditions",
+    "allergies": "allergy",
+    "medicines": "your medicines",
+    "past_medicines": "past prescriptions",
+    "vitals": "recent readings",
+    "reports": "reports",
+    "consultation": "last doctor visit",
+    "alerts": "health worker alert",
+    "asha_visit": "ASHA visit",
+    "diet": "food preferences"
+  },
+  "why": {
+    "title": "Why this answer?",
+    "hide": "Hide details",
+    "intro": "This answer used these parts of your health record:",
+    "pregnancy": "Pregnancy: your record shows you are pregnant.",
+    "pregnancyWeeks": "Pregnancy: your record shows about {{weeks}} weeks.",
+    "conditions": "Health conditions written in your record.",
+    "allergies": "Allergies written in your record.",
+    "medicines": "The medicines you are taking now.",
+    "past_medicines": "Medicines from your earlier prescriptions.",
+    "vitals": "Your last BP, weight and other readings.",
+    "reports": "The names and dates of your reports.",
+    "consultation": "Your last doctor visit.",
+    "alerts": "An open alert from your health worker.",
+    "asha_visit": "Your last ASHA home visit.",
+    "diet": "The food preferences you set.",
+    "footer": "The assistant does not diagnose or change medicines. Always follow your doctor's advice.",
+    "demo": "This is a sample answer for the demo patient, not from the AI. Always follow your doctor's advice."
+  },
+  "warning": {
+    "title": "Please read this first",
+    "allergy_match": "Your record shows an allergy to {{allergy}}. {{item}} can cause a serious reaction for you. Do not take or eat it unless your doctor has checked your allergy.",
+    "nsaid_pregnancy": "Your record shows you are about {{weeks}} weeks pregnant. Painkillers like {{item}} are usually avoided after 20 weeks because they can harm the baby. Do not take it unless your doctor says so. Ask your doctor what is safe for your pain.",
+    "ace_arb_pregnancy": "Your record shows you are pregnant. BP medicines like {{item}} are not used in pregnancy because they can harm the baby. Do not start it, and do not change your BP medicine without your doctor.",
+    "preg_htn_warning_sign": "Your record shows you are about {{weeks}} weeks pregnant with high BP. Headache, blurred vision, swelling, upper stomach pain or less baby movement can be warning signs of pre-eclampsia. Go to the hospital now or call 108.",
+    "preg_danger_sign": "Your record shows you are about {{weeks}} weeks pregnant. Blurred vision, upper stomach pain or less baby movement are danger signs. Go to the hospital now or call 108.",
+    "high_salt_bp": "Your record shows high BP. Pickles, papad, namkeen and other salty foods raise BP. Avoid them or eat very little, and follow your doctor's diet advice.",
+    "dose_change": "Do not stop, skip or change your {{item}} on your own. Ask your doctor before changing any medicine.",
+    "dose_change_any": "Do not stop, skip or change your medicines on your own. Ask your doctor before changing any medicine."
+  },
+  "diet": {
+    "title": "Food preferences",
+    "body": "The health assistant uses these to suggest food that suits you.",
+    "typeLabel": "I eat",
+    "type": {
+      "none": "Not set",
+      "veg": "Vegetarian",
+      "nonveg": "Non-vegetarian",
+      "vegan": "Vegan",
+      "jain": "Jain"
+    },
+    "noOnionGarlic": "No onion or garlic",
+    "avoidLabel": "Foods I avoid",
+    "avoidPlaceholder": "For example: brinjal, peanuts",
+    "avoidHint": "Separate foods with commas"
+  },
+  "demo": {
+    "fever": "For you: your record shows you are about {{weeks}} weeks pregnant, so a fever needs a check at the PHC today. Do not take ibuprofen. Your record also shows a penicillin allergy: tell the doctor before any antibiotic.",
+    "headache": "For you: your record shows high BP in pregnancy (about {{weeks}} weeks). A headache with blurred vision, swelling or upper stomach pain can be pre-eclampsia: go to the hospital now or call 108.",
+    "bp": "For you: your record shows high BP in pregnancy. Keep taking labetalol exactly as prescribed, avoid pickles, papad and namkeen, and do not change the dose without your doctor. With headache, blurred vision or swelling, call 108.",
+    "pregnancy": "For you: your record shows about {{weeks}} weeks with high BP. Keep your BP checks and take labetalol, iron and calcium as prescribed. Severe headache, blurred vision, swelling, upper stomach pain or less baby movement: go to the hospital now or call 108.",
+    "medicine": "For you: your record shows a penicillin allergy and that you are about {{weeks}} weeks pregnant. Do not take penicillin-type antibiotics like amoxicillin, or painkillers like ibuprofen. Ask your doctor before any new medicine."
+  }
+}

@@ -1,17 +1,24 @@
 /**
  * Chat state for the assistant and voice screens: messages, streaming,
  * suggestion chips, the on-device red-flag check and the labelled demo path.
+ *
+ * Personalised: every request carries the signed-in patient's record id and
+ * their food preferences; the server answers for that record only if the
+ * caller owns it, and streams `context` (record parts used) and `warning`
+ * (deterministic safety checks) events, kept on the reply message.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { detectRedFlags, EMERGENCY_CONTACTS } from '@am/patient-ai';
 
-import { useSession } from '@/features/shared/state/session';
+import { personalDemo, DEMO_PREGNANCY_WEEKS } from '@/features/patient/assistant/demo';
+import { dietForChat } from '@/features/patient/assistant/preferences';
+import { currentPatientId, useSession } from '@/features/shared/state/session';
 
 import { streamChat, type StreamChatOptions } from './chatClient';
 import { demoReplyKey } from './demoReplies';
 import { chatHistory, fromStored, toStored } from './history';
-import type { ChatMessage, ChatTurn, EmergencyInfo } from './types';
+import type { ChatMessage, ChatTurn, ChatWarning, EmergencyInfo, ReplyContext } from './types';
 
 export type ChatStatus = 'idle' | 'streaming' | 'error';
 
@@ -23,6 +30,8 @@ export interface UseAiChatOptions extends StreamChatOptions {
   persist?: boolean;
   /** Translates demo reply keys; returns the text to show. */
   demoText: (key: string) => string;
+  /** Translates the demo patient's personal demo note (assistant:demo.*), shown after the generic demo text. */
+  personalText?: (i18nKey: string, params: Record<string, string | number>) => string;
 }
 
 let seq = 0;
@@ -83,8 +92,18 @@ export function useAiChat(opts: UseAiChatOptions) {
       let final: ChatMessage = reply;
       try {
         let acc = '';
-        for await (const ev of streamChat({ message: text, history, language, mode: o.mode ?? 'text' }, { fetchImpl: o.fetchImpl, signal: ctrl.signal, timeoutMs: o.timeoutMs })) {
-          if (ev.type === 'delta') {
+        const warnings: ChatWarning[] = [];
+        const input = { message: text, history, language, mode: o.mode ?? 'text', patientId: currentPatientId(), diet: dietForChat() } as const;
+        for await (const ev of streamChat(input, { fetchImpl: o.fetchImpl, signal: ctrl.signal, timeoutMs: o.timeoutMs })) {
+          if (ev.type === 'context') {
+            const context: ReplyContext = { used: ev.used ?? [], personalised: !!ev.personalised, reason: ev.reason, pregnancyWeeks: ev.pregnancyWeeks };
+            final = { ...final, context };
+            patch({ context });
+          } else if (ev.type === 'warning') {
+            warnings.push({ code: ev.code, text: ev.text, params: ev.params, escalate: ev.escalate });
+            final = { ...final, warnings: [...warnings] };
+            patch({ warnings: [...warnings] });
+          } else if (ev.type === 'delta') {
             acc += ev.text;
             patch({ text: acc });
           } else if (ev.type === 'emergency') {
@@ -102,9 +121,14 @@ export function useAiChat(opts: UseAiChatOptions) {
         if (o.persist !== false) await chatHistory.append(toStored(user), toStored(final)).catch(() => undefined);
       } catch {
         // Unreachable or failed: a labelled demo answer, never a fake AI one.
-        const demo = o.demoText(demoReplyKey(text));
-        final = { ...final, text: demo, streaming: false, demo: true };
-        patch({ text: demo, streaming: false, demo: true });
+        const key = demoReplyKey(text);
+        const personal = o.personalText ? personalDemo(key) : null;
+        const note = personal ? o.personalText!(personal.i18nKey, { weeks: DEMO_PREGNANCY_WEEKS }) : '';
+        const demo = note ? `${o.demoText(key)} ${note}` : o.demoText(key);
+        const context = personal ? personal.context : undefined;
+        // Warnings the server already sent stay: they came from the safety rules, not the model.
+        final = { ...final, text: demo, streaming: false, demo: true, context };
+        patch({ text: demo, streaming: false, demo: true, context });
         setStatus('error');
       } finally {
         abortRef.current = null;

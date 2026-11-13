@@ -1,6 +1,7 @@
 /**
  * Streams one chat turn from POST /ai/chat (server/speech/http.ts).
- *   body: { message, history: [{role, text}], language, mode }
+ *   body: { message, history: [{role, content}], language, mode, patientId?, diet? }
+ *   patientId: the signed-in patient's own record; the server personalises only if the caller owns it.
  *   response: text/event-stream of ChatEvent (features/patient/chat/types.ts)
  *
  * `fetch` from 'expo/fetch' streams the body on iOS and Android; on web the
@@ -12,6 +13,13 @@ import { apiBaseUrl, authHeaders } from '@/features/shared/services/api';
 
 import { readSse } from './sse';
 import type { ChatEvent, ChatTurn } from './types';
+
+/** Food preferences sent with each chat request (features/patient/assistant/preferences.ts). */
+export interface ChatDiet {
+  type?: 'veg' | 'nonveg' | 'vegan' | 'jain';
+  noOnionGarlic?: boolean;
+  avoid?: string[];
+}
 
 export class ChatUnavailableError extends Error {
   constructor(
@@ -28,6 +36,8 @@ export interface StreamChatInput {
   history: ChatTurn[];
   language: string;
   mode?: 'text' | 'voice';
+  patientId?: string | null;
+  diet?: ChatDiet | null;
 }
 
 export interface StreamChatOptions {
@@ -54,7 +64,15 @@ export async function* streamChat(input: StreamChatInput, opts: StreamChatOption
     res = await fetchImpl(`${apiBaseUrl()}/ai/chat`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'text/event-stream', ...authHeaders() },
-      body: JSON.stringify({ message: input.message, history: input.history, language: input.language, mode: input.mode ?? 'text' }),
+      body: JSON.stringify({
+        message: input.message,
+        // The server reads { role, content } turns (server/speech/http.ts).
+        history: input.history.map((h) => ({ role: h.role, content: h.text })),
+        language: input.language,
+        mode: input.mode ?? 'text',
+        ...(input.patientId ? { patientId: input.patientId } : {}),
+        ...(input.diet ? { diet: input.diet } : {}),
+      }),
       signal: ctrl.signal,
     });
   } catch (e) {

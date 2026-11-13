@@ -7,7 +7,9 @@
  *                      Same fields as Sarvam's own API, so P3's app only changes its URL
  *                      (EXPO_PUBLIC_SARVAM_STT_URL). Any client `model` is ignored: the server picks a tested model.
  *   POST /speech/tts   JSON { text, language, speaker?, pace? }  → { audioBase64, mimeType } or 503 { fallback: 'device' | 'text-only' }
- *   POST /ai/chat      JSON { message, history, language, mode? } → text/event-stream of ChatEvent
+ *   POST /ai/chat      JSON { message, history, language, mode?, patientId?, diet? } → text/event-stream of ChatEvent
+ *                      patientId: the caller's own patients.id; the reply is personalised only if the
+ *                      caller may open that record as its owner (server/ai/chat/patientContext.ts).
  *   GET  /health
  *
  * Auth: if P2_PROXY_TOKEN is set, requests need `x-app-token: <token>`. Replace with
@@ -18,6 +20,8 @@ import { APP_LANGUAGES, LANGUAGE_CAPABILITIES, fromSarvamCode, ttsStrategy, type
 import type { SarvamClient } from './sarvamClient.ts';
 import type { SttMode } from './types.ts';
 import { streamChatReply, type ChatDeps, type ChatTurn } from '../ai/chat/chatService.ts';
+import { dietOnlyContext, parseDietPreferences } from '../ai/chat/patientContext.ts';
+import { recordsPatientContextLoader, type PatientContextLoader } from '../ai/chat/patientContextLoader.ts';
 
 export const MAX_AUDIO_BYTES = 10 * 1024 * 1024;
 export const MAX_TTS_CHARS = 2500;
@@ -29,6 +33,8 @@ export interface SpeechHttpDeps {
   /** Return false to reject with 401. Default: x-app-token must equal `appToken` when one is set. */
   authorize?: (req: Request) => boolean | Promise<boolean>;
   appToken?: string;
+  /** Loads the caller's own record for a personalised chat. Default: server auth + the records repository. */
+  patientContext?: PatientContextLoader;
 }
 
 const json = (body: unknown, status = 200) =>
@@ -122,7 +128,7 @@ async function handleTts(req: Request, deps: SpeechHttpDeps): Promise<Response> 
 }
 
 async function handleChat(req: Request, deps: SpeechHttpDeps): Promise<Response> {
-  const body = (await req.json().catch(() => null)) as { message?: unknown; history?: unknown; language?: unknown; mode?: unknown } | null;
+  const body = (await req.json().catch(() => null)) as { message?: unknown; history?: unknown; language?: unknown; mode?: unknown; patientId?: unknown; diet?: unknown } | null;
   const message = typeof body?.message === 'string' ? body.message : '';
   const lang = parseLanguage(body?.language) ?? 'en';
   const history: ChatTurn[] = Array.isArray(body?.history)
@@ -133,6 +139,16 @@ async function handleChat(req: Request, deps: SpeechHttpDeps): Promise<Response>
     : [];
   if (!message.trim()) return json({ error: 'Missing message' }, 400);
   const mode = body?.mode === 'voice' ? 'voice' : 'text';
+  const patientId = typeof body?.patientId === 'string' && /^[\w:-]{1,80}$/.test(body.patientId) ? body.patientId : null;
+  const diet = parseDietPreferences(body?.diet);
+  const loader = deps.patientContext ?? recordsPatientContextLoader();
+  // Request bodies are read once: hand the loader a copy that still has the headers.
+  const authReq = new Request(req.url, { headers: req.headers });
+  const loadPatientContext = patientId
+    ? () => loader(authReq, patientId, diet)
+    : diet
+      ? async () => ({ status: 'no_patient' as const, context: dietOnlyContext(diet) })
+      : undefined;
 
   const encoder = new TextEncoder();
   const controller = new AbortController();
@@ -140,7 +156,7 @@ async function handleChat(req: Request, deps: SpeechHttpDeps): Promise<Response>
   const stream = new ReadableStream<Uint8Array>({
     async start(ctrl) {
       try {
-        for await (const event of streamChatReply({ message, history, language: lang, mode }, deps.chat, { signal: controller.signal })) {
+        for await (const event of streamChatReply({ message, history, language: lang, mode, loadPatientContext }, deps.chat, { signal: controller.signal })) {
           ctrl.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
         }
       } catch {

@@ -7,6 +7,7 @@ import { useCurrentUser, useSession } from '@/features/shared/state/session';
 import { textScale as textScaleTokens, useTheme, useThemeSettings } from '@/features/shared/theme';
 import { Avatar, Card, Heading, Icon, Pill, PrimaryButton, Screen, SecondaryButton, Text } from '@/features/shared/ui';
 import { AudioGuideToggle, ScreenGuide } from '@/features/shared/a11y/audioGuide';
+import { DietPreferences } from '@/features/patient/assistant/DietPreferences';
 
 /** Shared profile: who is signed in, the language switcher, sign out. Used by patient and doctor tabs. */
 export function ProfileScreen({ note }: { note?: string }) {
@@ -83,6 +84,7 @@ export function ProfileScreen({ note }: { note?: string }) {
       <Text variant="caption" tone="tertiary">
         {t('demo.note')}
       </Text>
+      {user?.role === 'patient' ? <DietPreferences testID="diet-preferences" /> : null}
       <Card radius="xl" testID="a11y-card">
         <View style={{ gap: theme.space[3] }}>
           <Text variant="label">{t('profile.accessibility')}</Text>
