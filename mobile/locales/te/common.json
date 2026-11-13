@@ -1,0 +1,7 @@
+{
+  "appName": "ఆరోగ్య మిత్ర",
+  "tabs": { "home": "హోమ్", "records": "రికార్డులు", "assistant": "సహాయకుడు", "profile": "ప్రొఫైల్" },
+  "roles": { "patient": "రోగి", "asha": "ఆశా కార్యకర్త", "doctor": "వైద్యుడు", "admin": "నిర్వాహకుడు" },
+  "actions": { "signOut": "సైన్ అవుట్", "continue": "కొనసాగించు" },
+  "language": { "label": "భాష" }
+}

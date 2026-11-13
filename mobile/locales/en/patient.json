@@ -1,0 +1,51 @@
+{
+  "home": {
+    "greeting": "Hello, {{name}}",
+    "subtitle": "How are you feeling today?",
+    "searchPlaceholder": "Search medicines, reports, hospitals",
+    "services": "Services",
+    "today": "Today's health",
+    "reminders": "Upcoming reminders"
+  },
+  "services": {
+    "chat": "Chat",
+    "voice": "Voice",
+    "prescription": "Prescription",
+    "nutrition": "Nutrition",
+    "hospitalMap": "Hospital map",
+    "qrCard": "QR card",
+    "bloodBanks": "Blood banks",
+    "reports": "Reports"
+  },
+  "ai": {
+    "title": "AI Health Assistant",
+    "body": "Ask about symptoms, medicines or diet in your language.",
+    "cta": "Ask now"
+  },
+  "stats": {
+    "heartRate": "Heart rate",
+    "bpm": "bpm",
+    "normal": "Normal",
+    "weight": "Weight",
+    "kg": "kg",
+    "lastWeek": "Same as last week"
+  },
+  "reminders": {
+    "afterBreakfast": "After breakfast",
+    "afterDinner": "After dinner",
+    "checkup": "BP check-up",
+    "checkupPlace": "PHC Jayanagar · Tue 10:30",
+    "today": "Today"
+  },
+  "records": {
+    "title": "My records",
+    "body": "Your visits, reports and prescriptions will appear here."
+  },
+  "assistant": {
+    "title": "Assistant",
+    "body": "Chat or talk with the AI health assistant. Coming in the next phase."
+  },
+  "profile": {
+    "demoNote": "You are using demo mode. Nothing is sent to a server."
+  }
+}

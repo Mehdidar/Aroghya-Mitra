@@ -1,0 +1,61 @@
+{
+  "appName": "Aroghya Mitra",
+  "tagline": "Your health companion",
+  "tabs": {
+    "home": "Home",
+    "records": "Records",
+    "assistant": "Assistant",
+    "profile": "Profile",
+    "dashboard": "Dashboard",
+    "patients": "Patients",
+    "inbox": "Inbox"
+  },
+  "roles": {
+    "patient": "Patient",
+    "asha": "ASHA worker",
+    "doctor": "Doctor",
+    "admin": "Admin"
+  },
+  "actions": {
+    "back": "Back",
+    "continue": "Continue",
+    "signOut": "Sign out",
+    "search": "Search",
+    "notifications": "Notifications",
+    "seeAll": "See all"
+  },
+  "demo": {
+    "badge": "Demo",
+    "signedInAs": "Signed in as {{name}} · {{role}}",
+    "note": "Demo mode: data on this device is sample data only."
+  },
+  "language": {
+    "label": "Language",
+    "change": "Change language"
+  },
+  "placeholder": {
+    "comingSoon": "Coming soon",
+    "body": "This screen is part of the next build phase.",
+    "owner": "Being built by {{owner}}"
+  },
+  "doctor": {
+    "dashboardTitle": "Good morning, {{name}}",
+    "dashboardSub": "Scan a patient's QR health card to open their history.",
+    "scanQr": "Scan QR",
+    "scanQrHint": "Opens the camera to read a patient's health card",
+    "todayPatients": "Today's patients",
+    "pendingReferrals": "Referrals pending",
+    "patientsTitle": "Registered patients",
+    "inboxTitle": "Referral inbox",
+    "adminNote": "Admin tools appear here for the admin role."
+  },
+  "profile": {
+    "title": "Profile",
+    "language": "App language",
+    "account": "Account",
+    "phone": "Phone"
+  },
+  "dev": {
+    "title": "Component gallery"
+  }
+}

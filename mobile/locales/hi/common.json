@@ -1,0 +1,61 @@
+{
+  "appName": "आरोग्य मित्र",
+  "tagline": "आपका स्वास्थ्य साथी",
+  "tabs": {
+    "home": "होम",
+    "records": "रिकॉर्ड",
+    "assistant": "सहायक",
+    "profile": "प्रोफ़ाइल",
+    "dashboard": "डैशबोर्ड",
+    "patients": "मरीज़",
+    "inbox": "इनबॉक्स"
+  },
+  "roles": {
+    "patient": "मरीज़",
+    "asha": "आशा कार्यकर्ता",
+    "doctor": "डॉक्टर",
+    "admin": "एडमिन"
+  },
+  "actions": {
+    "back": "वापस",
+    "continue": "आगे बढ़ें",
+    "signOut": "साइन आउट",
+    "search": "खोजें",
+    "notifications": "सूचनाएँ",
+    "seeAll": "सभी देखें"
+  },
+  "demo": {
+    "badge": "डेमो",
+    "signedInAs": "{{name}} · {{role}} के रूप में साइन इन",
+    "note": "डेमो मोड: इस फ़ोन पर केवल नमूना डेटा है।"
+  },
+  "language": {
+    "label": "भाषा",
+    "change": "भाषा बदलें"
+  },
+  "placeholder": {
+    "comingSoon": "जल्द आ रहा है",
+    "body": "यह स्क्रीन अगले चरण में बनेगी।",
+    "owner": "{{owner}} बना रहे हैं"
+  },
+  "doctor": {
+    "dashboardTitle": "सुप्रभात, {{name}}",
+    "dashboardSub": "मरीज़ का पूरा इतिहास देखने के लिए उसका QR हेल्थ कार्ड स्कैन करें।",
+    "scanQr": "QR स्कैन करें",
+    "scanQrHint": "मरीज़ का हेल्थ कार्ड पढ़ने के लिए कैमरा खोलता है",
+    "todayPatients": "आज के मरीज़",
+    "pendingReferrals": "बाकी रेफ़रल",
+    "patientsTitle": "पंजीकृत मरीज़",
+    "inboxTitle": "रेफ़रल इनबॉक्स",
+    "adminNote": "एडमिन के लिए प्रबंधन टूल यहाँ दिखेंगे।"
+  },
+  "profile": {
+    "title": "प्रोफ़ाइल",
+    "language": "ऐप की भाषा",
+    "account": "खाता",
+    "phone": "फ़ोन"
+  },
+  "dev": {
+    "title": "कंपोनेंट गैलरी"
+  }
+}

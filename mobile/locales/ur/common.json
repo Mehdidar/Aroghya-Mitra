@@ -1,0 +1,47 @@
+{
+  "appName": "آروگیہ مترا",
+  "tagline": "آپ کا صحت ساتھی",
+  "tabs": {
+    "home": "ہوم",
+    "records": "ریکارڈ",
+    "assistant": "معاون",
+    "profile": "پروفائل",
+    "dashboard": "ڈیش بورڈ",
+    "patients": "مریض",
+    "inbox": "ان باکس"
+  },
+  "roles": {
+    "patient": "مریض",
+    "asha": "آشا کارکن",
+    "doctor": "ڈاکٹر",
+    "admin": "ایڈمن"
+  },
+  "actions": {
+    "back": "واپس",
+    "continue": "جاری رکھیں",
+    "signOut": "سائن آؤٹ",
+    "search": "تلاش",
+    "notifications": "اطلاعات",
+    "seeAll": "سب دیکھیں"
+  },
+  "demo": {
+    "badge": "ڈیمو",
+    "signedInAs": "{{name}} · {{role}} کے طور پر سائن ان",
+    "note": "ڈیمو موڈ: اس فون پر صرف نمونہ ڈیٹا ہے۔"
+  },
+  "language": {
+    "label": "زبان",
+    "change": "زبان بدلیں"
+  },
+  "placeholder": {
+    "comingSoon": "جلد آ رہا ہے",
+    "body": "یہ اسکرین اگلے مرحلے میں بنے گی۔",
+    "owner": "{{owner}} بنا رہے ہیں"
+  },
+  "profile": {
+    "title": "پروفائل",
+    "language": "ایپ کی زبان",
+    "account": "اکاؤنٹ",
+    "phone": "فون"
+  }
+}
