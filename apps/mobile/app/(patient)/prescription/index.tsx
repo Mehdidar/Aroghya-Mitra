@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, View } from 'react-native';
 
-import { DEMO_IDS } from '@am/shared';
 
 import { MedicineCard } from '@/features/patient/prescription/MedicineCard';
 import { extractPrescription, PrescriptionScanError, type PrescriptionImage } from '@/features/patient/prescription/client';
@@ -13,6 +12,7 @@ import { scheduleDoseNotifications } from '@/features/patient/prescription/notif
 import { toPrescription, toReminderItems } from '@/features/patient/prescription/toReminders';
 import { toReviewed, type ExtractResponse, type ReviewedMedicine } from '@/features/patient/prescription/types';
 import { useRecords } from '@/features/shared/data/recordsStore';
+import { currentPatientId } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
 import { Card, ErrorState, Heading, Icon, IconButton, Pill, PrimaryButton, Screen, SecondaryButton, Skeleton, Text } from '@/features/shared/ui';
 
@@ -54,7 +54,7 @@ export default function PrescriptionExplainer() {
   const save = async () => {
     if (step.kind !== 'review') return;
     const meds = step.meds.filter((m) => m.name.trim());
-    const rx = toPrescription(meds, DEMO_IDS.patientRecord);
+    const rx = toPrescription(meds, currentPatientId());
     const items = toReminderItems(meds, rx.id);
     addPrescription(rx, items);
     const copy = { channelName: t('reminders:notifChannel'), taken: t('reminders:taken'), skip: t('reminders:skip'), title: () => t('reminders:notifTitle'), body: (names: string[]) => names.join(', ') };

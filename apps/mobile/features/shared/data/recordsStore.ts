@@ -21,6 +21,8 @@ import { DEMO_IDS, type Consultation, type DoseLog, type HealthReport, type Pati
 
 import { buildDemoRecords } from '@/features/shared/seed/demoRecords';
 
+import { currentPatientId } from '@/features/shared/state/session';
+
 import { queuePush } from './outbox';
 
 export type ReminderPlanItem = {
@@ -61,6 +63,8 @@ export type RecordsState = {
 
   seedIfEmpty: () => void;
   reset: () => void;
+  /** A real patient signed in: drop the demo seed; their own records come from the server. */
+  startFresh: () => void;
   addPrescription: (p: Prescription, reminders?: ReminderPlanItem[]) => void;
   setReminders: (items: ReminderPlanItem[]) => void;
   /** `dose` (from the Reminders timeline) lets the server keep a dose log; without it the tap stays on this phone. */
@@ -131,6 +135,8 @@ export const useRecords = create<RecordsState>()(
         if (!get().seededAt) set(seedState());
       },
       reset: () => set(seedState()),
+      startFresh: () =>
+        set({ seededAt: new Date().toISOString(), patients: {}, vitals: [], prescriptions: [], doseLogs: [], doseActions: [], reminders: [], reports: [], consultations: [], referrals: [], riskAlerts: [], foodLog: [], shareHistory: false }),
       addPrescription: (p, reminders = []) => {
         set((s) => ({ prescriptions: [p, ...s.prescriptions.filter((x) => x.id !== p.id)], reminders: [...reminders, ...s.reminders.filter((r) => r.prescriptionId !== p.id)] }));
         queuePush({ prescriptions: [p] });
@@ -141,7 +147,7 @@ export const useRecords = create<RecordsState>()(
         if (dose) {
           const plan = get().reminders.find((r) => r.id === dose.medicineId);
           queuePush({
-            doseLogs: [{ id: doseId, patientId: demoPatientId, prescriptionId: plan?.prescriptionId ?? null, medicineName: dose.medicineName, scheduledAt: dose.at.toISOString(), status, takenAt: status === 'taken' ? at.toISOString() : null }],
+            doseLogs: [{ id: doseId, patientId: currentPatientId(), prescriptionId: plan?.prescriptionId ?? null, medicineName: dose.medicineName, scheduledAt: dose.at.toISOString(), status, takenAt: status === 'taken' ? at.toISOString() : null }],
           });
         }
       },
@@ -169,14 +175,14 @@ export const useRecords = create<RecordsState>()(
       addFoodLog: (e) => set((s) => ({ foodLog: [e, ...s.foodLog] })),
       setShareHistory: (on) => {
         set({ shareHistory: on });
-        queuePush({ consent: { patientId: demoPatientId, shareHistory: on } });
+        queuePush({ consent: { patientId: currentPatientId(), shareHistory: on } });
       },
       upsertPatient: (p) => set((s) => ({ patients: { ...s.patients, [p.id]: p } })),
     }),
     {
       name: 'aroghya-records-v2',
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: ({ seedIfEmpty: _a, reset: _b, addPrescription: _c, setReminders: _d, logDose: _e, addReport: _f, addConsultation: _g, updateReferral: _h, addReferral: _i, addVitals: _j, addFoodLog: _k, setShareHistory: _l, upsertPatient: _m, ...data }) => data,
+      partialize: ({ seedIfEmpty: _a, reset: _b, startFresh: _n, addPrescription: _c, setReminders: _d, logDose: _e, addReport: _f, addConsultation: _g, updateReferral: _h, addReferral: _i, addVitals: _j, addFoodLog: _k, setShareHistory: _l, upsertPatient: _m, ...data }) => data,
       onRehydrateStorage: () => (state) => {
         state?.seedIfEmpty();
       },
@@ -184,5 +190,5 @@ export const useRecords = create<RecordsState>()(
   ),
 );
 
-/** The demo patient's record (the signed-in patient in demo mode). */
+/** The demo patient's record (Rekha). For the signed-in patient use currentPatientId(). */
 export const demoPatientId = DEMO_IDS.patientRecord;

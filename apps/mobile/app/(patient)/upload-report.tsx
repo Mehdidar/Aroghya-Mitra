@@ -7,7 +7,8 @@ import { Pressable, View } from 'react-native';
 import { REPORT_CATEGORIES, defaultTitle, progressPercent, reportStoragePath, resolveMime, validateUpload, type PickedFile, type ReportCategory, type UploadValidationError } from '@am/records';
 import { DEMO_IDS, type HealthReport } from '@am/shared';
 
-import { demoPatientId, useRecords } from '@/features/shared/data/recordsStore';
+import { useRecords } from '@/features/shared/data/recordsStore';
+import { currentPatientId, useSession } from '@/features/shared/state/session';
 import { useTheme } from '@/features/shared/theme';
 import { Card, Heading, Icon, IconButton, Pill, PrimaryButton, Screen, SectionHeader, Text, TextField, type IconName } from '@/features/shared/ui';
 
@@ -62,11 +63,11 @@ export default function UploadHealthReport() {
         clearInterval(tick);
         const report: HealthReport = {
           id,
-          patientId: demoPatientId,
-          uploadedBy: DEMO_IDS.patient,
+          patientId: currentPatientId(),
+          uploadedBy: useSession.getState().currentUserId() ?? DEMO_IDS.patient,
           category: category!,
           title: title.trim(),
-          storagePath: reportStoragePath(demoPatientId, mime, id),
+          storagePath: reportStoragePath(currentPatientId(), mime, id),
           mimeType: mime,
           sizeBytes: file.sizeBytes,
           reportDate: new Date().toISOString().slice(0, 10),

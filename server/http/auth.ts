@@ -17,6 +17,8 @@ export interface Caller {
   role: 'patient' | 'asha' | 'doctor' | 'admin';
   /** 'jwt' for a verified token, 'demo' for the bypass. */
   via: 'jwt' | 'demo';
+  /** The phone number on a verified token (E.164), if any. */
+  phone?: string;
 }
 
 export type AuthMode = 'supabase' | 'demo';
@@ -82,7 +84,7 @@ export async function verifySupabaseJwt(token: string, fetchImpl: typeof fetch =
   const parts = token.split('.');
   if (parts.length !== 3) return null;
   let header: { alg: string; kid?: string; typ?: string };
-  let claims: { sub?: string; exp?: number; nbf?: number; role?: string; user_metadata?: { role?: string }; app_metadata?: { role?: string } };
+  let claims: { sub?: string; exp?: number; nbf?: number; role?: string; phone?: string; user_metadata?: { role?: string }; app_metadata?: { role?: string } };
   try {
     header = JSON.parse(b64url.text(parts[0]));
     claims = JSON.parse(b64url.text(parts[1]));
@@ -105,9 +107,11 @@ export async function verifySupabaseJwt(token: string, fetchImpl: typeof fetch =
   if (typeof claims.exp === 'number' && claims.exp < t - 30) return null;
   if (typeof claims.nbf === 'number' && claims.nbf > t + 30) return null;
   if (!claims.sub) return null;
-  // Supabase's `role` claim is the Postgres role ('authenticated'); the app role lives in metadata.
-  const role = claims.app_metadata?.role ?? claims.user_metadata?.role ?? 'patient';
-  return { id: claims.sub, role: (ROLES.has(role) ? role : 'patient') as Caller['role'], via: 'jwt' };
+  // Supabase's `role` claim is the Postgres role ('authenticated'); the app role lives in app_metadata,
+  // which only the service role can set. user_metadata is writable by the user at sign-up, so it is
+  // never trusted for the role: anyone could otherwise make themselves a doctor.
+  const role = claims.app_metadata?.role ?? 'patient';
+  return { id: claims.sub, role: (ROLES.has(role) ? role : 'patient') as Caller['role'], via: 'jwt', ...(claims.phone ? { phone: `+${String(claims.phone).replace(/^\+/, '')}` } : {}) };
 }
 
 /** Resolve the caller for a request under the configured mode. null = 401. */

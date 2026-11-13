@@ -1,14 +1,25 @@
-import { createClient } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { Platform } from 'react-native';
+
+import { apiJson, setSessionToken } from '@/features/shared/services/api';
 import { patientConfig } from '@/features/shared/services/config';
 import type { Role } from '@/features/shared/state/session';
 
 /** Result of a code request: where it went, and whether this is the demo flow. */
 export type OtpRequest = { phone: string; demo: boolean };
-export type AuthUser = { id: string; phone: string; role: Role };
+export type AuthUser = {
+  id: string;
+  phone: string;
+  role: Role;
+  /** The patient record this user owns (patients only; created by the server on first sign-in). */
+  patientId?: string | null;
+  fullName?: string;
+};
 
 export class AuthError extends Error {
   constructor(
-    public readonly code: 'invalid_phone' | 'invalid_code' | 'network' | 'not_configured',
+    public readonly code: 'invalid_phone' | 'invalid_code' | 'network' | 'not_configured' | 'wrong_role',
     message?: string
   ) {
     super(message ?? code);
@@ -62,10 +73,38 @@ export async function supabasePhoneAuthEnabled(fetchImpl: typeof fetch = globalT
   }
 }
 
+let client: SupabaseClient | null = null;
+/** One Supabase client for the app, with the session kept across launches (AsyncStorage). */
+export function supabaseClient(): SupabaseClient | null {
+  if (!patientConfig.supabaseUrl || !patientConfig.supabaseAnonKey) return null;
+  if (!client) {
+    client = createClient(patientConfig.supabaseUrl, patientConfig.supabaseAnonKey, {
+      auth: { storage: AsyncStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: Platform.OS === 'web' },
+    });
+    // Every token refresh reaches the server calls (Authorization: Bearer).
+    client.auth.onAuthStateChange((_event, session) => setSessionToken(session?.access_token ?? null));
+  }
+  return client;
+}
+
+/** App start: put a saved Supabase session's token back on server calls. */
+export async function restoreSupabaseSession(): Promise<void> {
+  const c = supabaseClient();
+  if (!c) return;
+  try {
+    const { data } = await c.auth.getSession();
+    setSessionToken(data.session?.access_token ?? null);
+  } catch {
+    /* offline or no session */
+  }
+}
+
+type Me = { ok: boolean; id: string; role: Role; fullName: string; patientId: string | null; isActive: boolean };
+
 /** Real Supabase phone OTP auth (Phase B). Falls back to demo codes while the project cannot send SMS. */
 export class SupabaseAuthService implements AuthService {
   readonly demo = false;
-  private supabase = createClient(patientConfig.supabaseUrl, patientConfig.supabaseAnonKey);
+  private supabase = supabaseClient()!;
   private phoneEnabled: Promise<boolean> | null = null;
   private fallback = new DemoAuthService();
   /** Numbers that were given a demo code because the project could not send a real one. */
@@ -99,18 +138,27 @@ export class SupabaseAuthService implements AuthService {
       token: code,
       type: 'sms',
     });
-    if (error || !data.user) throw new AuthError('invalid_code', error?.message);
-    const resolvedRole: Role =
-      (data.user.user_metadata?.role as Role | undefined) ?? role;
-    return {
-      id: data.user.id,
-      phone: '+91' + phone10,
-      role: resolvedRole,
-    };
+    if (error || !data.user || !data.session) throw new AuthError('invalid_code', error?.message);
+    setSessionToken(data.session.access_token);
+    // The role comes from the server (the token's app_metadata, set by an admin), never from the
+    // role the user tapped: a new number is always a patient until an admin registers it as staff.
+    let me: Me;
+    try {
+      me = await apiJson<Me>('/me');
+    } catch (e) {
+      await this.signOut();
+      throw new AuthError('network', (e as Error).message);
+    }
+    if (me.role !== role && !(role === 'doctor' && me.role === 'admin')) {
+      await this.signOut();
+      throw new AuthError('wrong_role', me.role);
+    }
+    return { id: me.id, phone: '+91' + phone10, role: me.role, patientId: me.patientId, fullName: me.fullName };
   }
 
   async signOut(): Promise<void> {
-    await this.supabase.auth.signOut();
+    setSessionToken(null);
+    await this.supabase.auth.signOut().catch(() => undefined);
   }
 }
 

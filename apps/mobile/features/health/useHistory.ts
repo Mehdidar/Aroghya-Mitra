@@ -9,7 +9,8 @@ import { DEMO_PROFILES, type AshaVisit } from '@am/shared';
 import { buildPatientHistory, type PatientHistory } from '@server/records/history';
 import type { PatientRecordBundle } from '@server/records/repository';
 
-import { demoPatientId, useRecords, type RecordsState } from '@/features/shared/data/recordsStore';
+import { currentPatientId } from '@/features/shared/state/session';
+import { useRecords, type RecordsState } from '@/features/shared/data/recordsStore';
 
 /** Bundle for one patient from the local store. ASHA visits are derived from ASHA-sourced vitals. */
 export function bundleFor(s: RecordsState, patientId: string): PatientRecordBundle | null {
@@ -46,7 +47,7 @@ export function historyFor(s: RecordsState, patientId: string, now = new Date())
 }
 
 /** The signed-in demo patient's history (null until the store is seeded). */
-export function usePatientHistory(patientId: string = demoPatientId): PatientHistory | null {
+export function usePatientHistory(patientId: string = currentPatientId()): PatientHistory | null {
   const seededAt = useRecords((s) => s.seededAt);
   const vitals = useRecords((s) => s.vitals);
   const prescriptions = useRecords((s) => s.prescriptions);

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { DEMO_USERS } from '@am/shared';
+import { DEMO_IDS, DEMO_USERS } from '@am/shared';
 
 import type { LanguageCode } from '@/features/shared/i18n/languages';
 import type { AppRole } from '@/features/shared/theme';
@@ -20,7 +20,11 @@ export type SessionState = {
   /** 'demo' = instant sign-in from the role picker; 'phone' = OTP flow. */
   authMethod: 'demo' | 'phone' | null;
   hasHydrated: boolean;
-  signIn: (role: Role, method?: 'demo' | 'phone') => void;
+  /** Real sign-in only: the Supabase user, their patient record and name. Null in demo sign-in. */
+  userId: string | null;
+  patientId: string | null;
+  fullName: string | null;
+  signIn: (role: Role, method?: 'demo' | 'phone', identity?: { userId: string; patientId?: string | null; fullName?: string | null }) => void;
   signOut: () => void;
   setLanguage: (language: LanguageCode) => void;
   setOnboarded: (onboarded: boolean) => void;
@@ -36,13 +40,17 @@ export const useSession = create<SessionState>()(
       onboarded: false,
       authMethod: null,
       hasHydrated: false,
-      signIn: (role, method = 'demo') => set({ role, authMethod: method, onboarded: true }),
-      signOut: () => set({ role: null, authMethod: null }),
+      userId: null,
+      patientId: null,
+      fullName: null,
+      signIn: (role, method = 'demo', identity) =>
+        set({ role, authMethod: method, onboarded: true, userId: identity?.userId ?? null, patientId: identity?.patientId ?? null, fullName: identity?.fullName ?? null }),
+      signOut: () => set({ role: null, authMethod: null, userId: null, patientId: null, fullName: null }),
       setLanguage: (language) => set({ language }),
       setOnboarded: (onboarded) => set({ onboarded }),
       currentUserId: () => {
         const r = get().role;
-        return r ? DEMO_USERS[r].id : undefined;
+        return r ? (get().userId ?? DEMO_USERS[r].id) : undefined;
       },
     }),
     {
@@ -53,6 +61,9 @@ export const useSession = create<SessionState>()(
         language: s.language,
         onboarded: s.onboarded,
         authMethod: s.authMethod,
+        userId: s.userId,
+        patientId: s.patientId,
+        fullName: s.fullName,
       }),
       onRehydrateStorage: () => () => {
         useSession.setState({ hasHydrated: true });
@@ -64,5 +75,19 @@ export const useSession = create<SessionState>()(
 /** The signed-in demo user (null when signed out). */
 export function useCurrentUser() {
   const role = useSession((s) => s.role);
-  return role ? { role, ...DEMO_USERS[role] } : null;
+  const userId = useSession((s) => s.userId);
+  const fullName = useSession((s) => s.fullName);
+  if (!role) return null;
+  return userId ? { role, ...DEMO_USERS[role], id: userId, name: fullName ?? DEMO_USERS[role].name } : { role, ...DEMO_USERS[role] };
 }
+
+/** The signed-in patient's record id: their own after a real sign-in, Rekha's in the demo. */
+export function currentPatientId(): string {
+  return useSession.getState().patientId ?? DEMO_IDS.patientRecord;
+}
+
+/** True when a real (non-demo) patient is signed in, whose records must not be the demo seed. */
+export const isRealPatient = () => {
+  const s = useSession.getState();
+  return s.role === 'patient' && !!s.patientId && s.patientId !== DEMO_IDS.patientRecord;
+};

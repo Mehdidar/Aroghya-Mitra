@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { formatCountdown, isUsable, nextRefreshDelayMs, retryDelayMs, secondsLeft, type IssuedQr } from '@am/records';
 
-import { demoPatientId } from '@/features/shared/data/recordsStore';
+import { currentPatientId } from '@/features/shared/state/session';
 import { ApiError, apiJson } from '@/features/shared/services/api';
 
 export const DEMO_QR_PREFIX = 'AM1.demo.';
@@ -26,7 +26,7 @@ export function offlineQr(patientId: string, now = new Date()): IssuedQr {
 }
 
 export function useQrCard(opts: { shareHistory: boolean; patientId?: string; fetchImpl?: typeof fetch }): QrCardState & { refresh: () => void; countdown: string } {
-  const patientId = opts.patientId ?? demoPatientId;
+  const patientId = opts.patientId ?? currentPatientId();
   const [state, setState] = useState<QrCardState>({ kind: 'loading' });
   const attempt = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);

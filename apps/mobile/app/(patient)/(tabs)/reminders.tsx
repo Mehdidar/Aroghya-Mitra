@@ -8,7 +8,7 @@ import type { TimelineItem } from '@am/patient-ai';
 import { useReminders } from '@/features/patient/reminders/useReminders';
 import { useTheme } from '@/features/shared/theme';
 import { Card, EmptyState, Heading, Icon, Pill, PrimaryButton, Screen, SectionHeader, StatCard, Text } from '@/features/shared/ui';
-import { demoPatientId } from '@/features/shared/data/recordsStore';
+import { currentPatientId } from '@/features/shared/state/session';
 import { pullPatientRecords, usePullWhileOpen } from '@/features/shared/data/serverSync';
 
 const fmt = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
@@ -51,7 +51,7 @@ function DoseRow({ item, onLog }: { item: TimelineItem; onLog: (status: 'taken' 
 
 export default function PatientReminders() {
   // The doctor's new prescriptions arrive from the server when this tab opens.
-  usePullWhileOpen(() => pullPatientRecords(demoPatientId), 'patient-reminders');
+  usePullWhileOpen(() => pullPatientRecords(currentPatientId()), 'patient-reminders');
   const { t } = useTranslation('reminders');
   const theme = useTheme();
   const r = useReminders();

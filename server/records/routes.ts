@@ -58,6 +58,28 @@ export function routes(opts: { repo?: RecordsRepository; now?: () => Date } = {}
       },
     },
     {
+      // Who am I? The app calls this right after sign-in and trusts only this
+      // answer for the role (the JWT's app_metadata), never the role the user tapped.
+      // A first-time patient gets a profile and an empty record here.
+      method: 'GET',
+      path: '/me',
+      handler: async (_req, { caller }) => {
+        const r = repo();
+        let profile = await viewerFor(r, caller);
+        let patientId: string | null = null;
+        if (caller.role === 'patient') {
+          let patient = await r.findPatientByUser(profile.id);
+          if (!patient && caller.via === 'jwt') {
+            const reg = await r.registerPatientUser(profile.id, caller.phone ?? null, now());
+            profile = reg.profile;
+            patient = reg.patient;
+          }
+          patientId = patient?.id ?? null;
+        }
+        return json({ ok: true, id: profile.id, role: profile.role, fullName: profile.fullName, facilityId: profile.facilityId, isActive: profile.isActive, patientId, via: caller.via });
+      },
+    },
+    {
       method: 'GET',
       path: '/records/inbox',
       handler: async (_req, { caller }) => {

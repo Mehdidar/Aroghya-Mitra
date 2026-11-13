@@ -25,6 +25,7 @@ import type {
 import { DbError, inList, type RestClient } from '../db/rest.ts';
 import { DEMO_FACILITY } from '../../packages/shared/demo.ts';
 import { furtherStatus, type AshaBatch } from '../asha/toRecords.ts';
+import { newPatientName } from './memoryRepository.ts';
 import type { DoctorInbox, PatientRecordBundle, RecordsRepository, ReferralPatch } from './repository.ts';
 
 type Row = Record<string, unknown>;
@@ -440,6 +441,22 @@ export class SupabaseRecordsRepository implements RecordsRepository {
     if (patch.acceptedAt !== undefined) body.accepted_at = patch.acceptedAt;
     const rows = await this.db.update<Row>('referrals', { id: `eq.${toDbId(id)}` }, body);
     return rows[0] ? mapReferral(rows[0]) : null;
+  }
+
+  async registerPatientUser(userId: string, phone: string | null, now: Date) {
+    const id = toDbId(userId);
+    let profile = await this.getProfile(id);
+    if (!profile) {
+      const [r] = await this.db.upsert<Row>('profiles', { id, role: 'patient', full_name: newPatientName(phone), phone, is_active: true }, 'id', { ignore: true });
+      profile = r ? mapProfile(r) : await this.getProfile(id);
+    }
+    let patient = await this.findPatientByUser(id);
+    if (!patient) {
+      const [r] = await this.db.insert<Row>('patients', { user_id: id, full_name: profile!.fullName, phone, created_at: now.toISOString() });
+      patient = mapPatient(r);
+      await this.db.upsert('patient_consents', { patient_id: patient.id, share_history: false, updated_at: now.toISOString() }, 'patient_id', { ignore: true });
+    }
+    return { profile: profile!, patient };
   }
 
   async saveAshaBatch(batch: AshaBatch) {

@@ -7,6 +7,8 @@ import { AuthError, DEMO_OTP, getAuthService } from '@/features/shared/auth/Auth
 import { ROLES, useSession, type Role } from '@/features/shared/state/session';
 import { RoleScope, useTheme } from '@/features/shared/theme';
 import { Card, Heading, Icon, IconButton, Pill, PrimaryButton, Screen, Text, TextField } from '@/features/shared/ui';
+import { DEMO_IDS } from '@am/shared';
+import { useRecords } from '@/features/shared/data/recordsStore';
 
 /** Phone OTP sign-in. Demo mode accepts 123456 (and says so); Supabase comes in Phase B. */
 export default function PhoneSignIn() {
@@ -52,9 +54,19 @@ function PhoneForm({ role }: { role: Role }) {
     setBusy(true);
     try {
       const user = await auth.verifyOtp(phone.replace(/\D/g, ''), code.trim(), role);
-      signIn(user.role, 'phone');
+      const real = !auth.demo && !user.id.startsWith('demo-');
+      // A real patient who is not the demo patient starts with an empty record; theirs comes from the server.
+      if (real && user.role === 'patient' && user.patientId && user.patientId !== DEMO_IDS.patientRecord) useRecords.getState().startFresh();
+      signIn(user.role, 'phone', real ? { userId: user.id, patientId: user.patientId ?? null, fullName: user.fullName ?? null } : undefined);
     } catch (e) {
-      setError(e instanceof AuthError && e.code === 'invalid_code' ? t('phone.invalidCode') : String((e as Error).message));
+      const code = e instanceof AuthError ? e.code : null;
+      setError(
+        code === 'invalid_code'
+          ? t('phone.invalidCode')
+          : code === 'wrong_role'
+            ? t('phone.wrongRole', { role: t(`common:roles.${role}`), defaultValue: 'This number is not registered as {{role}}. Ask your admin, or sign in as a patient.' })
+            : String((e as Error).message),
+      );
     } finally {
       setBusy(false);
     }

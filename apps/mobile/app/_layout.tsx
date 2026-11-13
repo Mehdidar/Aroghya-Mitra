@@ -8,6 +8,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Platform, View } from 'react-native';
 
+import { restoreSupabaseSession, supabaseClient } from '@/features/shared/auth/AuthService';
+import { useRecords } from '@/features/shared/data/recordsStore';
+import { setSessionToken } from '@/features/shared/services/api';
 import { startOutbox } from '@/features/shared/data/outbox';
 import { FONT_FILES } from '@/features/shared/i18n/fonts';
 import { applyLanguage, useLanguage } from '@/features/shared/i18n/useLanguage';
@@ -40,7 +43,18 @@ export default function RootLayout() {
     if (ready) SplashScreen.hide();
   }, [ready]);
   // Start sending queued record changes to the server (retries quietly while offline).
-  useEffect(() => startOutbox(), []);
+  useEffect(() => {
+    // A saved Supabase sign-in puts its token back on server calls before anything is sent.
+    void restoreSupabaseSession().finally(() => startOutbox());
+    // Signing out of a real account ends the Supabase session and brings back the demo records.
+    return useSession.subscribe((now, before) => {
+      if (before.role && !now.role && before.userId) {
+        setSessionToken(null);
+        void supabaseClient()?.auth.signOut().catch(() => undefined);
+        if (before.role === 'patient') useRecords.getState().reset();
+      }
+    });
+  }, []);
 
   // Rendering nothing until the role is known stops the guard flashing (auth) on launch.
   if (!ready) return null;

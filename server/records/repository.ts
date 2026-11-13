@@ -80,6 +80,12 @@ export interface RecordsRepository {
   saveReport(r: HealthReport): Promise<HealthReport>;
   updateReferral(id: string, patch: ReferralPatch): Promise<Referral | null>;
 
+  /**
+   * First sign-in of a new patient: a 'patient' profile and an empty patient
+   * record owned by this auth user. Returns what already exists if called again.
+   */
+  registerPatientUser(userId: string, phone: string | null, now: Date): Promise<{ profile: Profile; patient: Patient }>;
+
   /** Mirror one ASHA sync into the records (patients, visits, alerts, referrals). */
   saveAshaBatch(batch: AshaBatch): Promise<void>;
   /** A doctor's inbox: open referrals to them or their facility, with the patients and their open alerts. */

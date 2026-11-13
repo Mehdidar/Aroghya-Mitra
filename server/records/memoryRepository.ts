@@ -250,4 +250,21 @@ export class MemoryRecordsRepository implements RecordsRepository {
       patients: this.data.patients.filter((p) => ids.has(p.id)),
     };
   }
+
+  async registerPatientUser(userId: string, phone: string | null, now: Date) {
+    let profile = this.data.profiles.find((p) => p.id === userId);
+    if (!profile) {
+      profile = { id: userId, role: 'patient', fullName: newPatientName(phone), facilityId: null, isActive: true };
+      this.data.profiles.push(profile);
+    }
+    let patient = this.data.patients.find((p) => p.userId === userId);
+    if (!patient) {
+      patient = { id: `pt-${userId}`, userId, fullName: profile.fullName, dateOfBirth: null, sex: null, phone, facilityId: null, ashaWorkerId: null, area: null, bloodGroup: null, allergies: [], chronicConditions: [], createdAt: now.toISOString() };
+      this.data.patients.push(patient);
+    }
+    return { profile, patient };
+  }
 }
+
+/** Placeholder name until the patient fills in their profile. */
+export const newPatientName = (phone: string | null) => (phone ? `Patient ${phone.replace(/\D/g, '').slice(-4)}` : 'New patient');

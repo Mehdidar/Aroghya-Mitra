@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, ScrollView, View } from 'react-native';
 
-import { useCurrentUser } from '@/features/shared/state/session';
+import { currentPatientId, useCurrentUser } from '@/features/shared/state/session';
 import { demoPatientHome } from '@/features/shared/seed/patientHome';
 import { useTheme } from '@/features/shared/theme';
 import {
@@ -20,7 +20,6 @@ import {
   type IconName,
   type TileTint,
 } from '@/features/shared/ui';
-import { demoPatientId } from '@/features/shared/data/recordsStore';
 import { pullPatientRecords, usePullWhileOpen } from '@/features/shared/data/serverSync';
 
 type ServiceId = 'chat' | 'voice' | 'prescription' | 'nutrition' | 'hospitalMap' | 'qrCard' | 'bloodBanks' | 'reports';
@@ -59,7 +58,7 @@ function call108() {
  * Analytics preview (steps & oxygen), AI assistant banner, and reminders.
  */
 export default function PatientHome() {
-  usePullWhileOpen(() => pullPatientRecords(demoPatientId), 'patient-records');
+  usePullWhileOpen(() => pullPatientRecords(currentPatientId()), 'patient-records');
   const { t } = useTranslation('patient');
   const theme = useTheme();
   const user = useCurrentUser();
