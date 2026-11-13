@@ -61,7 +61,8 @@ export function Screen({
         <View
           style={[
             styles.inner,
-            { maxWidth: t.layout.maxContentWidth, paddingHorizontal: t.layout.screenPaddingX, paddingBottom: insets.bottom + t.space[4], gap: t.space[3] },
+            // flexGrow 0: on a short page the footer stays its own height at the bottom instead of sharing the free space.
+            { flexGrow: 0, maxWidth: t.layout.maxContentWidth, paddingHorizontal: t.layout.screenPaddingX, paddingBottom: insets.bottom + t.space[4], gap: t.space[3] },
           ]}>
           {footer}
         </View>
