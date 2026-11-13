@@ -27,7 +27,7 @@ export default function ServiceScreen() {
     return <Redirect href="/voice" />;
   }
   if (id === 'reports') {
-    return <Redirect href="/records" />;
+    return <Redirect href="/health" />;
   }
   if (id === 'nutrition') {
     return <Redirect href="/nutrition" />;

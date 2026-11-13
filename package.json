@@ -19,7 +19,9 @@
     "dev:server": "node server/scripts/devServer.ts",
     "demo": "node scripts/demo.mjs",
     "ml:test": "cd ml/food-classifier && python -m pytest -m \"not slow\" -q",
-    "start": "npm run start --workspace apps/mobile"
+    "start": "npm run start --workspace apps/mobile",
+    "demo:web": "node scripts/demo.mjs --web",
+    "demo:server": "node scripts/demo.mjs --server-only"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

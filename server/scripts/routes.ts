@@ -1,6 +1,7 @@
-/** Routes beyond P2's speech/chat. Each module exports a `routes()` list; add it here. */
+/** Routes beyond P2's speech/chat. Each module exports a `routes()` list; register it here. */
+import { foodRoutes } from '../ai/food/routes.ts';
 import type { Route } from '../http/router.ts';
 
 export function extraRoutes(): Route[] {
-  return [];
+  return [...foodRoutes()];
 }

@@ -24,11 +24,13 @@ export type SessionState = {
   signOut: () => void;
   setLanguage: (language: LanguageCode) => void;
   setOnboarded: (onboarded: boolean) => void;
+  /** The signed-in user's id (demo cast id until Supabase auth lands). */
+  currentUserId: () => string | undefined;
 };
 
 export const useSession = create<SessionState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       role: null,
       language: 'en',
       onboarded: false,
@@ -38,6 +40,10 @@ export const useSession = create<SessionState>()(
       signOut: () => set({ role: null, authMethod: null }),
       setLanguage: (language) => set({ language }),
       setOnboarded: (onboarded) => set({ onboarded }),
+      currentUserId: () => {
+        const r = get().role;
+        return r ? DEMO_USERS[r].id : undefined;
+      },
     }),
     {
       name: 'aroghya-session-v1',

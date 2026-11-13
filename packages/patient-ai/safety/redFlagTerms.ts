@@ -5,8 +5,11 @@
  * NEEDS NATIVE-SPEAKER REVIEW before release. Terms are kept conservative:
  * words that are also common everyday words (e.g. Bengali/Kannada/Marathi
  * "vish-" = poison, but "vishay" = subject) are only listed inside a phrase.
- * Not yet covered: Odia, Assamese, Kashmiri (the server-side check
- * translates to English and runs the English list as a second net).
+ * Odia (or), Assamese (as) and Kashmiri (ks) lists were added without a
+ * native speaker (NEEDS NATIVE-SPEAKER REVIEW, especially Kashmiri spelling
+ * in the Perso-Arabic script); they cover the nine core categories only.
+ * The server-side check translates to English and runs the English list as
+ * a second net for every language.
  */
 
 export type RedFlagCategory =
@@ -40,6 +43,9 @@ export const RED_FLAG_TERMS: Record<RedFlagCategory, CategoryRule> = {
       hinglish: ['seene me dard', 'seene mein dard', 'sine me dard', 'chhati me dard', 'chhati mein dard', 'chaati me dard', 'dil ka daura'],
       hi: ['सीने में दर्द', 'छाती में दर्द', 'दिल का दौरा', 'हार्ट अटैक'],
       ur: ['سینے میں درد', 'دل کا دورہ'],
+      or: ['ଛାତି ଯନ୍ତ୍ରଣା', 'ଛାତିରେ ଯନ୍ତ୍ରଣା', 'ହୃଦ୍‌ଘାତ', 'ହାର୍ଟ ଆଟାକ'],
+      as: ['বুকুৰ বিষ', 'বুকুত বিষ', 'হৃদৰোগৰ আক্ৰমণ', 'হাৰ্ট এটেক'],
+      ks: ['سینس منز درد', 'دِلُک دورہ', 'ہارٹ اٹیک'],
       bn: ['বুকে ব্যথা', 'হার্ট অ্যাটাক'],
       ta: ['நெஞ்சு வலி', 'நெஞ்சுவலி', 'மாரடைப்பு'],
       te: ['ఛాతీ నొప్పి', 'గుండెపోటు', 'గుండె నొప్పి'],
@@ -56,6 +62,9 @@ export const RED_FLAG_TERMS: Record<RedFlagCategory, CategoryRule> = {
       hinglish: ['saans nahi aa rahi', 'saans nahi le pa', 'saans lene me takleef', 'saans lene mein takleef', 'saans lene me dikkat', 'saans lene mein dikkat', 'saans phool rahi'],
       hi: ['सांस नहीं आ रही', 'साँस नहीं आ रही', 'सांस नहीं ले पा', 'सांस लेने में तकलीफ', 'साँस लेने में तकलीफ', 'सांस लेने में दिक्कत', 'साँस लेने में दिक्कत', 'सांस फूल रही'],
       ur: ['سانس نہیں آ رہی', 'سانس لینے میں تکلیف', 'سانس لینے میں دشواری'],
+      or: ['ନିଶ୍ୱାସ ନେଇ ପାରୁନାହିଁ', 'ନିଶ୍ୱାସ ନେବାରେ କଷ୍ଟ', 'ଶ୍ୱାସକଷ୍ଟ'],
+      as: ['উশাহ ল\'ব নোৱাৰা', 'উশাহ লোৱাত কষ্ট', 'শ্বাসকষ্ট'],
+      ks: ['شہ ہیکنس منز تکلیف', 'سانس نہٕ یوان', 'شٛہہ چھُ نہٕ یوان'],
       bn: ['শ্বাসকষ্ট', 'শ্বাস নিতে পারছি না', 'শ্বাস নিতে কষ্ট'],
       ta: ['மூச்சு திணறல்', 'மூச்சுத் திணறல்', 'மூச்சு விட முடியவில்லை'],
       te: ['ఊపిరి ఆడటం లేదు', 'శ్వాస తీసుకోవడం కష్టం'],
@@ -73,6 +82,9 @@ export const RED_FLAG_TERMS: Record<RedFlagCategory, CategoryRule> = {
       hinglish: ['lakwa', 'laqwa', 'muh tedha', 'munh tedha'],
       hi: ['लकवा', 'चेहरा टेढ़ा', 'मुंह टेढ़ा', 'मुँह टेढ़ा', 'एक तरफ कमजोरी'],
       ur: ['فالج', 'لقوہ'],
+      or: ['ପକ୍ଷାଘାତ', 'ମୁହଁ ବଙ୍କା'],
+      as: ['পক্ষাঘাত', 'মুখ বেঁকা'],
+      ks: ['فالج', 'لقوہ'],
       bn: ['স্ট্রোক', 'পক্ষাঘাত'],
       ta: ['பக்கவாதம்'],
       te: ['పక్షవాతం'],
@@ -89,6 +101,9 @@ export const RED_FLAG_TERMS: Record<RedFlagCategory, CategoryRule> = {
       hinglish: ['behosh', 'hosh nahi'],
       hi: ['बेहोश', 'होश नहीं'],
       ur: ['بے ہوش', 'بیہوش'],
+      or: ['ଅଚେତ', 'ବେହୋସ', 'ଚେତା ହରାଇ'],
+      as: ['অচেতন', 'বেহুঁচ', 'জ্ঞান হেৰুৱা'],
+      ks: ['بے ہوش', 'بیہوش'],
       bn: ['অজ্ঞান'],
       ta: ['சுயநினைவு இல்லை', 'சுயநினைவு இழந்'],
       te: ['స్పృహ కోల్పోయ', 'స్పృహ లేదు'],
@@ -106,6 +121,9 @@ export const RED_FLAG_TERMS: Record<RedFlagCategory, CategoryRule> = {
       hinglish: ['mirgi ka daura', 'daura pad', 'jhatke aa rahe'],
       hi: ['मिर्गी का दौरा', 'दौरा पड़', 'झटके आ रहे'],
       ur: ['مرگی کا دورہ', 'دورہ پڑ'],
+      or: ['ବାତ ମାରୁଛି', 'ଖିଞ୍ଚ ହେଉଛି', 'ମୃଗୀ'],
+      as: ['মৃগী', 'খিচুনি'],
+      ks: ['مرگی', 'دورٕ'],
       bn: ['খিঁচুনি'],
       ta: ['வலிப்பு'],
       te: ['మూర్ఛ', 'ఫిట్స్'],
@@ -122,6 +140,9 @@ export const RED_FLAG_TERMS: Record<RedFlagCategory, CategoryRule> = {
       hinglish: ['khoon nahi ruk raha', 'bahut khoon', 'khoon ki ulti'],
       hi: ['खून नहीं रुक रहा', 'बहुत खून', 'खून की उल्टी', 'ज़्यादा खून', 'ज्यादा खून'],
       ur: ['خون نہیں رک رہا', 'بہت خون', 'خون کی الٹی'],
+      or: ['ରକ୍ତ ବନ୍ଦ ହେଉନାହିଁ', 'ବହୁତ ରକ୍ତସ୍ରାବ'],
+      as: ['তেজ বন্ধ হোৱা নাই', 'বহুত তেজ ওলাই'],
+      ks: ['خون چھُ نہٕ رُکان', 'زیادٕ خون'],
       bn: ['রক্ত বন্ধ হচ্ছে না', 'রক্তবমি'],
       ta: ['இரத்தம் நிற்கவில்லை', 'ரத்தம் நிற்கவில்லை', 'இரத்த வாந்தி'],
       te: ['రక్తం ఆగడం లేదు', 'రక్తపు వాంతి'],
@@ -139,6 +160,9 @@ export const RED_FLAG_TERMS: Record<RedFlagCategory, CategoryRule> = {
       hinglish: ['khudkushi', 'aatmahatya', 'atmahatya', 'mar jana chahta', 'mar jana chahti', 'jeena nahi chahta', 'jeena nahi chahti'],
       hi: ['आत्महत्या', 'खुदकुशी', 'ख़ुदकुशी', 'मर जाना चाहता', 'मर जाना चाहती', 'जीना नहीं चाहता', 'जीना नहीं चाहती', 'खुद को मार'],
       ur: ['خودکشی', 'مر جانا چاہتا', 'مر جانا چاہتی'],
+      or: ['ମରିଯିବାକୁ ଚାହୁଁଛି', 'ଆତ୍ମହତ୍ୟା'],
+      as: ['মৰিব খোজো', 'আত্মহত্যা'],
+      ks: ['مرُن چھُم یژھان', 'خودکشی'],
       bn: ['আত্মহত্যা'],
       ta: ['தற்கொலை'],
       te: ['ఆత్మహత్య'],
@@ -155,6 +179,9 @@ export const RED_FLAG_TERMS: Record<RedFlagCategory, CategoryRule> = {
       hinglish: ['zeher', 'zehar', 'jahar', 'keetnashak'],
       hi: ['ज़हर', 'जहर', 'कीटनाशक', 'ओवरडोज़', 'ओवरडोज'],
       ur: ['زہر'],
+      or: ['ବିଷ ଖାଇ', 'ବିଷ ପିଇ', 'କୀଟନାଶକ ପିଇ'],
+      as: ['বিহ খালে', 'বিহ খাইছে', 'কীটনাশক খাইছে'],
+      ks: ['زہر کھیوو', 'زہر چیو'],
       bn: ['বিষ খেয়ে', 'কীটনাশক'],
       ta: ['விஷம்', 'பூச்சிக்கொல்லி'],
       te: ['విషం', 'పురుగుల మందు'],
@@ -171,6 +198,9 @@ export const RED_FLAG_TERMS: Record<RedFlagCategory, CategoryRule> = {
       hinglish: ['saanp ne kaat', 'sanp ne kaat', 'saap ne kaat', 'saanp ne kata', 'sanp ne kata'],
       hi: ['साँप ने काट', 'सांप ने काट', 'सर्पदंश'],
       ur: ['سانپ نے کاٹ'],
+      or: ['ସାପ କାମୁଡ଼ି', 'ସାପ କାମୁଡ଼ା'],
+      as: ['সাপে কামুৰিলে', 'সাপে খুটিলে'],
+      ks: ['سرپُن ژٹُن', 'سرپن ژٹ'],
       bn: ['সাপে কেটেছে', 'সাপের কামড়'],
       ta: ['பாம்பு கடி'],
       te: ['పాము కాటు', 'పాము కరిచ'],

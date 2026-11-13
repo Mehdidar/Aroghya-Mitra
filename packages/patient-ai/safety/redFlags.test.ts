@@ -98,3 +98,21 @@ describe('red flags: false positives', () => {
     assert.deepEqual(flagged(''), []);
   });
 });
+
+describe('red flags: Odia, Assamese, Kashmiri (added without a native speaker; needs review)', () => {
+  it('detects the core emergencies in Odia', () => {
+    assert.deepEqual(flagged('ମୋ ବାପାଙ୍କର ଛାତି ଯନ୍ତ୍ରଣା ହେଉଛି'), ['cardiac']);
+    assert.deepEqual(flagged('ସେ ନିଶ୍ୱାସ ନେଇ ପାରୁନାହିଁ'), ['breathing']);
+    assert.deepEqual(flagged('ସାପ କାମୁଡ଼ି ଦେଇଛି'), ['snakebite']);
+  });
+  it('detects the core emergencies in Assamese', () => {
+    assert.deepEqual(flagged('মোৰ বুকুত বিষ হৈছে'), ['cardiac']);
+    assert.deepEqual(flagged('তেওঁ বিহ খাইছে'), ['poisoning']);
+    assert.deepEqual(flagged('মোৰ ভাইক সাপে কামুৰিলে'), ['snakebite']);
+  });
+  it('detects the core emergencies in Kashmiri', () => {
+    assert.deepEqual(flagged('میانس بابس چھُ سینس منز درد'), ['cardiac']);
+    assert.deepEqual(flagged('سُ چھُ بے ہوش'), ['unconscious']);
+    assert.deepEqual(flagged('تمس زہر کھیوو'), ['poisoning']);
+  });
+});

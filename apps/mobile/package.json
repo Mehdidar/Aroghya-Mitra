@@ -58,6 +58,7 @@
     "expo-updates": "~58.0.22",
     "expo-web-browser": "~58.0.8",
     "i18next": "^27.1.1",
+    "qrcode": "^1.5.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-i18next": "^18.0.1",
@@ -76,10 +77,10 @@
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "30.0.0",
     "@types/react": "~19.3.0",
+    "eslint": "^9.39.0",
+    "eslint-config-expo": "~58.0.0",
     "jest": "~30.5.2",
     "jest-expo": "~58.0.14",
-    "typescript": "~6.0.3",
-    "eslint": "^9.39.0",
-    "eslint-config-expo": "~58.0.0"
+    "typescript": "~6.0.3"
   }
 }

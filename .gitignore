@@ -45,3 +45,6 @@ Thumbs.db
 .idea/
 .archify/
 *.log
+
+# Server dev data (ASHA sync store, uploaded photos)
+server/.data/
