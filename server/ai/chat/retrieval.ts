@@ -2,7 +2,7 @@
  * Small BM25 search over the approved knowledge base. Fast enough to run per
  * message with no vector database; swap for embeddings later behind `search`.
  */
-import type { KnowledgeDoc } from './knowledge';
+import type { KnowledgeDoc } from './knowledge.ts';
 
 const STOPWORDS = new Set(['a', 'an', 'the', 'is', 'are', 'am', 'i', 'my', 'me', 'to', 'of', 'in', 'on', 'for', 'and', 'or', 'it', 'what', 'how', 'do', 'does', 'should', 'can', 'with', 'have', 'has', 'be', 'this', 'that', 'hai', 'ka', 'ki', 'ke', 'me', 'mein', 'kya', 'है', 'का', 'की', 'के', 'में', 'क्या']);
 
@@ -23,8 +23,12 @@ export class KnowledgeIndex {
   private readonly docs: { doc: KnowledgeDoc; tf: Map<string, number>; len: number }[];
   private readonly df = new Map<string, number>();
   private readonly avgLen: number;
+  private readonly k1: number;
+  private readonly b: number;
 
-  constructor(docs: KnowledgeDoc[], private readonly k1 = 1.2, private readonly b = 0.75) {
+  constructor(docs: KnowledgeDoc[], k1 = 1.2, b = 0.75) {
+    this.k1 = k1;
+    this.b = b;
     this.docs = docs.map((doc) => {
       // Title and keywords count three times: they are curated and precise.
       const boosted = `${doc.title} ${doc.keywords.join(' ')}`;
@@ -39,7 +43,7 @@ export class KnowledgeIndex {
 
   /** Hits must reach `minScore` and at least `relative` × the best score, so weak extra matches are dropped. */
   search(query: string, opts: { limit?: number; minScore?: number; relative?: number } = {}): SearchHit[] {
-    const q = [...new Set(tokenize(query))];
+    const q = [...new Set(tokenize(query).map((t) => this.resolveTerm(t)))];
     const n = this.docs.length;
     const hits = this.docs.map(({ doc, tf, len }) => {
       let score = 0;
@@ -55,5 +59,18 @@ export class KnowledgeIndex {
     const sorted = hits.filter((h) => h.score >= (opts.minScore ?? 1)).sort((a, b) => b.score - a.score);
     const floor = (sorted[0]?.score ?? 0) * (opts.relative ?? 0.5);
     return sorted.filter((h) => h.score >= floor).slice(0, opts.limit ?? 3);
+  }
+
+  /**
+   * Indian languages attach endings to words (Malayalam "പനിയുണ്ട്" = "പനി" + "has"; Tamil, Telugu, Kannada alike).
+   * A non-Latin query word that is not in the index maps to the longest indexed word it starts with (3+ letters).
+   */
+  private resolveTerm(term: string): string {
+    if (this.df.has(term) || /^[\p{Script=Latin}\p{N}]+$/u.test(term)) return term;
+    let best = term;
+    for (const known of this.df.keys()) {
+      if (known.length >= 3 && known.length > (best === term ? 0 : best.length) && term.startsWith(known)) best = known;
+    }
+    return best;
   }
 }

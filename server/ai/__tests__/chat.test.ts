@@ -1,11 +1,11 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { clearPhraseCache, streamChatReply, type ChatDeps, type ChatEvent } from '../chat/chatService';
-import { KNOWLEDGE_BASE } from '../chat/knowledge';
-import { KnowledgeIndex } from '../chat/retrieval';
-import { trimHistory } from '../chat/prompt';
-import { ChatHistoryStore, MAX_STORED_MESSAGES, type KeyValueStorage } from '../../../features/patient-ai/chat/historyStore';
-import type { ChatMessage } from '../../speech/types';
+import { clearPhraseCache, streamChatReply, type ChatDeps, type ChatEvent } from '../chat/chatService.ts';
+import { KNOWLEDGE_BASE } from '../chat/knowledge.ts';
+import { KnowledgeIndex } from '../chat/retrieval.ts';
+import { trimHistory } from '../chat/prompt.ts';
+import { ChatHistoryStore, MAX_STORED_MESSAGES, type KeyValueStorage } from '../../../features/patient-ai/chat/historyStore.ts';
+import type { ChatMessage } from '../../speech/types.ts';
 
 async function collect(gen: AsyncGenerator<ChatEvent>): Promise<ChatEvent[]> {
   const out: ChatEvent[] = [];
@@ -39,6 +39,17 @@ describe('KnowledgeIndex', () => {
     assert.equal(index.search('cough for 3 weeks and weight loss')[0].doc.id, 'tuberculosis');
     assert.equal(index.search('बीपी कैसे कम करें')[0].doc.id, 'hypertension'); // Hindi keyword, no translation
   });
+  it('finds content in every main language without translation, including suffixed words', () => {
+    const fever: Record<string, string> = {
+      ta: 'எனக்கு காய்ச்சல் இருக்கிறது', bn: 'আমার জ্বর হয়েছে', te: 'నాకు జ్వరం ఉంది', mr: 'मला ताप आला आहे',
+      gu: 'મને તાવ છે', kn: 'ನನಗೆ ಜ್ವರ ಇದೆ', ml: 'എനിക്ക് പനിയുണ്ട്', pa: 'ਮੈਨੂੰ ਬੁਖਾਰ ਹੈ', ur: 'مجھے بخار ہے', od: 'ମୋର ଜ୍ୱର ହୋଇଛି',
+    };
+    for (const [lang, q] of Object.entries(fever)) {
+      assert.deepEqual(index.search(q).map((h) => h.doc.id), ['fever-care'], lang);
+    }
+    assert.equal(index.search('মাঝে মাঝে পাতলা পায়খানা')[0].doc.id, 'diarrhoea-ors');
+  });
+
   it('returns nothing for unrelated text', () => {
     assert.deepEqual(index.search('who won the cricket match yesterday'), []);
   });
