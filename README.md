@@ -1,136 +1,154 @@
-# DishDetect India
+# Aroghya Mitra
 
-Photo in → dish name, dietary tier (non-veg / vegetarian / vegan), ingredients,
-and an honest confidence. The Indian-food sibling of the Saudi DishDetect
-project in `../food_classifier`, using the same pipeline and starting from the
-models trained there.
+One app for three people who rarely share a screen: the **patient** at home, the
+**ASHA worker** walking between households, and the **doctor or admin** at the
+primary health centre. Hindi, Kannada, Tamil, Telugu, Urdu, Kashmiri and
+English; voice first; works offline in the field.
 
-## Where this stands
+Built for a hackathon by a team of four (Mehdidar, sai-yogesh-git, thejas2401, Siddhanthsv),
+joined into one Expo app, one TypeScript server and one Python
+food-recognition service. A screening and care-coordination aid, never a
+diagnosis: the 108 emergency button is on every patient screen.
 
-| Piece | State |
-|---|---|
-| Pipeline code (crop, three heads, cross-check, open-set guard, API, camera UI) | Carried over, working |
-| Saudi checkpoints (`checkpoints/pretrained_saudi/`) | Copied in: warm-start for training, stand-in for veg/vegan until retrained |
-| Indian taxonomy (`core/indian_taxonomy.json`) | 43 dishes written: 15 non-veg, 19 vegetarian, 9 vegan |
-| Indian training images | **None yet — this is the next step** |
-| Indian dish / veg / vegan heads | Not trained |
-| Nutrition map (`core/nutrition_map.json`) | Empty; figures fall back to automatic USDA retrieval, labelled "estimated" |
-| Thresholds in `core/config.py` | Inherited from the Saudi sweep; must be re-swept after training |
+```
+                 ┌──────────────── apps/mobile (Expo, iOS + Android + web) ────────────────┐
+                 │  (auth) language · role · OTP  │ (patient) │ (asha) │ (doctor / admin)  │
+                 └───────────────┬────────────────┴─────┬─────┴───┬────┴─────────┬─────────┘
+                                 │ @am/shared types, theme, i18n │ @am/patient-ai │ @am/records
+                                 ▼                               ▼                ▼
+               ┌──────────── server/ (TypeScript, web-standard handlers) ─────────────┐
+               │ /speech/stt /speech/tts /ai/chat   Sarvam (key stays here)           │
+               │ /ai/prescription  /ai/food         Gemini vision · DishDetect proxy  │
+               │ /asha/sync /asha/photos            risk re-verified with server/risk │
+               │ /qr/issue /qr/scan  /records/*     signed QR health card, history    │
+               └───────┬───────────────────────────────────────────────┬──────────────┘
+                       ▼                                               ▼
+            supabase/migrations (Postgres + RLS)         ml/food-classifier (FastAPI, PyTorch)
+```
 
-The predictor runs today, but only as a demonstration: the veg and vegan heads
-are the Saudi models, no dish is named, every result is marked unreliable, and
-"vegan" is never claimed. The Saudi models have not been measured on Indian
-food.
+```mermaid
+flowchart LR
+  subgraph App[apps/mobile · Expo]
+    P[Patient] --- A[ASHA] --- D[Doctor / Admin]
+  end
+  App -->|/speech /ai/chat| S[server/ · TypeScript]
+  App -->|/asha/sync| S
+  App -->|/qr /records| S
+  S -->|Sarvam API| SV[(Sarvam)]
+  S -->|Gemini vision| GV[(Gemini)]
+  S -->|/ai/food| ML[ml/food-classifier · FastAPI]
+  S --> DB[(Supabase Postgres · RLS)]
+  App -. phone OTP .-> DB
+```
+
+## What is in the box
+
+| Role | What they can do | Logic it runs on |
+|---|---|---|
+| Patient | Voice-first home with "tap to speak" and 108 · health assistant (chat and voice, streamed, grounded on approved summaries and the patient's own record) · **guided symptom check** (asks a few questions, then names possible causes and what to do) · prescription photo reader · medicine reminders with Taken / Skip, streak and adherence · food scan (DishDetect) · preventive care (vaccines, ANC, screenings) · PHC appointments · QR health card · find and message my ASHA · nearby hospitals and pharmacies on a map · blood banks · step counter | `packages/patient-ai` (red flags, symptom check, reminders, adherence, prevention), `server/ai`, `server/appointments`, `server/prevention` |
+| ASHA worker | Caseload · register patient · home visit with vitals, symptoms, voice report and photos · automatic risk alerts · referrals · patient messages and visit requests · scan a patient's QR card · Today's plan · works offline, syncs later | `apps/mobile/features/asha` (35-rule risk engine); `server/asha` re-runs every rule and its verdict wins |
+| Doctor | Referral inbox ranked by approved criteria · scan QR to open history · **AI copilot**: summary built only from the record, timeline, lab comparison, voice notes to an editable draft · prescribing with interaction, allergy, pregnancy and duplicate warnings, NLEM 2022 list, Jan Aushadhi generics · quick prescribe · day list of appointments | `server/copilot`, `packages/records`, `server/qr`, `server/records` |
+| Admin | Staff · ASHA assignment board by village · blood stock · analytics · PHC hours | `packages/records`, `server/records` |
+
+Everything the four modules share lives in `packages/shared`: the types, the
+theme tokens, the language table and the **demo cast**, so the pregnant patient
+with high blood pressure in Sunita's caseload (Rekha Kumari) is the same person
+who signs in as the patient, whose QR the doctor scans, and whose referral sits
+in Dr Rao's inbox.
 
 ## Setup
 
 ```bash
-cd indian_food_classifier
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-.venv/bin/python -m pytest -m "not slow"     # 135 pass before any training
+# Node 24+ and npm 11; Python 3.11+ only for the food model
+npm install                       # installs the app, packages and server (npm workspaces)
+cp .env.example .env              # server secrets: SARVAM_API_KEY, GEMINI_API_KEY, QR_TOKEN_SECRET
+cp apps/mobile/.env.example apps/mobile/.env   # app settings (no keys in here, ever)
+
+npm test                          # server + packages (node --test) and the app (jest-expo)
+npm run typecheck                 # server/packages tsconfig + the app's
+npm run ml:test                   # pytest for ml/food-classifier (needs its venv, see its README)
 ```
 
-To reuse the Saudi project's environment instead of creating a new one, prefix
-commands with `PY=../food_classifier/.venv/bin/python` or call that Python
-directly.
+Optional: the food model. `ml/food-classifier/README.md` explains the data, the
+trained heads and how to run the FastAPI service on port 8000; the server proxies
+`/ai/food` to it (or to its Hugging Face Space), with a Sarvam image model as
+backup. Nutrition numbers always come from `server/ai/food/dishCatalog.json`.
+When neither is reachable the app says so; it never shows a sample dish.
 
-## Training the Indian models
-
-### 1. Collect images
-
-One folder per dish, named as the dish is keyed in `core/indian_taxonomy.json`
-(case, spaces and hyphens are forgiven: `Palak Paneer` matches `palak_paneer`):
-
-```
-datasets/raw/palak_paneer/*.jpg
-datasets/raw/chicken_biryani/*.jpg
-...
-```
-
-Aim for at least 50 images per dish; the Saudi dish head had about 55 per dish
-and reached 78% (88% with the CLIP probe). Fewer than 20 is too few to split
-into train / val / test.
-
-Keep a separate set of real restaurant photos out of training entirely, in
-`datasets/benchmark/<dish>/`. That set is what the final accuracy is quoted on.
-
-A dish that is not in the taxonomy yet needs an entry there first — the
-taxonomy is the only source of dietary labels.
-
-### 2. Crop, then derive the three training sets
+## Run the demo
 
 ```bash
-python tools/make_crops.py --input datasets/raw --output datasets/grabcut_dataset
-python tools/build_diet_datasets.py --source datasets/grabcut_dataset
+npm run demo          # server on the laptop's LAN IP + Expo Go QR code
+npm run demo:web      # same, in the browser
 ```
 
-The second command prints any folder it could not match to the taxonomy and
-any dish with too few images.
+The script prints the LAN URL, writes it into `apps/mobile/.env`, starts the
+server (and the ML service if a venv exists) and Expo. Missing keys are listed
+up front; each one degrades to a labelled demo path rather than an error.
 
-### 3. Train, starting from the Saudi checkpoints
+**Demo logins** (role picker → one tap, or phone OTP with code `123456` when
+Supabase is not configured):
+
+| Role | Name | What they see |
+|---|---|---|
+| Patient | Rekha Kumari | 34 weeks pregnant, gestational hypertension, labetalol reminders, a referral in progress |
+| ASHA | Sunita Devi | Six households in Rampur / Bhagwanpur / Sonpur, Rekha flagged critical |
+| Doctor | Dr. Arjun Rao, PHC Hebbal | Rekha's referral pending, QR scan opens her history |
+| Admin | Meena Shetty, PHC Hebbal | Staff, ASHA assignments, blood stock, analytics |
+
+### Three-minute demo script
+
+0. **Symptom check.** Patient → tap to speak: "Mujhe khansi hai" → it asks how long (tap a button), then about breathing, blood, fever… → possible causes and what to do. A short cough with a cold comes out as a common cold, not TB; a "yes" to breathing trouble shows the 108 banner.
+1. **Patient, Kannada.** Pick Kannada → Patient → tap the voice orb: "ನನಗೆ ತಲೆನೋವು ಮತ್ತು ಕಣ್ಣು ಮಂಜಾಗುತ್ತಿದೆ" → the reply is spoken back; "chest pain" words would raise the red Call 108 banner.
+2. **Prescription.** Home → Prescription → photo of a prescription → medicine cards, one field marked "Confirm with pharmacist" → Set reminders → Reminders tab shows today's doses; tap Taken.
+3. **ASHA.** Sign out → ASHA → Rekha's card is critical (BP 150/100, headache, swelling) → open the visit → record a voice report in Hindi → Refer → the outbox shows "waiting to sync".
+4. **Doctor.** Sign out → Doctor → referral inbox shows Rekha from Sunita → Scan QR (or "Use demo patient card") → history with the ASHA visit, vitals trend and adherence → New consultation → add a medicine → Save.
+5. **Back to the patient.** Sign out → Patient → Reminders: the new medicine is there.
+
+Records, reminders and ASHA visits work with no network and sync later. Speech,
+chat, the symptom check's wording, prescription reading and food scans need the
+server; without it the app says it cannot reach the service (no canned answers).
+Sign-in is in demo mode (code `123456`) until phone sign-in is switched on in Supabase.
+
+### Connecting the phones through Supabase
+
+With a database, the three apps share data across separate phones: an ASHA
+sync reaches the doctor's inbox, the doctor's prescription reaches the
+patient's Reminders, and the patient's dose taps reach the record. Each phone
+still works offline and sends its changes later (`features/shared/data/outbox.ts`).
+
+1. In the repo-root `.env`: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
+   `DATABASE_URL`, and `AUTH_MODE=demo` while phone sign-in is off.
+2. `npm run db:migrate` applies `supabase/migrations` (safe to repeat).
+3. `npm run db:seed` creates the four demo users and Rekha's records (safe to repeat).
+4. `npm run db:check` confirms every table, then restart the server.
+
+Without these the server keeps records in memory, which is enough for a
+one-laptop demo.
+
+### Phones and hosting
 
 ```bash
-python scripts/train.py --dataset datasets/derived/veg_binary   --run veg_indian   --img_size 344 --init saudi
-python scripts/train.py --dataset datasets/derived/vegan_binary --run vegan_indian --img_size 288 --init saudi
-python scripts/train.py --dataset datasets/derived/dishes       --run dish_indian  --img_size 320 --init saudi
+npm run deploy:server -- --yes   # server → Supabase Edge Function "api"
+npm run deploy:food -- --local   # food model → container / Hugging Face Space
 ```
 
-`--init saudi` loads the matching Saudi checkpoint. The veg and vegan heads
-load completely (same two classes); the dish head loads the backbone and
-trains a new final layer for the Indian dish list. Drop `--init` to start from
-ImageNet instead and compare — warm-starting is a hypothesis, not a measured
-win.
+- **iPhone or Android, quickest:** open the `preview` EAS Update in Expo Go
+  (signed in to the project's Expo account). No Mac or Apple fee needed.
+- **Android app file:** build an APK from the `preview` EAS build profile.
+- Publish from a clean git worktree of committed code only.
 
-The run names matter: `core/config.py` looks for `checkpoints/<run>_best.pth`
-and `results/runs/<run>/`. As soon as those exist the predictor serves the
-Indian head in place of the stand-in.
-
-### 4. Open-set index, CLIP probes, thresholds
-
-```bash
-python tools/build_openset_index.py                          # "is this a dish we know?"
-python tools/clip_probe.py --head dish --views ensemble --save
-python tools/clip_probe.py --head veg  --views ensemble --save
-python tools/vegan_threshold_sweep.py                        # then set VEGAN_THRESHOLD
-python tools/benchmark_predictor.py --ensemble               # needs datasets/benchmark/
-```
-
-In the Saudi project the CLIP probe beat the fine-tuned dish head by 12 points
-on about 1,100 images. `clip_probe.py` prints both numbers on the same split;
-only keep the saved probe if it wins here too (delete
-`checkpoints/clip_probe_<head>.joblib` to go back to the MobileNet head).
-
-## Running it
-
-```bash
-python scripts/predict.py --image photo.jpg
-./run_app.sh                                  # API + camera UI (expects .venv/)
-```
-
-## What is different from the Saudi project
-
-- **Egg is non-vegetarian**, following Indian labelling convention. "Vegetarian"
-  here means lacto-vegetarian.
-- **Ghee is the hard problem.** Dal tadka, dosa and roti are plant-based or not
-  depending on a fat that cannot be seen. The taxonomy marks a dish vegan only
-  where the traditional recipe is oil-based, and marks dal tadka and masala
-  dosa vegetarian. These are judgement calls — review them.
-- `arabic` in the taxonomy and API output is now `local_name` (Devanagari).
-- The dataset builder takes a flat `<dish>/` layout and reads veg / non-veg
-  from the taxonomy rather than from a parent folder name.
-- `train.py` has `--init`; `core/config.py` has `BASELINES`.
-- Not carried over: the mobile app, Dockerfile and deploy files, the report
-  generators, and everything the Saudi `STRUCTURE.md` lists as historical.
-
-## Layout
+## Repository
 
 ```
-core/config.py              paths, resolutions, thresholds — start here
-core/indian_taxonomy.json   dish → diet, ingredients, rationale
-core/predictor.py           three heads + lookup + cross-check + abstention
-scripts/train.py            two-stage training, --init for warm start
-tools/                      crops, dataset builder, open-set index, probes, benchmark
-api/, app/camera_ui.py      FastAPI service and Streamlit camera page
-checkpoints/pretrained_saudi/   the three Saudi models
-tests/                      pytest; tests that need trained Indian heads skip until they exist
-```
+apps/mobile/            Expo app (SDK 58, Expo Router): app/(auth) (patient) (asha) (doctor), features/, locales/ (7 languages)
+packages/shared/        types, theme tokens, language table, demo cast, ids                         (@am/shared)
+packages/patient-ai/    red flags, guided symptom check, reminders, adherence, prevention, generics (@am/patient-ai)
+packages/records/       QR card, referral inbox ranking, medicines and warnings, blood banks       (@am/records)
+server/                 one router: speech + chat (Sarvam), symptom check, prescription/food AI, copilot,
+                        ASHA sync, QR, records, appointments, prevention, places, integrations (ABDM sandbox)
+supabase/migrations/    1000 base · 3001–3002 ASHA · 4001–4003 records/QR/reports · 5001 labs · 5101 preventive
+                        · 5201 appointments · 5301 ASHA connect; RLS test in supabase/tests
+ml/food-classifier/     DishDetect India: CLIP probe + MobileNet heads, FastAPI /ai/food
+docs/                   STATUS · CLINICAL_REVIEW · DEVICE_TEST · INT
+
