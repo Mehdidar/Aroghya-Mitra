@@ -32,8 +32,7 @@
     "alerts": "An open alert from your health worker.",
     "asha_visit": "Your last ASHA home visit.",
     "diet": "The food preferences you set.",
-    "footer": "The assistant does not diagnose or change medicines. Always follow your doctor's advice.",
-    "demo": "This is a sample answer for the demo patient, not from the AI. Always follow your doctor's advice."
+    "footer": "The assistant does not diagnose or change medicines. Always follow your doctor's advice."
   },
   "warning": {
     "title": "Please read this first",
@@ -61,12 +60,5 @@
     "avoidLabel": "Foods I avoid",
     "avoidPlaceholder": "For example: brinjal, peanuts",
     "avoidHint": "Separate foods with commas"
-  },
-  "demo": {
-    "fever": "For you: your record shows you are about {{weeks}} weeks pregnant, so a fever needs a check at the PHC today. Do not take ibuprofen. Your record also shows a penicillin allergy: tell the doctor before any antibiotic.",
-    "headache": "For you: your record shows high BP in pregnancy (about {{weeks}} weeks). A headache with blurred vision, swelling or upper stomach pain can be pre-eclampsia: go to the hospital now or call 108.",
-    "bp": "For you: your record shows high BP in pregnancy. Keep taking labetalol exactly as prescribed, avoid pickles, papad and namkeen, and do not change the dose without your doctor. With headache, blurred vision or swelling, call 108.",
-    "pregnancy": "For you: your record shows about {{weeks}} weeks with high BP. Keep your BP checks and take labetalol, iron and calcium as prescribed. Severe headache, blurred vision, swelling, upper stomach pain or less baby movement: go to the hospital now or call 108.",
-    "medicine": "For you: your record shows a penicillin allergy and that you are about {{weeks}} weeks pregnant. Do not take penicillin-type antibiotics like amoxicillin, or painkillers like ibuprofen. Ask your doctor before any new medicine."
   }
 }

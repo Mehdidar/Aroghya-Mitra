@@ -66,21 +66,26 @@ export default function VoiceConsultation() {
   const [replyMsg, setReplyMsg] = useState<ChatMessage | null>(null);
   const [speaking, setSpeaking] = useState(false);
   const [via, setVia] = useState<SpokenVia | null>(null);
-  const [demo, setDemo] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const voice = useVoiceInput(language);
   const chat = useAiChat({
     persist: false,
     mode: 'voice',
-    demoText: (key) => t(`chat.demo.${key}`),
-    personalText: (key, params) => t(key, params),
     onReply: (m) => {
+      // Not reachable: say so out loud (the phone's own voice, since the server is out of reach). No canned answer.
+      if (m.failed && !m.text) {
+        const msg = t('chat.unavailable');
+        setReply(msg);
+        setReplyMsg(m);
+        setSpeaking(true);
+        void speak(msg, language, { onDone: () => setSpeaking(false) }).then(setVia);
+        return;
+      }
       // Safety warnings are spoken first, then the answer.
       const warnings = (m.warnings ?? []).map((w) => warningText(t, w));
       const spoken = [...warnings, m.text].filter(Boolean).join(' ');
       setReply(m.text || warnings.join(' ') || null);
       setReplyMsg(m);
-      setDemo(!!m.demo);
       if (!spoken) return;
       setSpeaking(true);
       void speak(spoken, language, { onDone: () => setSpeaking(false) }).then(setVia);
@@ -182,8 +187,7 @@ export default function VoiceConsultation() {
                   {orbState === 'listening' ? t('voice.seconds', { s: voice.seconds, max: voice.maxSeconds }) : t(`voice.${statusKey}`)}
                 </Text>
               ) : null}
-              {demo ? <Pill label={t('chat.demoLabel')} tone="warning" icon="flask-outline" /> : null}
-              {answer && replyMsg?.context ? <PersonalisedNote context={replyMsg.context} demo={replyMsg.demo} tone="panel" /> : null}
+              {answer && replyMsg?.context && !replyMsg.failed ? <PersonalisedNote context={replyMsg.context} tone="panel" /> : null}
               {via === 'device' ? <Pill label={t('voice.deviceVoice')} tone="neutral" icon="phone-portrait-outline" /> : null}
               {voice.error ? <Pill label={t(`voice.error.${voice.error.kind}`, voice.error.message)} tone="warning" icon="alert-circle-outline" /> : null}
             </View>

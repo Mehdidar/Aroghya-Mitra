@@ -68,7 +68,6 @@
     "clear": "Clear chat",
     "thinking": "Thinking…",
     "sources": "Sources: {{list}}",
-    "demoLabel": "Demo answer · server not reachable",
     "emergencyTitle": "This could be an emergency",
     "emergencyBody": "Do not wait for the assistant. Call for help now.",
     "dismiss": "Dismiss",
@@ -82,15 +81,8 @@
       "bp": "My BP is high",
       "cough": "Cough for a week"
     },
-    "demo": {
-      "fever": "Demo answer: rest, drink fluids, and take paracetamol as advised on the pack. See a doctor if the fever is above 102°F, lasts more than 3 days, or comes with a rash, stiff neck or breathing trouble.",
-      "headache": "Demo answer: rest in a quiet room, drink water, and avoid screens. A sudden severe headache, or one with vomiting, weakness or blurred vision, needs a doctor today.",
-      "bp": "Demo answer: sit quietly for 5 minutes and measure again. Readings of 140/90 or more on two occasions, or any reading with headache, chest pain or swelling, need a doctor. In pregnancy, go the same day.",
-      "cough": "Demo answer: warm fluids and steam help most coughs. A cough over 2 weeks, blood in sputum, night sweats or weight loss should be checked for TB at the nearest PHC.",
-      "pregnancy": "Demo answer: keep your antenatal check-ups and iron tablets. Bleeding, severe headache, swelling of face or hands, or reduced baby movements need care today.",
-      "medicine": "Demo answer: take medicines exactly as written on the prescription. Use the Prescription scanner in this app to set reminders, and ask a pharmacist about any doubt.",
-      "general": "Demo answer: the health assistant server is not reachable right now, so this is a sample reply. For anything urgent, call 108 or visit the nearest PHC."
-    }
+    "unavailable": "Can't reach the health assistant right now. Check your internet and try again. For an emergency, call 108.",
+    "retry": "Try again"
   },
   "voice": {
     "title": "Voice assistant",

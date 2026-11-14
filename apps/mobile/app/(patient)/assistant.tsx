@@ -7,21 +7,23 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'rea
 
 import { PersonalisedNote, WarningCards } from '@/features/patient/assistant/PersonalisedNote';
 import { useAiChat } from '@/features/patient/chat/useAiChat';
-import { DEMO_CHIP_KEYS } from '@/features/patient/chat/demoReplies';
 import { EmergencyBanner } from '@/features/patient/chat/EmergencyBanner';
 import type { ChatMessage } from '@/features/patient/chat/types';
 import { useTheme } from '@/features/shared/theme';
-import { Avatar, Card, Heading, Icon, IconButton, Pill, Screen, Skeleton, Text, TextField } from '@/features/shared/ui';
+import { Avatar, Card, Heading, Icon, IconButton, Screen, SecondaryButton, Skeleton, Text, TextField } from '@/features/shared/ui';
 import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
-function Bubble({ m }: { m: ChatMessage }) {
+/** Starter questions on an empty chat (chat.starters.*). */
+const STARTER_KEYS = ['fever', 'headache', 'bp', 'cough'] as const;
+
+function Bubble({ m, onRetry }: { m: ChatMessage; onRetry?: () => void }) {
   const { t } = useTranslation('patient');
   const theme = useTheme();
   const mine = m.role === 'user';
   return (
     <View style={{ alignItems: mine ? 'flex-end' : 'flex-start', gap: theme.space[1] }} testID={`msg-${m.role}`}>
       {!mine && m.warnings?.length ? <WarningCards warnings={m.warnings} /> : null}
-      {!mine && m.streaming === false && !m.text && m.emergency ? null : (
+      {!mine && m.streaming === false && !m.text && (m.emergency || m.failed) ? null : (
       <View
         style={{
           maxWidth: '88%',
@@ -44,8 +46,21 @@ function Bubble({ m }: { m: ChatMessage }) {
         )}
       </View>
       )}
-      {!mine && m.context && !m.streaming ? <PersonalisedNote context={m.context} demo={m.demo} /> : null}
-      {m.demo ? <Pill label={t('chat.demoLabel')} tone="warning" icon="flask-outline" /> : null}
+      {!mine && m.context && !m.streaming && !m.failed ? <PersonalisedNote context={m.context} /> : null}
+      {m.failed ? (
+        <View
+          accessibilityRole="alert"
+          testID="chat-unavailable"
+          style={{ maxWidth: '88%', gap: theme.space[2], padding: theme.space[3], borderRadius: theme.radii.xl, backgroundColor: theme.colors.status.warning.bg }}>
+          <View style={{ flexDirection: 'row', gap: theme.space[2], alignItems: 'flex-start' }}>
+            <Icon name="cloud-offline-outline" size={theme.sizes.icon.sm} color={theme.colors.status.warning.icon} />
+            <Text variant="bodySmall" color={theme.colors.status.warning.fg} style={{ flex: 1 }}>
+              {t('chat.unavailable')}
+            </Text>
+          </View>
+          {onRetry ? <SecondaryButton label={t('chat.retry')} icon="refresh" onPress={onRetry} testID="chat-retry" /> : null}
+        </View>
+      ) : null}
       {m.sources?.length ? (
         <Text variant="caption" tone="tertiary">
           {t('chat.sources', { list: m.sources.map((s) => s.title).join(' · ') })}
@@ -60,7 +75,7 @@ export default function PatientAssistant() {
   const theme = useTheme();
   const [input, setInput] = useState('');
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
-  const chat = useAiChat({ demoText: (key) => t(`chat.demo.${key}`), personalText: (key, params) => t(key, params) });
+  const chat = useAiChat();
 
   useEffect(() => {
     const id = setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 80);
@@ -72,7 +87,8 @@ export default function PatientAssistant() {
     void chat.send(text);
   };
 
-  const chips = chat.messages.length === 0 ? DEMO_CHIP_KEYS.map((k) => t(`chat.starters.${k}`)) : chat.chips;
+  const chips = chat.messages.length === 0 ? STARTER_KEYS.map((k) => t(`chat.starters.${k}`)) : chat.chips;
+  const lastFailed = chat.messages.map((m) => !!m.failed).lastIndexOf(true);
 
   return (
     <Screen scroll={false} background="mist" padded={false} testID="screen-assistant">
@@ -109,7 +125,7 @@ export default function PatientAssistant() {
               </View>
             </Card>
           ) : (
-            chat.messages.map((m) => <Bubble key={m.id} m={m} />)
+            chat.messages.map((m, i) => <Bubble key={m.id} m={m} onRetry={i === lastFailed && chat.status !== 'streaming' ? chat.retry : undefined} />)
           )}
         </ScrollView>
 

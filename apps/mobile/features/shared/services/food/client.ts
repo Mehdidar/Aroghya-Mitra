@@ -5,7 +5,6 @@
 // x-api-key (DishDetect in prod mode requires one).
 import { Platform } from 'react-native';
 
-import { mockRecognition } from './mock';
 import { FoodRecognitionSchema, type FoodScanResult } from './types';
 import { filePart } from '@/features/shared/services/filePart';
 
@@ -13,7 +12,7 @@ export type FoodImageInput = { uri: string; mimeType?: string | null; fileName?:
 
 export class FoodScanError extends Error {
   constructor(
-    public readonly kind: 'bad_image' | 'too_large' | 'rate_limited' | 'server' | 'bad_response',
+    public readonly kind: 'bad_image' | 'too_large' | 'rate_limited' | 'server' | 'bad_response' | 'offline' | 'unavailable',
     public readonly status?: number
   ) {
     super(kind);
@@ -55,19 +54,16 @@ async function buildForm(image: FoodImageInput, platform: string, fetchImpl: typ
 }
 
 /**
- * Sends a meal photo for recognition. Falls back to a labelled demo result when no server is
- * configured or it cannot be reached (offline, DNS, timeout). Real HTTP errors are thrown so
- * the screen can show them.
+ * Sends a meal photo for recognition. No sample dishes: with no server configured it throws
+ * 'unavailable', and when the server cannot be reached (offline, DNS, timeout) it throws
+ * 'offline', so the screen says so. HTTP errors are thrown with their own kind.
  */
 export async function analyzeFood(image: FoodImageInput, opts: FoodClientOptions = {}): Promise<FoodScanResult> {
-  const isMockedTest = opts.fetchImpl !== undefined;
   const baseUrl = resolveBase(opts.baseUrl);
   const fetchImpl = opts.fetchImpl ?? globalThis.fetch.bind(globalThis);
   const platform = opts.platform ?? Platform.OS;
 
-  if (!baseUrl) {
-    return { recognition: mockRecognition(image.uri), demo: true, demoReason: 'unset' };
-  }
+  if (!baseUrl) throw new FoodScanError('unavailable');
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), opts.timeoutMs ?? FOOD_TIMEOUT_MS);
@@ -81,8 +77,8 @@ export async function analyzeFood(image: FoodImageInput, opts: FoodClientOptions
       signal: controller.signal,
     });
   } catch {
-    // Network failure or timeout: the server is unreachable, so use the demo result.
-    return { recognition: mockRecognition(image.uri), demo: true, demoReason: 'unreachable' };
+    // Network failure or timeout: the server is unreachable.
+    throw new FoodScanError('offline');
   } finally {
     clearTimeout(timer);
   }
@@ -97,7 +93,7 @@ export async function analyzeFood(image: FoodImageInput, opts: FoodClientOptions
   } catch {
     throw new FoodScanError('bad_response', res.status);
   }
-  return { recognition: parseFoodRecognition(json), demo: false };
+  return { recognition: parseFoodRecognition(json) };
 }
 
 export function parseFoodRecognition(json: unknown) {

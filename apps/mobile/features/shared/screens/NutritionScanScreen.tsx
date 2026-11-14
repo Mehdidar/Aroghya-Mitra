@@ -59,7 +59,8 @@ export function NutritionScanScreen() {
       setStatus({ kind: 'done', result: await analyzeFood(photo) });
     } catch (e) {
       const kind = e instanceof FoodScanError ? e.kind : 'server';
-      const key = kind === 'bad_image' ? 'errorBadImage' : kind === 'too_large' ? 'errorTooLarge' : kind === 'rate_limited' ? 'errorRateLimited' : 'errorServer';
+      const key =
+        kind === 'bad_image' ? 'errorBadImage' : kind === 'too_large' ? 'errorTooLarge' : kind === 'rate_limited' ? 'errorRateLimited' : kind === 'offline' ? 'errorOffline' : kind === 'unavailable' ? 'errorUnavailable' : 'errorServer';
       setStatus({ kind: 'error', message: t(key) });
     }
   };
@@ -173,20 +174,11 @@ function LoadingCard({ label }: { label: string }) {
 export function ResultCard({ result }: { result: FoodScanResult }) {
   const { t } = useTranslation('nutrition');
   const theme = useTheme();
-  const { recognition: r, demo, demoReason } = result;
+  const { recognition: r } = result;
   const item: FoodItem | undefined = r.items[0];
 
   return (
     <Card radius="xl" padding="lg" testID="nutrition-result">
-      {demo ? (
-        <View style={{ gap: theme.space[1] }}>
-          <Pill label={t('demoResult')} tone="warning" icon="flask-outline" />
-          <Text variant="caption" tone="tertiary">
-            {t(demoReason === 'unreachable' ? 'demoOffline' : 'demoUnset')}
-          </Text>
-        </View>
-      ) : null}
-
       {!item ? (
         <View style={{ gap: theme.space[2] }} testID="not-recognized">
           <Heading variant="h3">{r.isFood ? t('notRecognizedTitle') : t('notFood')}</Heading>
@@ -197,9 +189,9 @@ export function ResultCard({ result }: { result: FoodScanResult }) {
           </Text>
         </View>
       ) : (
-        <ItemDetails key={`${item.name}-${item.estimatedGrams}`} item={item} reliable={r.reliable} source={r.source} notes={r.notes} demo={demo} />
+        <ItemDetails key={`${item.name}-${item.estimatedGrams}`} item={item} reliable={r.reliable} source={r.source} notes={r.notes} />
       )}
-      <Feedback requestId={demo ? null : (r.requestId ?? null)} />
+      <Feedback requestId={r.requestId ?? null} />
     </Card>
   );
 }
@@ -209,14 +201,11 @@ function ItemDetails({
   reliable,
   source,
   notes,
-  demo,
 }: {
   item: FoodItem;
   reliable: boolean;
   source: 'vision-llm' | 'dishdetect';
   notes: string | null;
-  /** A canned sample that ignores the photo: never show match quality or confidence for it. */
-  demo: boolean;
 }) {
   const { t } = useTranslation('nutrition');
   const theme = useTheme();
@@ -233,12 +222,10 @@ function ItemDetails({
           {item.name}
         </Heading>
         {item.localName ? <Text tone="secondary">{item.localName}</Text> : null}
-        {demo ? null : (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2], marginTop: theme.space[2] }}>
-            <Pill label={reliable ? t('confident') : t('uncertain')} tone={reliable ? 'success' : 'warning'} icon={reliable ? 'checkmark-circle' : 'help-circle'} />
-            <Pill label={t('confidence', { value: Math.round(item.confidence * 100) })} tone="neutral" icon="analytics-outline" />
-          </View>
-        )}
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2], marginTop: theme.space[2] }}>
+          <Pill label={reliable ? t('confident') : t('uncertain')} tone={reliable ? 'success' : 'warning'} icon={reliable ? 'checkmark-circle' : 'help-circle'} />
+          <Pill label={t('confidence', { value: Math.round(item.confidence * 100) })} tone="neutral" icon="analytics-outline" />
+        </View>
       </View>
 
       {known ? (

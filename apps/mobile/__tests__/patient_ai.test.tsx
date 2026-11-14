@@ -25,7 +25,7 @@ beforeEach(async () => {
 });
 
 describe('AI chat', () => {
-  it('shows a labelled demo reply when the server cannot be reached', async () => {
+  it('says the assistant cannot be reached, invents no answer, and asks again on Try again', async () => {
     const failing = jest.fn(async () => {
       throw new TypeError('Network request failed');
     });
@@ -35,11 +35,19 @@ describe('AI chat', () => {
       await render(wrap(<PatientAssistant />));
       await screen.findByText('How are you feeling?');
       fireEvent.press(screen.getByText('I have a fever'));
-      await waitFor(() => expect(screen.getByText('Demo answer · server not reachable')).toBeTruthy());
-      expect(screen.getByText(/^Demo answer: rest/)).toBeTruthy();
-      expect(failing).toHaveBeenCalled();
+      await waitFor(() => expect(screen.getByTestId('chat-unavailable')).toBeTruthy());
+      expect(screen.getByText(/^Can't reach the health assistant right now/)).toBeTruthy();
+      expect(screen.queryByText(/Demo answer/)).toBeNull();
       const [url] = failing.mock.calls[0] as unknown as [string];
       expect(url).toMatch(/\/ai\/chat$/);
+      const calls = failing.mock.calls.length;
+      await act(async () => {
+        fireEvent.press(screen.getByTestId('chat-retry'));
+      });
+      await waitFor(() => expect(failing.mock.calls.length).toBeGreaterThan(calls));
+      const body = JSON.parse((failing.mock.calls.at(-1) as unknown as [string, RequestInit])[1].body as string);
+      expect(body.message).toBe('I have a fever');
+      expect(body.history).toEqual([]);
     } finally {
       globalThis.fetch = realFetch;
     }

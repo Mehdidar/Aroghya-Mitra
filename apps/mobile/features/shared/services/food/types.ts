@@ -89,10 +89,7 @@ export const FoodRecognitionSchema = z.object({
 });
 export type FoodRecognition = z.infer<typeof FoodRecognitionSchema>;
 
-/** What the screen gets: P2's FoodRecognition plus whether it came from the on-device demo mock. */
+/** What the screen gets: always a real recognition from the server (there is no sample result). */
 export type FoodScanResult = {
   recognition: FoodRecognition;
-  demo: boolean;
-  /** Why the demo mock was used: no server configured, or the server could not be reached. */
-  demoReason?: 'unset' | 'unreachable';
 };

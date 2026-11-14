@@ -114,7 +114,7 @@ describe('personalised chat', () => {
     await waitFor(() => expect(screen.getByTestId('chat-not-personalised')).toBeTruthy());
   });
 
-  it('offline, the demo patient gets a demo reply that knows her record', async () => {
+  it('offline, nothing is invented, not even for the demo patient', async () => {
     globalThis.fetch = jest.fn(async () => {
       throw new TypeError('offline');
     }) as unknown as typeof fetch;
@@ -123,23 +123,9 @@ describe('personalised chat', () => {
     await act(async () => {
       fireEvent.press(screen.getByText('My BP is high'));
     });
-    await waitFor(() => expect(screen.getByText('Demo answer · server not reachable')).toBeTruthy());
-    expect(screen.getByText(/^Demo answer: .*For you: your record shows high BP in pregnancy/)).toBeTruthy();
-    expect(screen.getByTestId('chat-personalised')).toBeTruthy();
-  });
-
-  it('a real patient does not get the demo patient’s record offline', async () => {
-    useSession.setState({ patientId: 'real-patient-1' });
-    globalThis.fetch = jest.fn(async () => {
-      throw new TypeError('offline');
-    }) as unknown as typeof fetch;
-    await render(wrap(<PatientAssistant />));
-    await screen.findByText('How are you feeling?');
-    await act(async () => {
-      fireEvent.press(screen.getByText('My BP is high'));
-    });
-    await waitFor(() => expect(screen.getByText('Demo answer · server not reachable')).toBeTruthy());
-    expect(screen.queryByText(/For you:/)).toBeNull();
+    await waitFor(() => expect(screen.getByTestId('chat-unavailable')).toBeTruthy());
+    expect(screen.queryByText(/Demo answer|For you:/)).toBeNull();
+    expect(screen.queryByTestId('chat-personalised')).toBeNull();
   });
 
   it('voice mode speaks the warnings first', async () => {

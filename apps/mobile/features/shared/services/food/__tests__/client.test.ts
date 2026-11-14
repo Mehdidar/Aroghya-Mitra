@@ -1,6 +1,6 @@
 import { analyzeFood, FoodScanError, parseFoodRecognition, sendFoodFeedback } from '../client';
 import { clampPortion, extrasForPortion, macrosForPortion } from '../macros';
-import { MOCK_RESULTS } from '../mock';
+import { MOCK_RESULTS } from '../testFixtures';
 
 const photo = { uri: 'file:///tmp/meal.jpg', mimeType: 'image/jpeg', fileName: 'meal.jpg' };
 
@@ -105,36 +105,30 @@ describe('macros', () => {
 });
 
 describe('analyzeFood', () => {
-  it('uses a labelled demo result when no server URL is set', async () => {
+  it('says the food scan is not set up when no server URL is set (no sample dish)', async () => {
     const fetchImpl = jest.fn();
-    const r = await analyzeFood(photo, { baseUrl: '', fetchImpl: fetchImpl as unknown as typeof fetch });
-    expect(r.demo).toBe(true);
-    expect(r.demoReason).toBe('unset');
-    expect(MOCK_RESULTS).toContain(r.recognition);
+    await expect(analyzeFood(photo, { baseUrl: '', fetchImpl: fetchImpl as unknown as typeof fetch })).rejects.toMatchObject({ kind: 'unavailable' });
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
-  it('falls back to the demo result when the server is unreachable', async () => {
+  it('says it cannot reach the server when the network fails (no sample dish)', async () => {
     const fetchImpl = jest.fn(async () => {
       throw new TypeError('Network request failed');
     });
-    const r = await analyzeFood(photo, { baseUrl: 'http://10.0.0.5:8000', fetchImpl: fetchImpl as unknown as typeof fetch, platform: 'ios' });
-    expect(r).toMatchObject({ demo: true, demoReason: 'unreachable' });
+    await expect(analyzeFood(photo, { baseUrl: 'http://10.0.0.5:8000', fetchImpl: fetchImpl as unknown as typeof fetch, platform: 'ios' })).rejects.toMatchObject({ kind: 'offline' });
   });
 
-  it('falls back on timeout', async () => {
+  it('treats a timeout as offline', async () => {
     const fetchImpl = jest.fn(
       (_url: string, init: RequestInit) =>
         new Promise<Response>((_resolve, reject) => init.signal?.addEventListener('abort', () => reject(new Error('aborted'))))
     );
-    const r = await analyzeFood(photo, { baseUrl: 'http://x', fetchImpl: fetchImpl as unknown as typeof fetch, timeoutMs: 20, platform: 'android' });
-    expect(r.demoReason).toBe('unreachable');
+    await expect(analyzeFood(photo, { baseUrl: 'http://x', fetchImpl: fetchImpl as unknown as typeof fetch, timeoutMs: 20, platform: 'android' })).rejects.toMatchObject({ kind: 'offline' });
   });
 
   it('posts multipart `file` to /ai/food and returns the server result', async () => {
     const fetchImpl = okFetch(good);
     const r = await analyzeFood(photo, { baseUrl: 'http://ai.local/', fetchImpl: fetchImpl as unknown as typeof fetch, platform: 'ios' });
-    expect(r.demo).toBe(false);
     expect(r.recognition.items[0].name).toBe('Idli');
     const [url, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe('http://ai.local/ai/food');

@@ -14,7 +14,7 @@ import { contextLabels, warningText, whyLine } from './labels';
  * part used. When the record could not be used, a short note says so.
  * `tone="panel"` draws it on the dark voice panel.
  */
-export function PersonalisedNote({ context, demo, tone = 'default' }: { context: ReplyContext; demo?: boolean; tone?: 'default' | 'panel' }) {
+export function PersonalisedNote({ context, tone = 'default' }: { context: ReplyContext; tone?: 'default' | 'panel' }) {
   const { t } = useTranslation('assistant');
   const theme = useTheme();
   const [open, setOpen] = useState(false);
@@ -85,7 +85,7 @@ export function PersonalisedNote({ context, demo, tone = 'default' }: { context:
               </Text>
             ))}
           <Text variant="caption" tone={onPanel ? undefined : 'tertiary'} color={soft}>
-            {demo ? t('why.demo') : t('why.footer')}
+            {t('why.footer')}
           </Text>
         </View>
       ) : null}

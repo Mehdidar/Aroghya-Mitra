@@ -51,8 +51,8 @@ export interface ChatMessage {
   createdAt: string;
   /** True while the assistant is still streaming this reply. */
   streaming?: boolean;
-  /** A canned reply shown because the server could not be reached: labelled, never passed off as AI. */
-  demo?: boolean;
+  /** The server could not be reached or the reply failed: the screen says so and offers a retry. */
+  failed?: boolean;
   emergency?: EmergencyInfo;
   sources?: SourceRef[];
   /** Personalisation: the record parts used (shown as "based on: ..."). */

@@ -1,6 +1,7 @@
 /**
  * Chat state for the assistant and voice screens: messages, streaming,
- * suggestion chips, the on-device red-flag check and the labelled demo path.
+ * suggestion chips and the on-device red-flag check. When the server cannot
+ * be reached the reply is marked `failed` and says so: no canned answers.
  *
  * Personalised: every request carries the signed-in patient's record id and
  * their food preferences; the server answers for that record only if the
@@ -11,12 +12,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { detectRedFlags, EMERGENCY_CONTACTS } from '@am/patient-ai';
 
-import { personalDemo, DEMO_PREGNANCY_WEEKS } from '@/features/patient/assistant/demo';
 import { dietForChat } from '@/features/patient/assistant/preferences';
 import { currentPatientId, useSession } from '@/features/shared/state/session';
 
 import { streamChat, type StreamChatOptions } from './chatClient';
-import { demoReplyKey } from './demoReplies';
 import { chatHistory, fromStored, toStored } from './history';
 import type { ChatMessage, ChatTurn, ChatWarning, EmergencyInfo, ReplyContext } from './types';
 
@@ -28,10 +27,14 @@ export interface UseAiChatOptions extends StreamChatOptions {
   onReply?: (m: ChatMessage) => void;
   /** Skip AsyncStorage history (voice screen, tests). */
   persist?: boolean;
-  /** Translates demo reply keys; returns the text to show. */
-  demoText: (key: string) => string;
-  /** Translates the demo patient's personal demo note (assistant:demo.*), shown after the generic demo text. */
-  personalText?: (i18nKey: string, params: Record<string, string | number>) => string;
+}
+
+/** The conversation sent to the server: no failed replies, and no question whose reply failed (it is asked again). */
+export function historyFor(messages: ChatMessage[]): ChatTurn[] {
+  return messages
+    .filter((m, i) => !m.failed && !(m.role === 'user' && messages[i + 1]?.failed))
+    .slice(-12)
+    .map((m) => ({ role: m.role, text: m.text }));
 }
 
 let seq = 0;
@@ -45,7 +48,7 @@ export function localEmergency(text: string): EmergencyInfo | null {
   return { categories: r.categories, contacts: contacts.map((c) => ({ number: c.number, labelKey: c.labelKey })), steps: [] };
 }
 
-export function useAiChat(opts: UseAiChatOptions) {
+export function useAiChat(opts: UseAiChatOptions = {}) {
   const language = useSession((s) => s.language);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [chips, setChips] = useState<string[]>([]);
@@ -79,7 +82,7 @@ export function useAiChat(opts: UseAiChatOptions) {
       const user: ChatMessage = { id: nextId(), role: 'user', text, createdAt: new Date().toISOString() };
       const local = localEmergency(text);
       if (local) setEmergency(local);
-      const history: ChatTurn[] = messages.filter((m) => !m.demo).slice(-12).map((m) => ({ role: m.role, text: m.text }));
+      const history = historyFor(messages);
       const replyId = nextId();
       const reply: ChatMessage = { id: replyId, role: 'assistant', text: '', createdAt: new Date().toISOString(), streaming: true, emergency: local ?? undefined };
       setMessages((prev) => [...prev, user, reply]);
@@ -90,8 +93,8 @@ export function useAiChat(opts: UseAiChatOptions) {
       const patch = (p: Partial<ChatMessage>) => setMessages((prev) => prev.map((m) => (m.id === replyId ? { ...m, ...p } : m)));
 
       let final: ChatMessage = reply;
+      let acc = '';
       try {
-        let acc = '';
         const warnings: ChatWarning[] = [];
         const input = { message: text, history, language, mode: o.mode ?? 'text', patientId: currentPatientId(), diet: dietForChat() } as const;
         for await (const ev of streamChat(input, { fetchImpl: o.fetchImpl, signal: ctrl.signal, timeoutMs: o.timeoutMs })) {
@@ -120,16 +123,18 @@ export function useAiChat(opts: UseAiChatOptions) {
         setStatus('idle');
         if (o.persist !== false) await chatHistory.append(toStored(user), toStored(final)).catch(() => undefined);
       } catch {
-        // Unreachable or failed: a labelled demo answer, never a fake AI one.
-        const key = demoReplyKey(text);
-        const personal = o.personalText ? personalDemo(key) : null;
-        const note = personal ? o.personalText!(personal.i18nKey, { weeks: DEMO_PREGNANCY_WEEKS }) : '';
-        const demo = note ? `${o.demoText(key)} ${note}` : o.demoText(key);
-        const context = personal ? personal.context : undefined;
-        // Warnings the server already sent stay: they came from the safety rules, not the model.
-        final = { ...final, text: demo, streaming: false, demo: true, context };
-        patch({ text: demo, streaming: false, demo: true, context });
-        setStatus('error');
+        if (ctrl.signal.aborted) {
+          // Stopped by the patient: keep what had arrived.
+          final = { ...final, text: acc, streaming: false };
+          patch({ text: acc, streaming: false });
+          setStatus('idle');
+        } else {
+          // Unreachable or failed: say so (the screen shows chat.unavailable and a retry). Never a canned answer.
+          // Warnings the server already sent stay: they came from the safety rules, not the model.
+          final = { ...final, text: acc, streaming: false, failed: true };
+          patch({ text: acc, streaming: false, failed: true });
+          setStatus('error');
+        }
       } finally {
         abortRef.current = null;
       }
@@ -140,6 +145,13 @@ export function useAiChat(opts: UseAiChatOptions) {
   );
 
   const stop = useCallback(() => abortRef.current?.abort(), []);
+  /** Ask the last failed question again. */
+  const retry = useCallback(() => {
+    const i = messages.map((m) => !!m.failed).lastIndexOf(true);
+    const question = i > 0 && messages[i - 1].role === 'user' ? messages[i - 1].text : null;
+    if (!question || status === 'streaming') return;
+    void send(question);
+  }, [messages, send, status]);
   const clear = useCallback(async () => {
     setMessages([]);
     setChips([]);
@@ -148,5 +160,5 @@ export function useAiChat(opts: UseAiChatOptions) {
     if (opts.persist !== false) await chatHistory.clear().catch(() => undefined);
   }, [opts.persist]);
 
-  return { messages, chips, status, emergency, loaded, send, stop, clear, dismissEmergency: () => setEmergency(null) };
+  return { messages, chips, status, emergency, loaded, send, stop, retry, clear, dismissEmergency: () => setEmergency(null) };
 }

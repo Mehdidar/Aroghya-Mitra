@@ -7,9 +7,6 @@
   "changePhoto": "Change photo",
   "analyze": "Analyze with AI",
   "analyzing": "Looking at your meal…",
-  "demoResult": "Demo result",
-  "demoUnset": "No AI server is set up, so this is a sample result.",
-  "demoOffline": "Could not reach the AI server, so this is a sample result.",
   "notRecognizedTitle": "We couldn't name this dish yet",
   "notRecognizedBody": "Try another photo, closer and in better light. You can also log it by hand.",
   "notFood": "This photo does not look like food.",
@@ -80,5 +77,7 @@
   "sodium": "Sodium",
   "unitMg": "mg",
   "estimateCurated": "Estimate · typical recipe values (IFCT 2017) via DishDetect",
-  "feedbackNotSent": "Thank you. We could not send this now, but your note helps us."
+  "feedbackNotSent": "Thank you. We could not send this now, but your note helps us.",
+  "errorOffline": "Could not reach the food scan. Check your internet and try again.",
+  "errorUnavailable": "The food scan is not set up in this app yet."
 }

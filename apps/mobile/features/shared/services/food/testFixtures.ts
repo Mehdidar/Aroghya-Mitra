@@ -1,7 +1,7 @@
 import type { FoodRecognition } from './types';
 
-// Demo results (realistic, approximate per-100 g values for common Bengaluru dishes). Shown with a
-// visible "Demo result" pill; never presented as a real analysis.
+// Test fixtures only (approximate per-100 g values for common Bengaluru dishes). Never shown to
+// users: when the food scan cannot be reached the app says so instead of showing a sample dish.
 export const MOCK_RESULTS: readonly FoodRecognition[] = [
   {
     isFood: true,
@@ -69,10 +69,3 @@ export const MOCK_RESULTS: readonly FoodRecognition[] = [
     requestId: null,
   },
 ];
-
-/** Picks a mock result from the photo URI so the same photo always gives the same demo answer. */
-export function mockRecognition(seed: string): FoodRecognition {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
-  return MOCK_RESULTS[h % MOCK_RESULTS.length];
-}
