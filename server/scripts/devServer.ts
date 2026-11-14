@@ -43,6 +43,15 @@ export function lanIp(): string | null {
 }
 
 createServer(async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
   try {
     const chunks: Buffer[] = [];
     for await (const c of req) chunks.push(c as Buffer);
@@ -51,11 +60,13 @@ createServer(async (req, res) => {
     for (const [k, v] of Object.entries(req.headers)) if (typeof v === 'string') headers.set(k, v);
     const request = new Request(`http://localhost:${port}${req.url}`, { method: req.method, headers, body: req.method === 'GET' || req.method === 'HEAD' ? undefined : body });
     const response = await handler(request);
-    res.writeHead(response.status, Object.fromEntries(response.headers));
+    const outHeaders = Object.fromEntries(response.headers);
+    outHeaders['access-control-allow-origin'] = '*';
+    res.writeHead(response.status, outHeaders);
     if (response.body) for await (const chunk of response.body) res.write(chunk);
     res.end();
   } catch (e) {
-    res.writeHead(500, { 'content-type': 'application/json' });
+    res.writeHead(500, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });
     res.end(JSON.stringify({ error: String(e) }));
   }
 }).listen(port, '0.0.0.0', () => {

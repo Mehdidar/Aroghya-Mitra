@@ -38,10 +38,15 @@ export type StepsState =
   | { status: 'denied'; canAsk: boolean }
   | { status: 'ready'; today: number; week: { date: Date; steps: number }[]; allDay: boolean };
 
+import { requireOptionalNativeModule } from 'expo';
+
 type PedometerModule = typeof import('expo-sensors').Pedometer;
 function pedometer(): PedometerModule | null {
   if (Platform.OS === 'web') return null;
   try {
+    if (typeof requireOptionalNativeModule === 'function' && !requireOptionalNativeModule('ExponentPedometer')) {
+      return null;
+    }
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return (require('expo-sensors') as typeof import('expo-sensors')).Pedometer;
   } catch {

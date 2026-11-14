@@ -52,5 +52,6 @@
     "**/node_modules",
     "apps",
     "ml"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }
