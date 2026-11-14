@@ -5,8 +5,10 @@ One app for three people who rarely share a screen: the **patient** at home, the
 primary health centre. Hindi, Kannada, Tamil, Telugu, Urdu, Kashmiri and
 English; voice first; works offline in the field.
 
-Built for a hackathon by four teams, now joined into one Expo app, one
-TypeScript server and one Python food-recognition service.
+Built for a hackathon by a team of four (Mehdidar, sai-yogesh-git, thejas2401, Siddhanthsv),
+joined into one Expo app, one TypeScript server and one Python
+food-recognition service. A screening and care-coordination aid, never a
+diagnosis: the 108 emergency button is on every patient screen.
 
 ```
                  ┌──────────────── apps/mobile (Expo, iOS + Android + web) ────────────────┐
@@ -41,11 +43,12 @@ flowchart LR
 
 ## What is in the box
 
-| Role | Screens | Logic it runs on |
+| Role | What they can do | Logic it runs on |
 |---|---|---|
-| Patient | Home with service tiles and "Call 108" · AI chat (streamed, red-flag banner) · voice assistant · prescription explainer · reminders with Taken / Skip and streak · nutrition scan with portion slider · QR health card · history · report upload · blood banks · hospital navigation | `packages/patient-ai` (red flags, reminder schedule, adherence, macros), `packages/records`, `server/ai` |
-| ASHA worker | Caseload · register patient · patient detail · home visit with voice report · alerts · referrals · offline outbox with sync | `apps/mobile/features/asha` (35-rule risk engine), `server/asha` re-verifies every alert |
-| Doctor / Admin | Dashboard with Scan QR · patients · consultation with prescription (lands in the patient's reminders) · referral inbox fed by ASHA referrals · admin: users, ASHA assignments, blood stock, analytics | `packages/records` (dashboard, inbox, analytics), `server/qr`, `server/records` |
+| Patient | Voice-first home with "tap to speak" and 108 · health assistant (chat and voice, streamed, grounded on approved summaries and the patient's own record) · **guided symptom check** (asks a few questions, then names possible causes and what to do) · prescription photo reader · medicine reminders with Taken / Skip, streak and adherence · food scan (DishDetect) · preventive care (vaccines, ANC, screenings) · PHC appointments · QR health card · find and message my ASHA · nearby hospitals and pharmacies on a map · blood banks · step counter | `packages/patient-ai` (red flags, symptom check, reminders, adherence, prevention), `server/ai`, `server/appointments`, `server/prevention` |
+| ASHA worker | Caseload · register patient · home visit with vitals, symptoms, voice report and photos · automatic risk alerts · referrals · patient messages and visit requests · scan a patient's QR card · Today's plan · works offline, syncs later | `apps/mobile/features/asha` (35-rule risk engine); `server/asha` re-runs every rule and its verdict wins |
+| Doctor | Referral inbox ranked by approved criteria · scan QR to open history · **AI copilot**: summary built only from the record, timeline, lab comparison, voice notes to an editable draft · prescribing with interaction, allergy, pregnancy and duplicate warnings, NLEM 2022 list, Jan Aushadhi generics · quick prescribe · day list of appointments | `server/copilot`, `packages/records`, `server/qr`, `server/records` |
+| Admin | Staff · ASHA assignment board by village · blood stock · analytics · PHC hours | `packages/records`, `server/records` |
 
 Everything the four modules share lives in `packages/shared`: the types, the
 theme tokens, the language table and the **demo cast**, so the pregnant patient
@@ -68,7 +71,9 @@ npm run ml:test                   # pytest for ml/food-classifier (needs its ven
 
 Optional: the food model. `ml/food-classifier/README.md` explains the data, the
 trained heads and how to run the FastAPI service on port 8000; the server proxies
-`/ai/food` to it and the app shows a labelled demo result when it is not running.
+`/ai/food` to it (or to its Hugging Face Space), with a Sarvam image model as
+backup. Nutrition numbers always come from `server/ai/food/dishCatalog.json`.
+When neither is reachable the app says so; it never shows a sample dish.
 
 ## Run the demo
 
@@ -93,14 +98,17 @@ Supabase is not configured):
 
 ### Three-minute demo script
 
+0. **Symptom check.** Patient → tap to speak: "Mujhe khansi hai" → it asks how long (tap a button), then about breathing, blood, fever… → possible causes and what to do. A short cough with a cold comes out as a common cold, not TB; a "yes" to breathing trouble shows the 108 banner.
 1. **Patient, Kannada.** Pick Kannada → Patient → tap the voice orb: "ನನಗೆ ತಲೆನೋವು ಮತ್ತು ಕಣ್ಣು ಮಂಜಾಗುತ್ತಿದೆ" → the reply is spoken back; "chest pain" words would raise the red Call 108 banner.
 2. **Prescription.** Home → Prescription → photo of a prescription → medicine cards, one field marked "Confirm with pharmacist" → Set reminders → Reminders tab shows today's doses; tap Taken.
 3. **ASHA.** Sign out → ASHA → Rekha's card is critical (BP 150/100, headache, swelling) → open the visit → record a voice report in Hindi → Refer → the outbox shows "waiting to sync".
 4. **Doctor.** Sign out → Doctor → referral inbox shows Rekha from Sunita → Scan QR (or "Use demo patient card") → history with the ASHA visit, vitals trend and adherence → New consultation → add a medicine → Save.
 5. **Back to the patient.** Sign out → Patient → Reminders: the new medicine is there.
 
-Every step works with no network. With the server running, speech, chat and
-prescription reading are live; with Supabase keys, sign-in sends real OTPs.
+Records, reminders and ASHA visits work with no network and sync later. Speech,
+chat, the symptom check's wording, prescription reading and food scans need the
+server; without it the app says it cannot reach the service (no canned answers).
+Sign-in is in demo mode (code `123456`) until phone sign-in is switched on in Supabase.
 
 ### Connecting the phones through Supabase
 
@@ -118,18 +126,33 @@ still works offline and sends its changes later (`features/shared/data/outbox.ts
 Without these the server keeps records in memory, which is enough for a
 one-laptop demo.
 
+### Phones and hosting
+
+```bash
+npm run deploy:server -- --yes   # server → Supabase Edge Function "api"
+npm run deploy:food -- --local   # food model → container / Hugging Face Space
+```
+
+- **iPhone or Android, quickest:** open the `preview` EAS Update in Expo Go
+  (signed in to the project's Expo account). No Mac or Apple fee needed.
+- **Android app file:** build an APK from the `preview` EAS build profile.
+- Publish from a clean git worktree of committed code only.
+
 ## Repository
 
 ```
-apps/mobile/            Expo app (SDK 58, Expo Router): app/(auth) (patient) (asha) (doctor), features/, locales/
-packages/shared/        types, zod-ready schemas, theme tokens, language table, demo cast     (@am/shared)
-packages/patient-ai/    red flags, reminder schedule, adherence, macros, chat history           (@am/patient-ai)
-packages/records/       QR card, upload rules, doctor dashboard, referral inbox, blood banks   (@am/records)
-server/                 speech + chat (Sarvam), prescription/food AI, ASHA sync, QR, records; http/ router + auth
-supabase/migrations/    1000_base (P1) · 3001_asha (P3) · 4001–4003 (P4) and the RLS test
-ml/food-classifier/     DishDetect India: PyTorch heads + CLIP probe, FastAPI /ai/food, curated nutrition table
-docs/                   SPEC.md · TEAM.md · STATUS.md (what is real, what is mocked, what needs review)
-scripts/demo.mjs        the one-command demo
+apps/mobile/            Expo app (SDK 58, Expo Router): app/(auth) (patient) (asha) (doctor), features/, locales/ (7 languages)
+packages/shared/        types, theme tokens, language table, demo cast, ids                         (@am/shared)
+packages/patient-ai/    red flags, guided symptom check, reminders, adherence, prevention, generics (@am/patient-ai)
+packages/records/       QR card, referral inbox ranking, medicines and warnings, blood banks       (@am/records)
+server/                 one router: speech + chat (Sarvam), symptom check, prescription/food AI, copilot,
+                        ASHA sync, QR, records, appointments, prevention, places, integrations (ABDM sandbox)
+supabase/migrations/    1000 base · 3001–3002 ASHA · 4001–4003 records/QR/reports · 5001 labs · 5101 preventive
+                        · 5201 appointments · 5301 ASHA connect; RLS test in supabase/tests
+ml/food-classifier/     DishDetect India: CLIP probe + MobileNet heads, FastAPI /ai/food
+docs/                   STATUS · CLINICAL_REVIEW · DEVICE_TEST · INTEGRATIONS · TELEHEALTH · SPEC · TEAM
+AGENTS.md               context brief and rules for AI coding assistants
+scripts/                demo, deploy, clinical review sheet
 ```
 
 ## Security notes
@@ -148,9 +171,12 @@ scripts/demo.mjs        the one-command demo
 
 ## Clinical content
 
-The red-flag phrase lists, the chatbot's knowledge summaries and the ASHA risk
-thresholds have **not** been reviewed by a clinician. See `docs/STATUS.md`
-before using any of this outside a demo.
+The red-flag phrase lists, the chatbot's knowledge summaries, the guided
+symptom check's questions and rules, the prescribing warnings and the ASHA risk
+thresholds have **not** been reviewed by a clinician yet. `npm run
+review:clinical` writes all of them, straight from the code, into
+`docs/CLINICAL_REVIEW.md` as a sign-off sheet. See `docs/STATUS.md` for what is
+real, what is demo and what is pending before using any of this outside a demo.
 
 ## Licences
 
