@@ -208,7 +208,7 @@ describe('guided symptom check in the chat', () => {
     assert.deepEqual(chipsOf(events), ['Less than 1 week', '1 to 2 weeks', 'More than 2 weeks']);
     // The reviewed question is sent as is, with no AI call, so nothing else (no list of diseases) can be added.
     assert.equal(prompts.length, 0);
-    assert.equal(textOf(events), 'How long have you had the cough?');
+    assert.equal(textOf(events), 'How long have you had the cough or cold?');
   });
 
   it('after the answers, the prompt carries the possible causes from the rules', async () => {
@@ -252,7 +252,7 @@ describe('guided symptom check in the chat', () => {
       translate: async (text, from, to, o) => (from === 'kn' && to === 'en' ? en[text] ?? text : deps.translate!(text, from, to, o)),
     }));
     assert.equal(prompts.length, 0);
-    assert.match(textOf(events), /difficulty breathing/); // duration read as 3 weeks; next question is breathing (sent translated)
+    assert.match(textOf(events), /short of breath/); // duration read as 3 weeks; next question is breathing (sent translated)
   });
 });
 

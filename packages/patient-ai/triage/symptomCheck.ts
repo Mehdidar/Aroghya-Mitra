@@ -77,19 +77,19 @@ const CALL_108 = 'Call 108 now, or go to the nearest hospital.';
 // ---------------------------------------------------------------- cough
 const cough: SymptomRule = {
   id: 'cough',
-  label: 'Cough',
+  label: 'Cough or cold',
   triggerDocs: ['cough-cold', 'tuberculosis'],
   questions: [
     {
       id: 'duration',
-      text: 'How long have you had the cough?',
+      text: 'How long have you had the cough or cold?',
       kind: 'duration',
       options: ['Less than 1 week', '1 to 2 weeks', 'More than 2 weeks'],
       optionDays: [3, 10, 21],
     },
     {
       id: 'breathing',
-      text: 'Do you have difficulty breathing, or are you breathing very fast?',
+      text: 'Are you short of breath, or breathing very fast?',
       kind: 'yesno',
       options: YES,
       emergencyIfYes: { category: 'breathing', steps: [CALL_108, 'Sit upright and stay calm.', 'If you have an inhaler from your doctor, use it.'] },
@@ -97,7 +97,7 @@ const cough: SymptomRule = {
     },
     {
       id: 'blood',
-      text: 'Is there any blood when you cough?',
+      text: 'If you cough, is there any blood?',
       kind: 'yesno',
       options: YES,
       emergencyIfYes: { category: 'bleeding', steps: [CALL_108, 'Sit upright and keep calm.'] },
@@ -106,7 +106,7 @@ const cough: SymptomRule = {
     { id: 'fever', text: 'Do you have fever?', kind: 'yesno', options: YES, mentions: /fever|bukhar|बुखार|temperature/ },
     {
       id: 'tb_signs',
-      text: 'Have you had night sweats, or lost weight without trying?',
+      text: 'Any night sweats, or weight loss without trying?',
       kind: 'yesno',
       options: YES,
       askIf: (s) => (days(s) ?? 0) >= 7,
@@ -120,11 +120,11 @@ const cough: SymptomRule = {
       options: YES,
       askIf: (s) => (days(s) ?? 0) < 14,
       askWhen: 'cough for less than 2 weeks',
-      mentions: /runny nose|blocked nose|sneez|sore throat|throat|zukam|jukam|naak|जुकाम|गला|नाक/,
+      mentions: /runny nose|blocked nose|sneez|sore throat|throat|zukam|jukam|naak|जुकाम|गला|नाक|\b(?:a|have|got|caught|with) cold\b|common cold|sardi|सर्दी/,
     },
     {
       id: 'wheeze',
-      text: 'Do you hear a whistling sound when you breathe, or does the cough get worse with dust, smoke or cold air?',
+      text: 'Does your breath whistle, or do dust, smoke or cold air make the cough worse?',
       kind: 'yesno',
       options: YES,
       askIf: (s) => (days(s) ?? 0) >= 7 || s.cold_signs === false,
@@ -189,7 +189,7 @@ const fever: SymptomRule = {
     { id: 'chills', text: 'Does the fever come with shivering or chills, and then sweating?', kind: 'yesno', options: YES, mentions: /chill|shiver|kaanp|kanp|thand lag|ठंड लग|कंपकंपी/ },
     { id: 'aches', text: 'Is there severe body or joint pain, or pain behind the eyes?', kind: 'yesno', options: YES, mentions: /body pain|body ache|joint pain|behind the eyes|badan dard|jodon|बदन दर्द|जोड़ों/ },
     { id: 'urine', text: 'Is there burning or pain when you pass urine?', kind: 'yesno', options: YES, mentions: /burning (?:urine|while|when)|pain (?:while|when) (?:passing )?urin|peshab me jalan|पेशाब में जलन/ },
-    { id: 'cold_signs', text: 'Do you have a cough, runny nose or sore throat?', kind: 'yesno', options: YES, mentions: /cough|runny nose|sore throat|khansi|zukam|खांसी|जुकाम|गला/ },
+    { id: 'cold_signs', text: 'Do you have a cough, runny nose or sore throat?', kind: 'yesno', options: YES, mentions: /cough|runny nose|sore throat|khansi|zukam|खांसी|जुकाम|गला|\b(?:a|have|got|caught|with) cold\b|common cold|sardi|सर्दी/ },
   ],
   decide(s) {
     const d = days(s);

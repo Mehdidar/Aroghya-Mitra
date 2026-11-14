@@ -159,8 +159,11 @@ export class SarvamClient {
 
   /** REST speech-to-text. Audio must be 30 s or shorter; use the realtime socket for longer audio. */
   async transcribe(req: TranscribeRequest, opts?: CallOptions): Promise<TranscribeResult> {
-    const blob = req.audio instanceof Blob ? req.audio : new Blob([req.audio as BlobPart], { type: req.mimeType ?? 'audio/wav' });
-    const fileName = req.fileName ?? `audio.${extensionFor(req.mimeType ?? blob.type)}`;
+    const raw = req.audio instanceof Blob ? req.audio : new Blob([req.audio as BlobPart], { type: req.mimeType ?? 'audio/wav' });
+    const fileName = req.fileName ?? `audio.${extensionFor(req.mimeType ?? raw.type)}`;
+    // Browsers label recordings 'audio/webm;codecs=opus'; Sarvam accepts only the bare type and rejects the rest.
+    const type = sttMimeType(req.mimeType ?? raw.type, fileName);
+    const blob = raw.type === type ? raw : new Blob([raw], { type });
     const res = await this.send('/speech-to-text', {
       ...opts,
       body: () => {
@@ -476,6 +479,18 @@ export function bytesToBase64(bytes: Uint8Array): string {
 }
 
 const toBase64 = bytesToBase64;
+
+/** Audio types Sarvam speech-to-text accepts (from its 400 error text, 2026-11-14). */
+const STT_TYPES = new Set(['audio/mpeg', 'audio/mp3', 'audio/mpeg3', 'audio/x-mpeg-3', 'audio/x-mp3', 'audio/wav', 'audio/x-wav', 'audio/wave', 'audio/pcm_s16le', 'audio/l16', 'audio/raw', 'application/octet-stream', 'audio/aac', 'audio/x-aac', 'audio/aiff', 'audio/x-aiff', 'audio/ogg', 'audio/opus', 'audio/flac', 'audio/x-flac', 'audio/mp4', 'audio/x-m4a', 'audio/amr', 'audio/x-ms-wma', 'audio/webm', 'video/webm']);
+const STT_TYPE_BY_EXT: Record<string, string> = { mp3: 'audio/mpeg', wav: 'audio/wav', m4a: 'audio/mp4', mp4: 'audio/mp4', aac: 'audio/aac', ogg: 'audio/ogg', opus: 'audio/opus', webm: 'audio/webm', flac: 'audio/flac', amr: 'audio/amr' };
+
+/** A type Sarvam accepts: drop parameters (';codecs=opus'), else go by the file extension, else octet-stream (also accepted). */
+export function sttMimeType(mime: string | undefined, fileName: string): string {
+  const bare = (mime ?? '').split(';')[0].trim().toLowerCase();
+  if (STT_TYPES.has(bare)) return bare;
+  const ext = fileName.split('.').pop()?.toLowerCase() ?? '';
+  return STT_TYPE_BY_EXT[ext] ?? 'application/octet-stream';
+}
 
 function extensionFor(mime: string): string {
   if (/mpeg|mp3/.test(mime)) return 'mp3';

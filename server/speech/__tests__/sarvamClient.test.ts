@@ -174,3 +174,14 @@ describe('error helpers', () => {
     assert.equal(parseRetryAfter('soon'), undefined);
   });
 });
+
+describe('sttMimeType', () => {
+  it('strips codec parameters browsers add, and falls back to the file extension', async () => {
+    const { sttMimeType } = await import('../sarvamClient.ts');
+    assert.equal(sttMimeType('audio/webm;codecs=opus', 'clip.webm'), 'audio/webm');
+    assert.equal(sttMimeType('audio/mp4; codecs="mp4a.40.2"', 'clip.m4a'), 'audio/mp4');
+    assert.equal(sttMimeType('', 'clip.m4a'), 'audio/mp4');
+    assert.equal(sttMimeType('audio/3gpp', 'clip.3gp'), 'application/octet-stream');
+    assert.equal(sttMimeType('audio/wav', 'a.wav'), 'audio/wav');
+  });
+});

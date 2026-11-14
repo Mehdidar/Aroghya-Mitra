@@ -104,9 +104,27 @@ describe('diarrhoea check', () => {
 
 describe('prompt text', () => {
   it('tells the assistant to ask exactly the question, or to give possibilities without diagnosing', () => {
-    assert.match(describeForPrompt(runCheck('cough', ['I have a cough'])), /ask exactly this one question[\s\S]*How long have you had the cough\?/);
+    assert.match(describeForPrompt(runCheck('cough', ['I have a cough'])), /ask exactly this one question[\s\S]*How long have you had the cough or cold\?/);
     const result = describeForPrompt(runCheck('cough', ['I have a cough', 'Less than 1 week', 'No', 'No', 'No', 'Yes']));
     assert.match(result, /Common cold/);
     assert.match(result, /not a diagnosis/);
+  });
+});
+
+describe('a cold (2026-11-14: "I have cold" asked about a cough and then about cold signs again)', () => {
+  it('counts "I have a cold" as cold signs and asks about the cough or cold, not the cough alone', () => {
+    const first = runCheck('cough', ['I have a cold']);
+    assert.equal(first.kind, 'ask');
+    if (first.kind === 'ask') assert.equal(first.question.text, 'How long have you had the cough or cold?');
+    const end = runCheck('cough', ['I have a cold', 'Less than 1 week', 'No', 'No', 'No']);
+    assert.equal(end.kind, 'result');
+    if (end.kind === 'result') {
+      assert.equal(end.state.cold_signs, true, 'not asked again');
+      assert.equal(end.result.possibilities[0].name, 'Common cold (a virus)');
+    }
+  });
+  it('does not take "cold air" or "I feel cold" as a cold', () => {
+    const s = runCheck('cough', ['I have a cough', 'Less than 1 week', 'No', 'No', 'No', 'it gets worse in cold air']);
+    if (s.kind === 'result') assert.notEqual(s.state.cold_signs, true);
   });
 });

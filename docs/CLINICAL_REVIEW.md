@@ -1,6 +1,6 @@
 # Clinical review sheet
 
-For the reviewing clinician. Generated from the app's code on 2026-11-13
+For the reviewing clinician. Generated from the app's code on 2026-11-14
 (`npm run review:clinical`), so it shows exactly what the app does today.
 
 **How to use it.** For each row, tick OK or Change; for a change, write the correct
@@ -189,17 +189,17 @@ below, always as "this can happen with…, only a doctor or test can confirm".
 A "yes" to a danger-sign question stops the check and shows the 108 banner.
 Source: `packages/patient-ai/triage/symptomCheck.ts`.
 
-### 2b.1 Cough
+### 2b.1 Cough or cold
 
 | # | Question | Answers | Asked when | Danger sign |
 |---|---|---|---|---|
-| 1 | How long have you had the cough? | Less than 1 week / 1 to 2 weeks / More than 2 weeks | always |  |
-| 2 | Do you have difficulty breathing, or are you breathing very fast? | Yes / No | always | yes → 108 |
-| 3 | Is there any blood when you cough? | Yes / No | always | yes → 108 |
+| 1 | How long have you had the cough or cold? | Less than 1 week / 1 to 2 weeks / More than 2 weeks | always |  |
+| 2 | Are you short of breath, or breathing very fast? | Yes / No | always | yes → 108 |
+| 3 | If you cough, is there any blood? | Yes / No | always | yes → 108 |
 | 4 | Do you have fever? | Yes / No | always |  |
-| 5 | Have you had night sweats, or lost weight without trying? | Yes / No | cough for 1 week or more |  |
+| 5 | Any night sweats, or weight loss without trying? | Yes / No | cough for 1 week or more |  |
 | 6 | Do you also have a runny nose, sneezing or a sore throat? | Yes / No | cough for less than 2 weeks |  |
-| 7 | Do you hear a whistling sound when you breathe, or does the cough get worse with dust, smoke or cold air? | Yes / No | cough for 1 week or more, or no cold signs |  |
+| 7 | Does your breath whistle, or do dust, smoke or cold air make the cough worse? | Yes / No | cough for 1 week or more, or no cold signs |  |
 
 **Decision rules:**
 
