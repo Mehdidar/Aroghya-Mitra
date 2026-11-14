@@ -12,9 +12,10 @@ import { EmptyState, Heading, Screen, SecondaryButton, Skeleton, Text } from '@/
 import { feedback } from '@/features/shared/feedback';
 import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
-/** Referral inbox: ASHA referrals (records store + the ASHA module on this device), high risk first. */
+/** Referral inbox: ASHA referrals (records store + the ASHA module on this device), ranked by the copilot (risk rules, urgency, pregnancy danger signs, waiting time). */
 export default function DoctorReferrals() {
   const { t } = useTranslation('doctor');
+  const { t: tc } = useTranslation('copilot');
   const theme = useTheme();
   const { items, loading, patientNames, reload } = useInbox();
   const referrals = useRecords((s) => s.referrals);
@@ -28,6 +29,9 @@ export default function DoctorReferrals() {
         <Text tone="secondary">{t('inbox.subtitle', { count: items.length })}</Text>
       </View>
       <ScreenGuide id="doctorInbox" />
+      <Text variant="caption" tone="tertiary" testID="inbox-ranking-note">
+        {tc('priority.explain')}
+      </Text>
       <SecondaryButton label={t('inbox.refresh')} icon="refresh" onPress={reload} />
       {loading ? (
         <View style={{ gap: theme.space[3] }}>

@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 
-import { DEMO_IDS, DEMO_USERS, type RecordReferral, type RecordRiskAlert } from '@am/shared';
-import { buildDoctorDashboard, buildInbox, type InboxItem } from '@am/records';
+import { DEMO_IDS, DEMO_USERS } from '@am/shared';
+import { buildDoctorDashboard, prioritiseReferrals, type PrioritisedItem } from '@am/records';
+
+import { RULES } from '@/features/asha/logic/rules';
 
 import { useRecords } from '@/features/shared/data/recordsStore';
 import { useSession } from '@/features/shared/state/session';
@@ -10,7 +12,10 @@ import { useTheme } from '@/features/shared/theme';
 
 import { pullDoctorInbox } from '@/features/shared/data/serverSync';
 
-import { loadAshaBridge, mergeReferrals } from './ashaBridge';
+import { loadAshaBridge, mergeReferrals, type AshaBridgeData } from './ashaBridge';
+
+/** Rule id → severity from the ASHA rule engine (the server re-runs the same rules on sync). */
+const RULE_SEVERITY = Object.fromEntries(RULES.map((r) => [r.id, r.severity]));
 
 /** Two columns on tablets and wide web windows. */
 export function useColumns() {
@@ -29,11 +34,11 @@ export function useDoctorId() {
  * ASHA referrals synced from the field) merged with the ASHA module's store on
  * this device (the one-phone demo).
  */
-export function useInbox(): { items: InboxItem[]; loading: boolean; patientNames: Record<string, string>; reload: () => void } {
+export function useInbox(): { items: PrioritisedItem[]; loading: boolean; patientNames: Record<string, string>; reload: () => void } {
   const referrals = useRecords((s) => s.referrals);
   const riskAlerts = useRecords((s) => s.riskAlerts);
   const patients = useRecords((s) => s.patients);
-  const [bridge, setBridge] = useState<{ referrals: RecordReferral[]; alerts: RecordRiskAlert[]; patientNames: Record<string, string> } | null>(null);
+  const [bridge, setBridge] = useState<AshaBridgeData | null>(null);
   const [tick, setTick] = useState(0);
   useEffect(() => {
     let alive = true;
@@ -44,7 +49,20 @@ export function useInbox(): { items: InboxItem[]; loading: boolean; patientNames
       alive = false;
     };
   }, [tick]);
-  const items = useMemo(() => buildInbox(mergeReferrals(referrals, bridge?.referrals ?? []), [...riskAlerts, ...(bridge?.alerts ?? [])]), [referrals, riskAlerts, bridge]);
+  // Copilot feature C: ranked by the server-verified risk rules, urgency, pregnancy + hypertension signs and waiting time.
+  const items = useMemo(
+    () =>
+      prioritiseReferrals({
+        referrals: mergeReferrals(referrals, bridge?.referrals ?? []),
+        riskAlerts: [...riskAlerts, ...(bridge?.alerts ?? []).filter((a) => !riskAlerts.some((r) => r.id === a.id))],
+        now: new Date(),
+        ruleSeverity: RULE_SEVERITY,
+        alertDetails: bridge?.alertDetails,
+        urgency: bridge?.urgency,
+        patients: Object.fromEntries(Object.values(patients).map((p) => [p.id, { chronicConditions: p.chronicConditions }])),
+      }),
+    [referrals, riskAlerts, bridge, patients],
+  );
   const patientNames = useMemo(
     () => ({ ...(bridge?.patientNames ?? {}), ...Object.fromEntries(Object.values(patients).map((p) => [p.id, p.fullName])) }),
     [bridge, patients],

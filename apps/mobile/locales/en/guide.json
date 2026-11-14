@@ -27,6 +27,8 @@
     "doctorHome": "Doctor dashboard. It shows today's numbers, recent referrals from ASHA workers, and buttons to scan a patient's QR card and to see your patients.",
     "doctorInbox": "Referral inbox. Referrals from ASHA workers, highest risk first. Each one has buttons to mark it seen or accept it.",
     "doctorPatient": "Patient record. It shows the patient's details, alerts, recent vital signs, prescriptions and referrals, and a button to start a new consultation.",
-    "ashaHome": "ASHA home. At the top, patients who need attention today. Below are your households, alerts and referrals, and the sync button to send your visits."
+    "ashaHome": "ASHA home. At the top, patients who need attention today. Below are your households, alerts and referrals, and the sync button to send your visits.",
+    "prevention": "My preventive care. At the top are warnings that need attention, then what is overdue, due now, ongoing and coming up, and what is already done. Each card says why it matters and which national guideline it comes from. Tap Remind me to get a reminder on your phone. This is a screening aid, not a diagnosis. For an emergency, press the red 108 button.",
+    "appointments": "Appointments. At the top is the button to book a visit with the PHC doctor. Below it are your upcoming appointments, each with buttons to change the time or cancel. Further down are your past visits and consultations."
   }
 }

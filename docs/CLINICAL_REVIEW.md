@@ -60,7 +60,7 @@ and follow-up.
 
 ---
 
-## 2. Chatbot health summaries (10)
+## 2. Chatbot health summaries (11)
 
 The chatbot may only state medical facts from these summaries. Each one is
 currently marked **not reviewed**.
@@ -131,7 +131,22 @@ Source it summarises: WHO, https://www.who.int/news-room/fact-sheets/detail/hype
 
 ☐ OK ☐ Change — notes: ______________________________________________
 
-### 2.7 Diabetes care
+### 2.7 Pregnancy danger signs and raised blood pressure
+
+Source it summarises: WHO, https://www.who.int/publications/i/item/9789241549912
+
+> Pregnancy with raised blood pressure needs regular pressure checks and the prescribed medicine every day. Pre-eclampsia is a dangerous rise in pressure during pregnancy. Danger signs that need the hospital the same hour: severe headache, blurred vision, swelling of the face or hands, pain in the upper stomach, fits, bleeding, leaking fluid, or the baby moving less. Do not start new medicines, including painkillers like ibuprofen, without asking the doctor. Use less salt, keep antenatal check-ups and take iron and calcium tablets as advised.
+
+**First-aid steps shown in an emergency:**
+
+1. Call 108 now, or go to the nearest hospital with a labour room.
+2. While you wait, lie on your left side.
+3. Take your antenatal card and your medicines or prescriptions with you.
+4. Do not take any new medicine until a doctor sees you.
+
+☐ OK ☐ Change — notes: ______________________________________________
+
+### 2.8 Diabetes care
 
 Source it summarises: WHO, https://www.who.int/news-room/fact-sheets/detail/diabetes
 
@@ -139,7 +154,7 @@ Source it summarises: WHO, https://www.who.int/news-room/fact-sheets/detail/diab
 
 ☐ OK ☐ Change — notes: ______________________________________________
 
-### 2.8 Cough and cold: home care and when to see a doctor
+### 2.9 Cough and cold: home care and when to see a doctor
 
 Source it summarises: WHO, https://www.who.int/news-room/fact-sheets/detail/pneumonia
 
@@ -147,7 +162,7 @@ Source it summarises: WHO, https://www.who.int/news-room/fact-sheets/detail/pneu
 
 ☐ OK ☐ Change — notes: ______________________________________________
 
-### 2.9 Tuberculosis (TB)
+### 2.10 Tuberculosis (TB)
 
 Source it summarises: NTEP, https://tbcindia.gov.in/
 
@@ -155,7 +170,7 @@ Source it summarises: NTEP, https://tbcindia.gov.in/
 
 ☐ OK ☐ Change — notes: ______________________________________________
 
-### 2.10 Anaemia
+### 2.11 Anaemia
 
 Source it summarises: MoHFW, https://www.mohfw.gov.in/
 
@@ -460,6 +475,177 @@ Odia, Assamese and Kashmiri were written without one.
 | hi | लू लग | ☐ OK ☐ Change |
 | ur | لو لگ | ☐ OK ☐ Change |
 
+
+---
+
+## 4. Personal safety rules in the health assistant (7)
+
+Checked on the patient's own record **before** any AI answer. Source:
+`server/ai/chat/personalSafety.ts`.
+
+| Rule | When it fires | What the patient sees | Review |
+|---|---|---|---|
+| `allergy_match` | The message names something on the patient's allergy list, or a medicine of the same family (penicillins, sulfa drugs, NSAIDs incl. aspirin). | Warning above the reply | ☐ OK ☐ Change |
+| `nsaid_pregnancy` | Pregnant at 20 weeks or more and the message names an NSAID painkiller (ibuprofen, diclofenac, …). Low-dose aspirin is deliberately left out. | Warning above the reply | ☐ OK ☐ Change |
+| `ace_arb_pregnancy` | Pregnant (any week) and the message names an ACE inhibitor or ARB (names ending in -pril or -sartan). | Warning above the reply | ☐ OK ☐ Change |
+| `preg_htn_warning_sign` | Pregnant with high blood pressure in the record and the message mentions headache, blurred vision, swelling, upper stomach pain or the baby moving less. | **108 banner, no AI answer** | ☐ OK ☐ Change |
+| `preg_danger_sign` | Pregnant (no high BP recorded) and the message mentions blurred vision, upper stomach pain or the baby moving less. | **108 banner, no AI answer** | ☐ OK ☐ Change |
+| `high_salt_bp` | High blood pressure in the record and the message names a salty food (pickle, papad, namkeen, chips, dry fish, instant noodles, …). | Warning above the reply | ☐ OK ☐ Change |
+| `dose_change` | The message is about stopping, skipping, doubling or changing a current medicine. | Warning: ask the doctor first | ☐ OK ☐ Change |
+
+---
+
+## 5. Doctor copilot: prescription warnings
+
+The doctor picks every medicine, dose and duration; the app never issues a
+prescription. Each warning below must be ticked "reviewed" by the doctor
+before saving. Medicine list: 75 entries from
+NLEM 2022, MoHFW India (strengths and forms typed by hand: please check
+against the official list and the PHC stock). Source: `packages/records/medicines/`.
+
+### 5.1 Interactions (21)
+
+| Medicines | With | Severity | Effect | Advice shown | Review |
+|---|---|---|---|---|---|
+| warfarin | class: nsaid, class: aspirin | major | Higher bleeding risk (antiplatelet effect and GI irritation on top of anticoagulation). | Avoid; use paracetamol for pain. If unavoidable, monitor INR and for bleeding. | ☐ OK ☐ Change |
+| warfarin | metronidazole | major | Metronidazole raises the INR markedly. | Avoid or reduce warfarin dose and check INR within 3–5 days. | ☐ OK ☐ Change |
+| warfarin | cotrimoxazole | major | Co-trimoxazole raises the INR; serious bleeding reported. | Avoid; choose another antibiotic or monitor INR closely. | ☐ OK ☐ Change |
+| warfarin | fluconazole | major | Fluconazole inhibits warfarin metabolism and raises the INR. | Monitor INR closely; consider dose reduction. | ☐ OK ☐ Change |
+| warfarin | ciprofloxacin | moderate | Ciprofloxacin can raise the INR. | Monitor INR during and after the course. | ☐ OK ☐ Change |
+| warfarin | rifampicin | major | Rifampicin induces warfarin metabolism: anticoagulation is lost. | Expect large dose changes; monitor INR closely, also after stopping rifampicin. | ☐ OK ☐ Change |
+| class: ace_inhibitor, class: arb | spironolactone | major | Risk of severe hyperkalaemia. | Check potassium and creatinine before and after starting; avoid in renal impairment. | ☐ OK ☐ Change |
+| class: ace_inhibitor | class: arb | major | Dual RAAS blockade: hyperkalaemia, hypotension and kidney injury without extra benefit. | Do not combine. | ☐ OK ☐ Change |
+| class: ace_inhibitor, class: arb | class: nsaid | moderate | NSAIDs reduce the BP-lowering effect and raise the risk of kidney injury (worse with a diuretic). | Prefer paracetamol; if needed, short course and check creatinine. | ☐ OK ☐ Change |
+| atorvastatin | clarithromycin, erythromycin | major | Clarithromycin/erythromycin raise statin levels: myopathy and rhabdomyolysis. | Pause the statin during the course or use azithromycin. | ☐ OK ☐ Change |
+| clopidogrel | omeprazole | moderate | Omeprazole reduces activation of clopidogrel (less antiplatelet effect). | Use pantoprazole if a PPI is needed. | ☐ OK ☐ Change |
+| methotrexate | cotrimoxazole | major | Both are folate antagonists: bone-marrow suppression. | Avoid the combination. | ☐ OK ☐ Change |
+| tramadol | class: ssri, class: tricyclic | major | Serotonin syndrome and lowered seizure threshold. | Avoid; choose another analgesic. | ☐ OK ☐ Change |
+| class: opioid | class: benzodiazepine | major | Additive sedation and respiratory depression. | Avoid; if unavoidable, lowest doses and warn the patient. | ☐ OK ☐ Change |
+| digoxin | clarithromycin, erythromycin | major | Macrolides raise digoxin levels: toxicity. | Avoid or monitor digoxin level and pulse. | ☐ OK ☐ Change |
+| ciprofloxacin | class: iron, class: calcium | moderate | Iron and calcium bind ciprofloxacin and stop it being absorbed. | Take ciprofloxacin 2 hours before or 6 hours after iron/calcium. | ☐ OK ☐ Change |
+| doxycycline | class: iron, class: calcium | moderate | Iron and calcium bind doxycycline and reduce absorption. | Separate doses by at least 2–3 hours. | ☐ OK ☐ Change |
+| levothyroxine | class: iron, class: calcium | moderate | Iron and calcium reduce levothyroxine absorption. | Take levothyroxine on an empty stomach, 4 hours apart from iron/calcium. | ☐ OK ☐ Change |
+| class: sulfonylurea | fluconazole | moderate | Fluconazole raises sulfonylurea levels: hypoglycaemia. | Warn the patient; monitor blood sugar. | ☐ OK ☐ Change |
+| class: nsaid | class: nsaid, class: aspirin | moderate | Two NSAIDs together: more GI bleeding and kidney risk, no extra pain relief. | Use one NSAID only. | ☐ OK ☐ Change |
+| carbamazepine | valproate | moderate | Carbamazepine lowers valproate levels; valproate raises carbamazepine-epoxide. | Specialist monitoring of levels and side effects. | ☐ OK ☐ Change |
+
+### 5.2 Allergy rules (7)
+
+An allergy written as a drug name also matches that medicine directly.
+
+| Allergy words | Do not give (classes) | Caution (cross-reaction) | Note | Review |
+|---|---|---|---|---|
+| `penicillin\|amoxi\|ampicillin\|cloxacillin\|augmentin\|co-?amoxiclav\|beta[- ]?lactam` | penicillin | cephalosporin | Penicillin allergy: all penicillins (amoxicillin, co-amoxiclav, ampicillin, cloxacillin, benzathine penicillin) are contraindicated. Cephalosporins carry a small cross-reactivity risk; avoid after anaphylaxis. | ☐ OK ☐ Change |
+| `cephalosporin\|cef\|ceph` | cephalosporin | penicillin | Cephalosporin allergy: avoid cephalosporins; penicillins with caution. | ☐ OK ☐ Change |
+| `sulfa\|sulpha\|sulfonamide\|co-?trimoxazole\|septran\|bactrim` | sulfonamide_antibiotic | — | Sulfonamide antibiotic allergy: avoid co-trimoxazole. | ☐ OK ☐ Change |
+| `nsaid\|aspirin\|ibuprofen\|diclofenac\|brufen\|salicylate` | nsaid, aspirin | — | NSAID/aspirin hypersensitivity: avoid NSAIDs and aspirin (cross-reactive). Paracetamol is usually tolerated. | ☐ OK ☐ Change |
+| `macrolide\|azithro\|erythro\|clarithro` | macrolide | — | Macrolide allergy: avoid azithromycin, clarithromycin, erythromycin. | ☐ OK ☐ Change |
+| `quinolone\|cipro\|levoflox\|ofloxacin` | fluoroquinolone | — | Fluoroquinolone allergy: avoid ciprofloxacin and related. | ☐ OK ☐ Change |
+| `tetracycline\|doxy` | tetracycline | — | Tetracycline allergy: avoid doxycycline. | ☐ OK ☐ Change |
+
+### 5.3 Pregnancy rules (19)
+
+| Medicines / classes | Level | From week | Note | Review |
+|---|---|---|---|---|
+| class: ace_inhibitor | contraindicated | whole pregnancy | ACE inhibitors are fetotoxic (kidney damage, oligohydramnios, skull defects), mainly in the 2nd and 3rd trimesters. Use labetalol, nifedipine or methyldopa for BP in pregnancy. | ☐ OK ☐ Change |
+| class: arb | contraindicated | whole pregnancy | ARBs are fetotoxic like ACE inhibitors. Use labetalol, nifedipine or methyldopa. | ☐ OK ☐ Change |
+| class: statin | contraindicated | whole pregnancy | Statins: stop in pregnancy (no benefit; possible fetal harm). | ☐ OK ☐ Change |
+| class: nsaid | avoid | 20 | NSAIDs from 20 weeks: fetal kidney problems and low amniotic fluid; from about 30 weeks also premature closure of the ductus arteriosus. Use paracetamol. (Low-dose aspirin for pre-eclampsia prevention is a separate, supervised use.) | ☐ OK ☐ Change |
+| warfarin | contraindicated | whole pregnancy | Warfarin is teratogenic (embryopathy in weeks 6–12) and causes fetal bleeding. Specialist care: heparin is used instead. | ☐ OK ☐ Change |
+| class: retinoid | contraindicated | whole pregnancy | Isotretinoin is highly teratogenic. Never in pregnancy. | ☐ OK ☐ Change |
+| class: antimetabolite | contraindicated | whole pregnancy | Methotrexate is teratogenic and abortifacient. | ☐ OK ☐ Change |
+| class: prostaglandin | contraindicated | whole pregnancy | Misoprostol causes uterine contractions and abortion; only for specific obstetric indications under supervision. | ☐ OK ☐ Change |
+| valproate | avoid | whole pregnancy | Valproate: high risk of neural tube and other birth defects and developmental harm. Specialist review. | ☐ OK ☐ Change |
+| carbamazepine, phenytoin | caution | whole pregnancy | Teratogenic risk; do not stop suddenly. Specialist review and folic acid 5 mg. | ☐ OK ☐ Change |
+| class: tetracycline | avoid | whole pregnancy | Tetracyclines stain teeth and affect bone growth in the fetus (after about 15 weeks). | ☐ OK ☐ Change |
+| class: fluoroquinolone | caution | whole pregnancy | Fluoroquinolones: avoid in pregnancy when a safer antibiotic exists. | ☐ OK ☐ Change |
+| class: sulfonamide_antibiotic | caution | whole pregnancy | Co-trimoxazole: folate antagonist in the 1st trimester; neonatal jaundice risk near term. | ☐ OK ☐ Change |
+| spironolactone | avoid | whole pregnancy | Spironolactone: anti-androgen effects on the fetus. | ☐ OK ☐ Change |
+| atenolol | caution | whole pregnancy | Atenolol is linked to fetal growth restriction; labetalol is preferred in pregnancy. | ☐ OK ☐ Change |
+| carbimazole | caution | whole pregnancy | Carbimazole in the 1st trimester: possible birth defects. Specialist review. | ☐ OK ☐ Change |
+| class: sulfonylurea | caution | whole pregnancy | Insulin (or metformin) is preferred in pregnancy; specialist review. | ☐ OK ☐ Change |
+| class: benzodiazepine | caution | whole pregnancy | Near term: neonatal sedation and withdrawal. | ☐ OK ☐ Change |
+| class: opioid | caution | whole pregnancy | Regular use near term: neonatal withdrawal and breathing problems. | ☐ OK ☐ Change |
+
+### 5.4 Lab reference ranges (16)
+
+Used to flag results as high or low in the lab comparison. Values outside
+"accepted" are refused as typing errors.
+
+| Test | Unit | Normal range | In pregnancy | Accepted | Review |
+|---|---|---|---|---|---|
+| Haemoglobin | g/dL | 12–15.5 | ≥ 11 | 2–25 | ☐ OK ☐ Change |
+| Urine protein (dipstick) | grade | nil |  | 0–5 | ☐ OK ☐ Change |
+| Urine sugar (dipstick) | grade | nil |  | 0–5 | ☐ OK ☐ Change |
+| Fasting blood sugar | mg/dL | 70–99 | 60–91 | 10–1000 | ☐ OK ☐ Change |
+| Post-prandial blood sugar (2 h) | mg/dL | 70–139 | 60–152 | 10–1000 | ☐ OK ☐ Change |
+| Random blood sugar | mg/dL | 70–139 |  | 10–1000 | ☐ OK ☐ Change |
+| HbA1c | % | 4–5.6 |  | 3–20 | ☐ OK ☐ Change |
+| Platelet count | ×10³/µL | 150–450 |  | 1–2000 | ☐ OK ☐ Change |
+| Total leucocyte count | ×10³/µL | 4–11 |  | 0.1–200 | ☐ OK ☐ Change |
+| Serum creatinine | mg/dL | 0.5–1.1 |  | 0.1–20 | ☐ OK ☐ Change |
+| Blood urea | mg/dL | 15–40 |  | 1–400 | ☐ OK ☐ Change |
+| ALT (SGPT) | U/L | 7–40 |  | 1–5000 | ☐ OK ☐ Change |
+| AST (SGOT) | U/L | 10–40 |  | 1–5000 | ☐ OK ☐ Change |
+| Total bilirubin | mg/dL | 0.3–1.2 |  | 0–50 | ☐ OK ☐ Change |
+| TSH | mIU/L | 0.4–4 |  | 0.001–200 | ☐ OK ☐ Change |
+| Total cholesterol | mg/dL | ≤ 199 |  | 30–1000 | ☐ OK ☐ Change |
+
+### 5.5 Inferences in the summary and the dictated note
+
+- A medicine with no duration counts as current for 90 days. ☐ OK ☐ Change
+- Dose times are guessed from frequency words ("twice" → morning and night). ☐ OK ☐ Change
+- Temperatures dictated in °F are converted to °C. ☐ OK ☐ Change
+- Implausible vitals in a dictated note are dropped, not corrected. ☐ OK ☐ Change
+
+---
+
+## 6. Doctor copilot: referral ranking
+
+The doctor's referral inbox is sorted by these criteria, in this order. Each
+card shows "Why here". Source: `packages/records/records/prioritise.ts`.
+
+1. Alert severity: critical > high > medium > low (from the ASHA rule table above).
+2. Referral urgency: emergency > urgent > routine.
+3. Pregnancy with high blood pressure danger signs: rules `preg_preeclampsia_signs`, `preg_bp_severe`, `preg_bp_high`, `preg_convulsions`, or a pregnant patient whose referral shows BP ≥ 140/90.
+4. Not yet opened by the doctor.
+5. Waiting longest.
+
+☐ OK ☐ Change — notes: ______________________________________________
+
+---
+
+## 7. Preventive care guidelines (9)
+
+The vaccination, pregnancy, child growth, anaemia and screening plans are
+computed from these national guidelines. 9 of 9 still need a
+clinical review. Source: `packages/patient-ai/prevention/guidelines/`.
+
+| Guideline | Document | Version | Link | Review due | Status | Review |
+|---|---|---|---|---|---|---|
+| National Immunization Schedule (Universal Immunization Programme) | Universal Immunization Programme: National Immunization Schedule for Infants, Children and Pregnant Women (MoHFW, Government of India) | 2023 (fIPV 3rd dose; PCV nationwide) | https://www.mohfw.gov.in/sites/default/files/Universal%20Immunization%20Programme.pdf | 2027-05-14 | needs clinical review | ☐ OK ☐ Change |
+| Antenatal care: visits, tests and counselling | Guidelines for Antenatal Care and Skilled Attendance at Birth by ANMs/LHVs/SNs; Mother and Child Protection (MCP) Card (MoHFW, Government of India) | 2010 (ANC guidelines); MCP card 2018 | not verified online | 2027-05-14 | needs clinical review | ☐ OK ☐ Change |
+| Pradhan Mantri Surakshit Matritva Abhiyan (PMSMA) | PMSMA operational framework (MoHFW, Government of India) | 2016 | not verified online | 2027-05-14 | needs clinical review | ☐ OK ☐ Change |
+| Calcium supplementation during pregnancy and lactation | National Guidelines for Calcium Supplementation During Pregnancy and Lactation (MoHFW (Maternal Health Division)) | 2014 | not verified online | 2027-05-14 | needs clinical review | ☐ OK ☐ Change |
+| Home Based Newborn Care (HBNC) visits by ASHA | Home Based Newborn Care Operational Guidelines (revised) (MoHFW / NHM) | 2014 | not verified online | 2027-05-14 | needs clinical review | ☐ OK ☐ Change |
+| Anemia Mukt Bharat: prophylaxis, testing and treatment of anaemia | Anemia Mukt Bharat: Intensified National Iron Plus Initiative (I-NIPI) Operational Guidelines for Programme Managers (MoHFW, Government of India) | 2018 | https://anemiamuktbharat.info | 2027-05-14 | needs clinical review | ☐ OK ☐ Change |
+| Child growth monitoring (WHO Child Growth Standards on the MCP card) | Mother and Child Protection Card; WHO Child Growth Standards: weight-for-age, length/height-for-age (MoHFW / MWCD (MCP card); WHO (growth standards)) | MCP card 2018; WHO 2006 | https://www.who.int/tools/child-growth-standards | 2027-05-14 | needs clinical review | ☐ OK ☐ Change |
+| Population-based screening for common NCDs (age 30+) | National Programme for Prevention and Control of Non-Communicable Diseases (NP-NCD) Operational Guidelines (MoHFW, Government of India) | 2023-2030 | https://www.mohfw.gov.in/sites/default/files/NP-NCD%20Operational%20Guidelines_0.pdf | 2027-05-14 | needs clinical review | ☐ OK ☐ Change |
+| Child health screening (RBSK): defects, diseases, deficiencies, developmental delays | Rashtriya Bal Swasthya Karyakram: Operational Guidelines (NHM, MoHFW) | 2013 | not verified online | 2027-05-14 | needs clinical review | ☐ OK ☐ Change |
+
+**Open questions for the reviewer:**
+
+1. WHO growth tables: the weight-for-age and length/height-for-age LMS values are a sparse set, not the full WHO monthly tables. Replace before clinical use; every z-score is marked uncertain. ☐ OK ☐ Change
+2. fIPV-3 at 9 months: national schedule or state protocol? ☐ OK ☐ Change
+3. Vaccine upper age limits (RVV, fIPV, PCV, JE); 8-week minimum gap fIPV-1/2 and PCV-1/2; 150-day gap for Vitamin A doses 3–9. ☐ OK ☐ Change
+4. Td in pregnancy: Td-2 before 36 weeks; Td-1 due by 12 weeks. ☐ OK ☐ Change
+5. ANC: 4 visits used (WHO 2016 eight-contact model shown for reference only); ultrasound 18–22 weeks; birth plan 28–36 weeks; PMSMA holiday shift not modelled. ☐ OK ☐ Change
+6. HBNC: a visit counts if within ±2 days of the scheduled day; extra visits for low birth weight not modelled. ☐ OK ☐ Change
+7. Anaemia recheck intervals: pregnant 30 days, moderate 30, mild 90. "Biweekly" IFA syrup for 6–59 months read as twice a week. ☐ OK ☐ Change
+8. NP-NCD: BP and sugar yearly, cancers every 5 years; cervical screening upper age 65; random sugar cut-off 140 mg/dL; BP 180/110 as urgent; 90-day grace before overdue. ☐ OK ☐ Change
+9. Growth monitoring: monthly under 3 years, quarterly 3–6 years; faltering = no gain over 28 days; newborn back to birth weight by day 14. ☐ OK ☐ Change
+10. 28-day grace before a vaccine shows overdue. ☐ OK ☐ Change
+11. Danger-sign list and the text patterns that mark a pregnancy high risk. ☐ OK ☐ Change
 
 ---
 

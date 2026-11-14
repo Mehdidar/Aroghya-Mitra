@@ -6,3 +6,4 @@ export * from './reminders/adherence.ts';
 export * from './nutrition/macros.ts';
 export { ChatHistoryStore } from './chat/historyStore.ts';
 export * from './generics/janAushadhi.ts';
+export * as prevention from './prevention/index.ts';

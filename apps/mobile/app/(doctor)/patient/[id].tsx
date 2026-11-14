@@ -1,11 +1,19 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { applyAction, availableActions } from '@am/records';
 import { DEMO_PROFILES } from '@am/shared';
 
+import type { LabComparison as LabComparisonData } from '@server/copilot/labs';
+
 import { useAdmin } from '@/features/doctor/adminStore';
+import { ClinicalTimeline } from '@/features/doctor/components/ClinicalTimeline';
+import { CopilotSummaryCard } from '@/features/doctor/components/CopilotSummaryCard';
+import { LabComparison } from '@/features/doctor/components/LabComparison';
+import { useCopilotSummary } from '@/features/doctor/copilot/useCopilot';
+import { useSession } from '@/features/shared/state/session';
 import { ageFrom } from '@/features/doctor/prescriptions';
 import { useColumns, usePatientRecord } from '@/features/doctor/useDoctorData';
 import { useRecords } from '@/features/shared/data/recordsStore';
@@ -18,7 +26,11 @@ import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 export default function DoctorPatient() {
   const { id, via, referralId } = useLocalSearchParams<{ id: string; via?: string; referralId?: string }>();
   const { t } = useTranslation('doctor');
+  const { t: tc } = useTranslation('copilot');
   const theme = useTheme();
+  const role = useSession((s) => s.role);
+  const copilot = useCopilotSummary(id);
+  const [labsSaved, setLabsSaved] = useState<LabComparisonData | null>(null);
   const { twoColumn } = useColumns();
   // The latest record from the server (ASHA visits, other doctors' notes); the local copy shows meanwhile.
   usePullWhileOpen(id ? () => pullPatientRecords(id) : null, `doctor-patient-${id}`);
@@ -76,6 +88,10 @@ export default function DoctorPatient() {
           <Text>{p.chronicConditions.length ? p.chronicConditions.join(', ') : t('none')}</Text>
         </View>
       </Card>
+
+      {copilot.summary ? (
+        <CopilotSummaryCard summary={copilot.summary} source={copilot.source} narrative={copilot.narrative} narrativeState={copilot.narrativeState} onRequestNarrative={() => void copilot.requestNarrative()} />
+      ) : null}
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2] }}>
         <PrimaryButton label={t('consultation.new')} icon="create-outline" onPress={() => router.push({ pathname: '/consultation/[patientId]', params: { patientId: p.id, referralId: openReferral?.id ?? '' } })} testID="new-consultation" />
@@ -178,6 +194,14 @@ export default function DoctorPatient() {
             </Card>
           ))
         )}
+      </Section>
+
+      <Section title={tc('labs.title')}>
+        <LabComparison patientId={p.id} comparison={labsSaved ?? copilot.summary?.labs ?? null} canEdit={role === 'doctor'} onSaved={(c) => (setLabsSaved(c), copilot.reload())} />
+      </Section>
+
+      <Section title={tc('timeline.title')}>
+        <ClinicalTimeline entries={copilot.summary?.timeline ?? []} />
       </Section>
 
       <Section title={t('patient.alerts')}>

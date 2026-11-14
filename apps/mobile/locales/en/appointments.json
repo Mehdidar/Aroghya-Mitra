@@ -1,0 +1,182 @@
+{
+  "title": "Appointments",
+  "subtitle": "Your visits to the PHC doctor",
+  "bookCta": "Book an appointment",
+  "upcoming": "Upcoming",
+  "past": "Past visits and consultations",
+  "noUpcoming": "No upcoming appointments",
+  "noUpcomingBody": "Book a time with the PHC doctor when the PHC has published its hours.",
+  "noPast": "No past visits yet.",
+  "consultation": "Consultation",
+  "followUp": "Follow-up: {{date}}",
+  "doctorFallback": "PHC doctor",
+  "facilityFallback": "the PHC",
+  "patientFallback": "the patient",
+  "loading": "Loading",
+  "status": {
+    "booked": "Booked",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled",
+    "completed": "Completed",
+    "no_show": "Missed",
+    "rescheduled": "Moved"
+  },
+  "actions": {
+    "back": "Back",
+    "retry": "Try again",
+    "done": "Done",
+    "reschedule": "Change time",
+    "cancel": "Cancel",
+    "keep": "Keep appointment",
+    "goBack": "Go back",
+    "confirm": "Confirm",
+    "complete": "Completed",
+    "noShow": "Did not come",
+    "call": "Call {{phone}}"
+  },
+  "offlineTitle": "You are offline",
+  "offlineBody": "Booking needs the internet because appointment times are live. Connect and try again, or call the PHC.",
+  "offlineListBody": "Your appointments cannot be loaded without the internet. Connect and try again.",
+  "errorTitle": "Could not load appointments",
+  "errorBody": "Something went wrong. Please try again.",
+  "errors": {
+    "generic": "That did not work. Please try again.",
+    "slot_unavailable": "That time is no longer free. Please choose another.",
+    "slot_taken": "Someone just booked that time. Please choose another.",
+    "patient_busy": "You already have an appointment at that time.",
+    "too_many": "You already have 3 upcoming appointments. Cancel one to book another.",
+    "too_late": "This appointment has already started, so it cannot be changed here. Please call the PHC.",
+    "too_early": "You can mark this only after the appointment time.",
+    "not_active": "This appointment is already cancelled or finished.",
+    "same_slot": "That is the same time as now. Choose a different time.",
+    "not_permitted": "You are not allowed to do this.",
+    "no_doctor": "This doctor is not available for booking.",
+    "no_patient": "No patient record was found.",
+    "inactive_account": "Your account is not active.",
+    "bad_time": "Check the times: use HH:MM, and each end must be after its start.",
+    "bad_weekday": "Check the days.",
+    "bad_date": "Check the dates.",
+    "bad_slot_length": "Choose an appointment length.",
+    "window_too_short": "Some hours are shorter than one appointment."
+  },
+  "book": {
+    "title": "Book an appointment",
+    "rescheduleTitle": "Choose a new time",
+    "forPatient": "For {{name}}",
+    "stepDate": "1. Choose a day",
+    "stepTime": "2. Choose a time",
+    "stepReason": "3. Reason for the visit (optional)",
+    "reasonPlaceholder": "For example: BP check, fever for 3 days",
+    "review": "Your appointment",
+    "chooseTime": "Choose a time first",
+    "confirm": "Confirm booking",
+    "confirmReschedule": "Move to this time",
+    "currentTime": "Current appointment",
+    "emptyTitle": "No appointment times published yet",
+    "emptyBodyPhone": "The doctors at {{facility}} have not published their hours in the app. Call {{phone}} to book.",
+    "emptyBodyNoPhone": "The doctors at {{facility}} have not published their hours in the app. Please call or visit {{facility}} to book.",
+    "fullTitle": "All published times are taken",
+    "fullBodyPhone": "There are no free times in the next two weeks. Call {{facility}} on {{phone}}.",
+    "fullBodyNoPhone": "There are no free times in the next two weeks. Please call or visit {{facility}}.",
+    "booked": "Appointment booked",
+    "rescheduled": "Appointment moved",
+    "reminderNote": "We will remind you a day before and an hour before.",
+    "timeZoneNote": "All times are India time (IST)."
+  },
+  "cancelDialog": {
+    "title": "Cancel this appointment?",
+    "body": "{{when}} with {{doctor}}. The time will be given to someone else.",
+    "confirm": "Yes, cancel it",
+    "done": "Appointment cancelled"
+  },
+  "rescheduleDialog": {
+    "title": "Move your appointment?",
+    "body": "From {{from}} to {{to}}. Your old time will be freed.",
+    "confirm": "Yes, move it"
+  },
+  "reminder": {
+    "dayTitle": "Appointment tomorrow",
+    "hourTitle": "Appointment in 1 hour",
+    "body": "{{doctor}} at {{facility}}, {{time}}"
+  },
+  "doctor": {
+    "title": "Appointments",
+    "subtitleDoctor": "Your booked patients for the day",
+    "subtitleAdmin": "All appointments at the PHC for the day",
+    "today": "Today",
+    "prev": "Previous day",
+    "next": "Next day",
+    "empty": "No appointments on this day",
+    "emptyBody": "Patients can book only the hours you publish.",
+    "setHours": "Set consultation hours",
+    "cancelledByPhc": "Cancelled by the PHC",
+    "done": {
+      "confirm": "Appointment confirmed",
+      "complete": "Marked as completed",
+      "no-show": "Marked as did not come",
+      "cancel": "Appointment cancelled"
+    },
+    "dialog": {
+      "confirm": {
+        "title": "Confirm this appointment?",
+        "body": "{{patient}}, {{when}}.",
+        "confirm": "Confirm"
+      },
+      "complete": {
+        "title": "Mark as completed?",
+        "body": "{{patient}} was seen ({{when}}).",
+        "confirm": "Mark completed"
+      },
+      "no-show": {
+        "title": "Mark as did not come?",
+        "body": "{{patient}} did not come for {{when}}.",
+        "confirm": "Mark did not come"
+      },
+      "cancel": {
+        "title": "Cancel this appointment?",
+        "body": "{{patient}}, {{when}}. Please also tell the patient.",
+        "confirm": "Cancel appointment"
+      }
+    }
+  },
+  "availability": {
+    "title": "Consultation hours",
+    "subtitle": "Patients can book only the times published here.",
+    "doctor": "Doctor",
+    "noDoctors": "No doctors are registered at this PHC.",
+    "current": "Published: {{count}} entries",
+    "nothingPublished": "Nothing published yet. Patients are told to call the PHC.",
+    "templateTitle": "Admin setup",
+    "templateNote": "Fills the form with typical PHC hours. Nothing is shown to patients until you press Publish.",
+    "template": "Fill Mon–Sat, 9:00–13:00",
+    "templateFilled": "Form filled. Check it, then press Publish hours.",
+    "slotLength": "Length of each appointment",
+    "minutes": "{{count}} min",
+    "weekly": "Weekly hours",
+    "open": "Open",
+    "closed": "Closed",
+    "from": "From (HH:MM)",
+    "to": "To (HH:MM)",
+    "add": "Add more hours",
+    "remove": "Remove these hours",
+    "exceptions": "Days off and special days",
+    "exceptionsNote": "A date here replaces that day's weekly hours.",
+    "addException": "Add a date",
+    "pickDate": "Choose a date",
+    "removeDate": "Remove this date",
+    "dayOff": "Day off",
+    "customHours": "Different hours",
+    "publish": "Publish hours",
+    "published": "Hours published. Patients can now book these times.",
+    "unpublish": "Remove all hours",
+    "cleared": "All hours removed. Patients are told to call the PHC.",
+    "invalid": "Check the times: use HH:MM, and each end must be after its start.",
+    "offline": "Publishing hours needs the internet. Connect and try again.",
+    "timeZoneNote": "All times are India time (IST). Existing bookings are kept when hours change.",
+    "unpublishDialog": {
+      "title": "Remove all hours?",
+      "body": "Patients will not be able to book this doctor in the app. Existing bookings stay.",
+      "confirm": "Remove hours"
+    }
+  }
+}

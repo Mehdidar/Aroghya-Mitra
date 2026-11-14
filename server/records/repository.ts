@@ -40,6 +40,25 @@ export interface PatientRecordBundle {
   people: Pick<Profile, 'id' | 'fullName' | 'role'>[];
 }
 
+/** One structured lab value (supabase/migrations/5001_lab_results.sql), entered by a doctor from a report. */
+export interface LabResult {
+  id: string;
+  patientId: string;
+  /** The health_reports row it was read from, if any. */
+  reportId: string | null;
+  /** Lower-case code, e.g. 'hb', 'urine_protein' (server/copilot/labs.ts). */
+  testCode: string;
+  testName: string;
+  value: number;
+  unit: string;
+  referenceLow: number | null;
+  referenceHigh: number | null;
+  observedAt: string;
+  enteredBy: string;
+  source: 'manual' | 'extracted';
+  createdAt: string;
+}
+
 export interface RecordsRepository {
   getProfile(id: string): Promise<Profile | null>;
   getPatient(id: string): Promise<Patient | null>;
@@ -90,6 +109,11 @@ export interface RecordsRepository {
   saveAshaBatch(batch: AshaBatch): Promise<void>;
   /** A doctor's inbox: open referrals to them or their facility, with the patients and their open alerts. */
   listInbox(doctor: Pick<Profile, 'id' | 'facilityId'>): Promise<DoctorInbox>;
+
+  /** Lab values for one patient, oldest first (doctor copilot report comparison). */
+  listLabResults(patientId: string): Promise<LabResult[]>;
+  /** Upsert by id. */
+  saveLabResults(rows: LabResult[]): Promise<LabResult[]>;
 }
 
 export interface DoctorInbox {

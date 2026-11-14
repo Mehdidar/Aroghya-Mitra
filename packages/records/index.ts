@@ -8,3 +8,5 @@ export * from './bloodbank/types.ts';
 export * from './bloodbank/service.ts';
 export * from './bloodbank/geo.ts';
 export * from './bloodbank/remote.ts';
+export * from './records/prioritise.ts';
+export * from './medicines/index.ts';

@@ -1,5 +1,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Linking, View } from 'react-native';
 import { AlertCard } from '../../../../features/asha/components/AlertCard';
 import { patientAgeLabel } from '../../../../features/asha/components/PatientRow';
@@ -14,6 +15,7 @@ import { Avatar, EmptyState, Icon, Pill, SectionHeader, Text, type IconName } fr
 export default function PatientDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { db, store, lang, t, user } = useAsha();
+  const { i18n } = useTranslation(); // the preventive plan's strings are in all 7 languages, outside the ASHA module
   const theme = useTheme();
   const colors = useAshaColors();
   const patient = db.patients[id];
@@ -83,6 +85,7 @@ export default function PatientDetail() {
             {t('patient.conditions')}: {patient.conditions.map((c) => t(`cond.${c}`)).join(', ')}
           </Muted>
         ) : null}
+        <Button title={i18n.t('prevent:ashaTitle')} icon="shield-checkmark-outline" variant="secondary" onPress={() => router.push(`/asha/prevention/${patient.id}`)} testID="open-prevention" />
         {patient.phone ? (
           <Button title={`${t('patient.call')} ${patient.phone}`} icon="call-outline" variant="secondary" onPress={() => Linking.openURL(`tel:${patient.phone}`)} />
         ) : null}

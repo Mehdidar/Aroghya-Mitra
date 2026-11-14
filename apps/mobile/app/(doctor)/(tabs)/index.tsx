@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
@@ -13,7 +13,7 @@ import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 
 /** Doctor / Admin dashboard: today's numbers, the big Scan QR action, recent referrals. */
 export default function DoctorDashboard() {
-  const { t } = useTranslation(['doctor', 'common']);
+  const { t } = useTranslation(['doctor', 'common', 'appointments']);
   const theme = useTheme();
   const user = useCurrentUser();
   const dash = useDashboard();
@@ -90,6 +90,8 @@ export default function DoctorDashboard() {
         {demoPatient ? (
           <SecondaryButton label={t('dashboard.openDemoPatient', { name: demoPatient.fullName })} icon="person-outline" onPress={() => router.push({ pathname: '/patient/[id]', params: { id: demoPatient.id } })} testID="open-demo-patient" />
         ) : null}
+        <SecondaryButton label={t('appointments:doctor.title')} icon="calendar-outline" onPress={() => router.push('/appointments-day' as Href)} testID="open-appointments" />
+        <SecondaryButton label={t('appointments:availability.title')} icon="time-outline" onPress={() => router.push('/availability')} testID="open-availability" />
         <PrimaryButton label={t('patients.register')} icon="person-add-outline" onPress={() => router.push('/patient/new')} />
       </View>
       <Text variant="caption" tone="tertiary">

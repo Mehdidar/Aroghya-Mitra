@@ -40,11 +40,18 @@ export function toRecordAlert(a: RiskAlert, ashaId: string): RecordRiskAlert {
   };
 }
 
-export type AshaBridgeData = { referrals: RecordReferral[]; alerts: RecordRiskAlert[]; patientNames: Record<string, string> };
+export type AshaBridgeData = {
+  referrals: RecordReferral[];
+  alerts: RecordRiskAlert[];
+  patientNames: Record<string, string>;
+  /** What the record shapes drop, kept for the inbox ranking: rule id + severity per alert, urgency per referral. */
+  alertDetails: Record<string, { ruleId: string; severity: RiskAlert['severity'] }>;
+  urgency: Record<string, Referral['urgency']>;
+};
 
 /** Read the ASHA module's store. Empty when the ASHA app has never run on this device. */
 export async function loadAshaBridge(storage: Pick<typeof AsyncStorage, 'getItem'> = AsyncStorage): Promise<AshaBridgeData> {
-  const empty: AshaBridgeData = { referrals: [], alerts: [], patientNames: {} };
+  const empty: AshaBridgeData = { referrals: [], alerts: [], patientNames: {}, alertDetails: {}, urgency: {} };
   try {
     const raw = await storage.getItem(DB_KEY);
     if (!raw) return empty;
@@ -52,7 +59,9 @@ export async function loadAshaBridge(storage: Pick<typeof AsyncStorage, 'getItem
     const referrals = Object.values(db.referrals ?? {}).map(toRecordReferral);
     const alerts = Object.values(db.alerts ?? {}).map((a) => toRecordAlert(a, referrals.find((r) => r.patientId === a.patientId)?.fromAshaId ?? DEMO_IDS.asha));
     const patientNames = Object.fromEntries(Object.values(db.patients ?? {}).map((p) => [p.id, p.name]));
-    return { referrals, alerts, patientNames };
+    const alertDetails = Object.fromEntries(Object.values(db.alerts ?? {}).map((a) => [a.id, { ruleId: a.ruleId, severity: a.severity }]));
+    const urgency = Object.fromEntries(Object.values(db.referrals ?? {}).filter((r) => r.urgency).map((r) => [r.id, r.urgency]));
+    return { referrals, alerts, patientNames, alertDetails, urgency };
   } catch {
     return empty;
   }

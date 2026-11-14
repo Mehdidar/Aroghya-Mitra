@@ -24,7 +24,7 @@ import { VoiceHeroCard } from '@/features/patient/voice/VoiceHeroCard';
 import { ScreenGuide } from '@/features/shared/a11y/audioGuide';
 import { useReminders } from '@/features/patient/reminders/useReminders';
 
-type ServiceId = 'chat' | 'voice' | 'prescription' | 'nutrition' | 'hospitalMap' | 'qrCard' | 'bloodBanks' | 'reports';
+type ServiceId = 'chat' | 'voice' | 'prescription' | 'nutrition' | 'hospitalMap' | 'qrCard' | 'bloodBanks' | 'reports' | 'appointments' | 'prevention';
 
 const SERVICES: { id: ServiceId; icon: IconName; tint: TileTint }[] = [
   { id: 'chat', icon: 'chatbubbles', tint: 'blue' },
@@ -35,7 +35,12 @@ const SERVICES: { id: ServiceId; icon: IconName; tint: TileTint }[] = [
   { id: 'qrCard', icon: 'qr-code', tint: 'blue' },
   { id: 'bloodBanks', icon: 'water', tint: 'pink' },
   { id: 'reports', icon: 'folder-open', tint: 'lavender' },
+  { id: 'appointments', icon: 'calendar', tint: 'mint' },
+  { id: 'prevention', icon: 'shield-checkmark', tint: 'butter' },
 ];
+
+/** Tiles whose label is the module's own title (already in all 7 languages). */
+const SERVICE_LABEL: Partial<Record<ServiceId, string>> = { appointments: 'appointments:title', prevention: 'prevent:ashaTitle' };
 
 function openService(id: ServiceId) {
   if (id === 'nutrition') router.push('/nutrition');
@@ -46,6 +51,8 @@ function openService(id: ServiceId) {
   else if (id === 'hospitalMap') router.push('/nearby');
   else if (id === 'qrCard') router.push('/qr-card');
   else if (id === 'bloodBanks') router.push('/blood-banks');
+  else if (id === 'appointments') router.push('/appointments');
+  else if (id === 'prevention') router.push('/prevention');
   else router.push({ pathname: '/service/[id]', params: { id } });
 }
 
@@ -114,7 +121,7 @@ export default function PatientHome() {
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: theme.space[4] }}>
           {SERVICES.map((s) => (
             <View key={s.id} style={{ width: '25%', paddingHorizontal: theme.space[1] }}>
-              <ServiceTile label={t(`services.${s.id}`)} icon={s.icon} tint={s.tint} onPress={() => openService(s.id)} testID={`service-${s.id}`} />
+              <ServiceTile label={t(SERVICE_LABEL[s.id] ?? `services.${s.id}`)} icon={s.icon} tint={s.tint} onPress={() => openService(s.id)} testID={`service-${s.id}`} />
             </View>
           ))}
         </View>

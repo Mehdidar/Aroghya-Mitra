@@ -21,7 +21,7 @@ import type {
 import { RestClient, restConfigFromEnv } from '../db/rest.ts';
 import { MemoryRecordsRepository, type MemoryData } from './memoryRepository.ts';
 import { SupabaseRecordsRepository } from './supabaseRepository.ts';
-import type { RecordsRepository } from './repository.ts';
+import type { LabResult, RecordsRepository } from './repository.ts';
 
 const daysAgo = (d: number, hour: number, now: Date) => {
   const x = new Date(now);
@@ -135,6 +135,13 @@ export function demoMemoryData(now = new Date()): MemoryData {
       acceptedAt: null,
     },
   ];
+  // DEMO lab values typed from rep-1 and an earlier antenatal test (fictional): Hb falling, urine protein newly trace.
+  const labResults: LabResult[] = [
+    { id: 'lab-hb-1', patientId: patient.id, reportId: null, testCode: 'hb', testName: 'Haemoglobin', value: 10.2, unit: 'g/dL', referenceLow: 11, referenceHigh: 15, observedAt: `${dateOnly(daysAgo(44, 9, now))}T00:00:00.000Z`, enteredBy: DEMO_IDS.doctor, source: 'manual', createdAt: daysAgo(43, 12, now) },
+    { id: 'lab-up-1', patientId: patient.id, reportId: null, testCode: 'urine_protein', testName: 'Urine protein (dipstick)', value: 0, unit: 'grade', referenceLow: null, referenceHigh: 0, observedAt: `${dateOnly(daysAgo(44, 9, now))}T00:00:00.000Z`, enteredBy: DEMO_IDS.doctor, source: 'manual', createdAt: daysAgo(43, 12, now) },
+    { id: 'lab-hb-2', patientId: patient.id, reportId: 'rep-1', testCode: 'hb', testName: 'Haemoglobin', value: 9.6, unit: 'g/dL', referenceLow: 11, referenceHigh: 15, observedAt: `${dateOnly(daysAgo(16, 9, now))}T00:00:00.000Z`, enteredBy: DEMO_IDS.doctor, source: 'manual', createdAt: daysAgo(16, 12, now) },
+    { id: 'lab-up-2', patientId: patient.id, reportId: 'rep-1', testCode: 'urine_protein', testName: 'Urine protein (dipstick)', value: 1, unit: 'grade', referenceLow: null, referenceHigh: 0, observedAt: `${dateOnly(daysAgo(16, 9, now))}T00:00:00.000Z`, enteredBy: DEMO_IDS.doctor, source: 'manual', createdAt: daysAgo(16, 12, now) },
+  ];
   const riskAlerts: RecordRiskAlert[] = [
     { id: `${patient.id}:preg_severe_htn`, patientId: patient.id, ashaWorkerId: DEMO_IDS.asha, level: 'high', reason: 'BP 150/100 with severe headache and swelling at 34 weeks', createdAt: daysAgo(1, 10, now), resolvedAt: null },
   ];
@@ -156,6 +163,7 @@ export function demoMemoryData(now = new Date()): MemoryData {
     consultations,
     referrals,
     riskAlerts,
+    labResults,
   };
 }
 

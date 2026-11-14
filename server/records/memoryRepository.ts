@@ -19,7 +19,7 @@ import type {
 } from '../../packages/records/records/types.ts';
 import { sameRecord } from '../../packages/shared/ids.ts';
 import { alertToRecord, ashaPatientToRecord, furtherStatus, referralToRecord, visitToRecord, type AshaBatch } from '../asha/toRecords.ts';
-import type { DoctorInbox, PatientRecordBundle, RecordsRepository, ReferralPatch } from './repository.ts';
+import type { DoctorInbox, LabResult, PatientRecordBundle, RecordsRepository, ReferralPatch } from './repository.ts';
 
 export interface MemoryData {
   profiles: Profile[];
@@ -36,6 +36,7 @@ export interface MemoryData {
   consultations: Consultation[];
   referrals: Referral[];
   riskAlerts: RiskAlert[];
+  labResults: LabResult[];
 }
 
 export function emptyMemoryData(): MemoryData {
@@ -54,6 +55,7 @@ export function emptyMemoryData(): MemoryData {
     consultations: [],
     referrals: [],
     riskAlerts: [],
+    labResults: [],
   };
 }
 
@@ -249,6 +251,19 @@ export class MemoryRecordsRepository implements RecordsRepository {
       riskAlerts: this.data.riskAlerts.filter((a) => ids.has(a.patientId) && a.resolvedAt === null),
       patients: this.data.patients.filter((p) => ids.has(p.id)),
     };
+  }
+
+  async listLabResults(patientId: string) {
+    return this.data.labResults.filter((r) => r.patientId === patientId).sort((a, b) => Date.parse(a.observedAt) - Date.parse(b.observedAt));
+  }
+
+  async saveLabResults(rows: LabResult[]) {
+    for (const row of rows) {
+      const i = this.data.labResults.findIndex((r) => r.id === row.id);
+      if (i >= 0) this.data.labResults[i] = row;
+      else this.data.labResults.push(row);
+    }
+    return rows;
   }
 
   async registerPatientUser(userId: string, phone: string | null, now: Date) {

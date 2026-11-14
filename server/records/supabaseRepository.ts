@@ -26,7 +26,7 @@ import { DbError, inList, type RestClient } from '../db/rest.ts';
 import { DEMO_FACILITY } from '../../packages/shared/demo.ts';
 import { furtherStatus, type AshaBatch } from '../asha/toRecords.ts';
 import { newPatientName } from './memoryRepository.ts';
-import type { DoctorInbox, PatientRecordBundle, RecordsRepository, ReferralPatch } from './repository.ts';
+import type { DoctorInbox, LabResult, PatientRecordBundle, RecordsRepository, ReferralPatch } from './repository.ts';
 
 type Row = Record<string, unknown>;
 const s = (v: unknown) => (v === null || v === undefined ? null : String(v));
@@ -277,6 +277,39 @@ const mapLog = (r: Row): AccessLog => ({
 });
 
 // ---- the repository -----------------------------------------------------------
+
+// lab_results (5001_lab_results.sql)
+export const mapLabResult = (r: Row): LabResult => ({
+  id: String(r.id),
+  patientId: String(r.patient_id),
+  reportId: s(r.report_id),
+  testCode: String(r.test_code),
+  testName: String(r.test_name),
+  value: Number(r.value),
+  unit: String(r.unit),
+  referenceLow: n(r.reference_low),
+  referenceHigh: n(r.reference_high),
+  observedAt: String(r.observed_at),
+  enteredBy: String(r.entered_by),
+  source: r.source === 'extracted' ? 'extracted' : 'manual',
+  createdAt: String(r.created_at),
+});
+
+export const labResultRow = (l: LabResult): Row => ({
+  id: toDbId(l.id),
+  patient_id: toDbId(l.patientId),
+  report_id: dbIdOrNull(l.reportId),
+  test_code: l.testCode,
+  test_name: l.testName,
+  value: l.value,
+  unit: l.unit,
+  reference_low: l.referenceLow,
+  reference_high: l.referenceHigh,
+  observed_at: l.observedAt,
+  entered_by: toDbId(l.enteredBy),
+  source: l.source,
+  created_at: l.createdAt,
+});
 
 export class SupabaseRecordsRepository implements RecordsRepository {
   private readonly db: RestClient;
@@ -563,6 +596,16 @@ export class SupabaseRecordsRepository implements RecordsRepository {
         'id',
       );
     }
+  }
+
+  async listLabResults(patientId: string) {
+    const rows = await this.db.select<Row>('lab_results', { patient_id: `eq.${toDbId(patientId)}` }, { order: 'observed_at.asc' });
+    return rows.map(mapLabResult);
+  }
+
+  async saveLabResults(rows: LabResult[]) {
+    if (!rows.length) return [];
+    return (await this.db.upsert<Row>('lab_results', rows.map(labResultRow), 'id')).map(mapLabResult);
   }
 
   async listInbox(doctor: Pick<Profile, 'id' | 'facilityId'>): Promise<DoctorInbox> {
