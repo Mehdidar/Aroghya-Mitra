@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, type Href } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
@@ -95,6 +95,9 @@ export default function DoctorPatient() {
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2] }}>
         <PrimaryButton label={t('consultation.new')} icon="create-outline" onPress={() => router.push({ pathname: '/consultation/[patientId]', params: { patientId: p.id, referralId: openReferral?.id ?? '' } })} testID="new-consultation" />
+        {role === 'doctor' ? (
+          <SecondaryButton label={t('prescribe.button')} icon="medkit-outline" onPress={() => router.push(`/prescribe/${encodeURIComponent(p.id)}` as Href)} testID="prescribe-medicine" />
+        ) : null}
       </View>
 
       <View style={{ flexDirection: twoColumn ? 'row' : 'column', gap: theme.space[5] }}>

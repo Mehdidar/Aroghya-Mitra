@@ -28,6 +28,10 @@ export interface SyncResponse {
   patients?: StoredPatient[];
   visits?: Visit[];
   referrals?: Referral[];
+  /** Patients the PHC moved to another ASHA since `since`: the phone drops them (records stay on the server). */
+  released?: ID[];
+  /** Patients this push sent that belong to another ASHA now; the server did not save them. */
+  rejectedPatientIds?: ID[];
 }
 
 export interface SyncTransport {
@@ -36,7 +40,7 @@ export interface SyncTransport {
 }
 
 export type SyncResult =
-  | { ok: true; pushed: number; pulledReferrals: number }
+  | { ok: true; pushed: number; pulledReferrals: number; released: number }
   | { ok: false; error: string; skipped?: boolean };
 
 const isLocal = (uri: string) => !/^https?:\/\//.test(uri);
@@ -84,7 +88,10 @@ async function doSync(store: AshaStore, transport: SyncTransport, ashaId: ID): P
     const res = await transport.push(req);
     await store.markSynced(items, res.serverTime, photoUrls);
     await store.mergeRemote(res);
-    return { ok: true, pushed: items.length, pulledReferrals: res.referrals?.length ?? 0 };
+    // Assignment is the PHC's decision: patients moved to another ASHA (or refused by the server
+    // because they belong to someone else now) leave this phone, after their queued work was pushed above.
+    const released = await store.release([...(res.released ?? []), ...(res.rejectedPatientIds ?? [])]);
+    return { ok: true, pushed: items.length, pulledReferrals: res.referrals?.length ?? 0, released: released.length };
   } catch (e) {
     await store.markFailed(items);
     return { ok: false, error: e instanceof Error ? e.message : String(e) };

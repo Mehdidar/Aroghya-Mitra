@@ -1,4 +1,4 @@
-import { DEMO_IDS } from '@am/shared';
+import { DEMO_IDS, toDbId } from '@am/shared';
 import { buildDemoDB } from '../data/seed';
 import { dobFromAge, followUpsDue, lmpFromWeeks, parseDateInput } from '../logic/clinical';
 import { syncOnce, type SyncRequest, type SyncResponse, type SyncTransport } from '../services/sync';
@@ -132,6 +132,66 @@ describe('sync', () => {
     // An older server copy does not clobber it
     await syncOnce(store, okTransport(undefined, { referrals: [{ ...r, status: 'pending', updatedAt: '2020-01-01T00:00:00.000Z' }] }), 'a1');
     expect(store.snapshot.referrals[r.id].status).toBe('seen');
+  });
+});
+
+describe('release (patients the PHC moved to another ASHA)', () => {
+  async function twoPatients() {
+    const { kv, store } = await freshStore();
+    await store.savePatient({ ...patient(), id: 'p2', name: 'Sita' });
+    await store.recordVisit(visit({ systolic: 150, diastolic: 100 }));
+    await store.recordVisit({ ...visit({ hemoglobin: 6 }), patientId: 'p2' });
+    await store.createReferral({ patientId: 'p2', fromAshaId: 'a1', alertIds: [], urgency: 'urgent', reason: 'x' });
+    return { kv, store };
+  }
+
+  it('drops the patient with their visits, alerts, referrals and queued items', async () => {
+    const { kv, store } = await twoPatients();
+    const removed = await store.release(['p2']);
+    expect(removed).toEqual(['p2']);
+    const db = store.snapshot;
+    expect(Object.keys(db.patients)).toEqual(['p1']);
+    expect(Object.values(db.visits).every((v) => v.patientId === 'p1')).toBe(true);
+    expect(Object.values(db.alerts).every((a) => a.patientId === 'p1')).toBe(true);
+    expect(Object.values(db.referrals)).toEqual([]);
+    expect(db.outbox.every((o) => store.record(o.kind, o.id))).toBe(true);
+    expect(db.outbox.some((o) => o.kind === 'patient' && o.id === 'p1')).toBe(true);
+    // Persisted
+    const reloaded = await new AshaStore(kv).load();
+    expect(Object.keys(reloaded.patients)).toEqual(['p1']);
+  });
+
+  it('matches the server UUID form of a phone id', async () => {
+    const { store } = await twoPatients();
+    expect(await store.release([toDbId('p2')])).toEqual(['p2']);
+    expect(store.patient('p2')).toBeUndefined();
+  });
+
+  it('ignores unknown ids and an empty list', async () => {
+    const { store } = await twoPatients();
+    const before = store.snapshot;
+    expect(await store.release([])).toEqual([]);
+    expect(await store.release(['nobody'])).toEqual([]);
+    expect(store.snapshot).toBe(before);
+  });
+
+  it('sync applies `released` and `rejectedPatientIds` after pushing the queue', async () => {
+    const { store } = await twoPatients();
+    await store.savePatient({ ...patient(), id: 'p3', name: 'Asha' });
+    let pushed: SyncRequest | undefined;
+    const transport: SyncTransport = {
+      async push(req) {
+        pushed = req;
+        return { serverTime: '2030-01-01T00:00:00.000Z', released: [toDbId('p2')], rejectedPatientIds: ['p3'] };
+      },
+      uploadPhoto: async (u) => u,
+    };
+    const res = await syncOnce(store, transport, 'a1');
+    expect(res).toMatchObject({ ok: true, released: 2 });
+    // Her last visit for the released patient still went to the server first.
+    expect(pushed!.visits.some((v) => v.patientId === 'p2')).toBe(true);
+    expect(Object.keys(store.snapshot.patients)).toEqual(['p1']);
+    expect(store.snapshot.outbox).toEqual([]);
   });
 });
 

@@ -27,6 +27,8 @@ interface AshaContextValue {
   t: (key: string, params?: Record<string, string | number>) => string;
   sync: SyncStatus;
   syncNow: () => Promise<void>;
+  /** Phone has a network connection (NetInfo). */
+  online: boolean;
 }
 
 const Ctx = createContext<AshaContextValue | null>(null);
@@ -103,8 +105,8 @@ export function AshaProvider({ children, user }: { children: React.ReactNode; us
   const t = useCallback((key: string, params?: Record<string, string | number>) => translate(key, lang, params), [lang]);
 
   const value = useMemo<AshaContextValue>(
-    () => ({ ready, db, store, user: me, lang, setLang, t, sync, syncNow }),
-    [ready, db, store, me, lang, setLang, t, sync, syncNow],
+    () => ({ ready, db, store, user: me, lang, setLang, t, sync, syncNow, online }),
+    [ready, db, store, me, lang, setLang, t, sync, syncNow, online],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

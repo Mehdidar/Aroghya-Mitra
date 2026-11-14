@@ -7,6 +7,8 @@
  * auth.users). `ensureAuthUsers` creates them through the GoTrue admin API with
  * the fixed demo ids; a local test database can insert them with SQL instead.
  */
+import { DEMO_AREAS } from '../ashaConnect/routes.ts';
+import { areaKey } from '../ashaConnect/match.ts';
 import { DEMO_FACILITY, DEMO_IDS, DEMO_USERS } from '../../packages/shared/demo.ts';
 import type { Role } from '../../packages/shared/types.ts';
 import { demoMemoryData } from '../records/demoSeed.ts';
@@ -119,6 +121,12 @@ export async function seedDemo(db: RestClient, now = new Date()): Promise<SeedSu
 
   for (const c of d.consultations) await repo.saveConsultation(c);
   count('consultations', d.consultations.length);
+
+  // Villages each demo ASHA covers (migration 5301), so "Find my ASHA" can match a patient's village.
+  // Only for ASHAs that have a profile here (the second demo ASHA exists in the laptop demo only).
+  const areas = DEMO_AREAS.filter((a) => d.profiles.some((p) => p.id === a.ashaId));
+  await db.upsert('asha_service_areas', areas.map((a) => ({ asha_id: a.ashaId, facility_id: DEMO_FACILITY.id, area: a.area, area_key: areaKey(a.area) })), 'asha_id,area_key');
+  count('asha_service_areas', areas.length);
 
   return out;
 }

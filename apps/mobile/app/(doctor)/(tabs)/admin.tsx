@@ -6,6 +6,7 @@ import { Pressable, View } from 'react-native';
 import { BLOOD_COMPONENTS, buildAdminAnalytics, type BloodBank, type StockEntry } from '@am/records';
 import { BLOOD_GROUPS } from '@am/shared';
 
+import { AssignmentBoard } from '@/features/doctor/admin/AssignmentBoard';
 import { applyOverrides, facilityBank, useAdmin } from '@/features/doctor/adminStore';
 import { BarChart } from '@/features/doctor/components/BarChart';
 import { useColumns } from '@/features/doctor/useDoctorData';
@@ -31,7 +32,7 @@ function Stepper({ label, value, onChange, testID }: { label: string; value: num
   );
 }
 
-/** Admin tools: staff approvals, ASHA assignments, blood stock, analytics. */
+/** Admin tools: staff approvals, ASHA assignments (from the server), blood stock, analytics. */
 export default function AdminScreen() {
   const { t } = useTranslation('doctor');
   const theme = useTheme();
@@ -43,7 +44,6 @@ export default function AdminScreen() {
   const riskAlerts = useRecords((s) => s.riskAlerts);
   const doseLogs = useRecords((s) => s.doseLogs);
   const consultations = useRecords((s) => s.consultations);
-  const upsertPatient = useRecords((s) => s.upsertPatient);
   const [bank, setBank] = useState<{ bank: BloodBank; stock: StockEntry[] } | null | undefined>(undefined);
   const [component, setComponent] = useState(BLOOD_COMPONENTS[0].key);
 
@@ -53,7 +53,6 @@ export default function AdminScreen() {
       .catch(() => setBank(null));
   }, []);
 
-  const ashas = staff.filter((s) => s.role === 'asha');
   const analytics = useMemo(
     () =>
       buildAdminAnalytics({
@@ -76,7 +75,7 @@ export default function AdminScreen() {
           <Text tone="secondary">{user?.role === 'admin' ? t('admin.subtitleAdmin') : t('admin.subtitleDoctor')}</Text>
         </View>
         <IconButton icon="person-circle-outline" accessibilityLabel={t('admin.profile')} onPress={() => router.push('/doctor-profile')} testID="admin-profile" />
-        <IconButton icon="log-out-outline" accessibilityLabel={t('actions.signOut')} onPress={signOut} testID="admin-sign-out" />
+        <IconButton icon="log-out-outline" accessibilityLabel={t('common:actions.signOut')} onPress={signOut} testID="admin-sign-out" />
       </View>
 
       <View style={{ flexDirection: twoColumn ? 'row' : 'column', gap: theme.space[3] }}>
@@ -115,35 +114,7 @@ export default function AdminScreen() {
         ))}
       </View>
 
-      <View style={{ gap: theme.space[3] }}>
-        <SectionHeader title={t('admin.assignments')} />
-        {Object.values(patients).map((p) => (
-          <Card key={p.id} radius="lg" padding="md">
-            <View style={{ gap: theme.space[2] }}>
-              <Text variant="title">{p.fullName}</Text>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2] }}>
-                {ashas.map((a) => {
-                  const selected = p.ashaWorkerId === a.id;
-                  return (
-                    <Pressable
-                      key={a.id}
-                      accessibilityRole="radio"
-                      accessibilityState={{ selected }}
-                      accessibilityLabel={a.fullName}
-                      onPress={() => upsertPatient({ ...p, ashaWorkerId: a.id })}
-                      testID={`assign-${p.id}-${a.id}`}
-                      style={{ minHeight: theme.sizes.touchMin, paddingHorizontal: theme.space[3], justifyContent: 'center', borderRadius: theme.radii.full, borderWidth: 1.5, borderColor: selected ? theme.accent.accent : theme.colors.border, backgroundColor: selected ? theme.accent.accentSoft : theme.colors.surface }}>
-                      <Text variant="bodySmall" weight={selected ? 'semibold' : 'regular'}>
-                        {a.fullName}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </View>
-          </Card>
-        ))}
-      </View>
+      <AssignmentBoard />
 
       <View style={{ gap: theme.space[3] }}>
         <SectionHeader title={t('admin.bloodStock')} />
@@ -176,7 +147,7 @@ export default function AdminScreen() {
       </Text>
       <View style={{ gap: theme.space[3], marginTop: theme.space[2] }}>
         <SecondaryButton
-          label={t('actions.signOut')}
+          label={t('common:actions.signOut')}
           icon="log-out-outline"
           onPress={signOut}
           testID="admin-bottom-sign-out"

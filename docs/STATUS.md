@@ -84,6 +84,18 @@ until phone sign-in is switched on, or every call is refused.
 | Translations | Tamil, Telugu and Kashmiri complete (581, 581 and 596 strings), Urdu gaps filled (198). | Native-speaker review, Kashmiri especially. The ASHA module itself is in English and Hindi only. |
 | Hosting | The server runs as a Supabase Edge Function (tested under Deno against the live project); ASHA data and photos move to the database and Storage; `npm run deploy:server`. | A Supabase access token in `.env`, and run `supabase/migrations/3002_asha_sync_store.sql` in the SQL Editor. The food model (Python) needs its own host. |
 
+## ASHA connect (2026-11-14, branch feat/asha-connect)
+
+| Piece | State |
+|---|---|
+| Patient gets an ASHA | "Find my ASHA" by village: assigned at once when an active ASHA covers it, else the patient waits on the PHC admin's board. Admin assigns, moves (with a reason) or removes; every change is an `asha_assignment_events` row. The new ASHA's phone receives the patient on its next sync; the old phone is told to drop it (`released`) and its pushes for that patient are refused. |
+| Patient ⇄ ASHA | Messages, "please visit" (today / tomorrow / this week) and "please call me back" requests; the ASHA accepts with a date, declines or marks done (status only moves forward). Patient text runs through the red-flag detector: urgent + 108 / 112 banner at once (also checked on the phone, so it works offline). |
+| ASHA phone | Messages inbox (urgent first), conversation screen with quick replies, Today's plan on the home screen (emergency messages, open requests, visits she accepted for today, follow-ups due), Scan QR card. |
+| ASHA scans a QR card | Same signed short-lived token, consent and access log as the doctor's scan. Shows only what a home visit needs: identity, pregnancy weeks, allergies, conditions, latest vitals, symptoms of the last 30 days (visits, the patient's own messages, consultation notes), open alerts, current medicines, last doctor and ASHA visit. An unassigned patient can be added to her list within 2 h of a scan. |
+| Doctor quick prescribe | "Prescribe medicine" on the patient page: same interaction / allergy / pregnancy warnings as the consultation screen (each must be ticked as reviewed), saved as a doctor prescription that becomes the patient's reminders. Doctors only (admins cannot write prescriptions). |
+| Security fix | `/qr/scan` and `/asha/scan` accept the unsigned offline card `AM1.demo.<id>` only on a demo server (no `QR_TOKEN_SECRET`); a real server asks for the live, signed card. |
+| Needs | Migration `5301_asha_connect.sql` on the cloud database (plus 5001 / 5101 / 5201), then `npm run db:seed` for the demo villages. The second demo ASHA (Geeta Rani, Bhagwanpur) exists in the laptop demo only: a cloud ASHA needs a real auth user. No edit form yet for the details of a patient who signed up on their own phone (`needsDetails`). Messages are not end-to-end encrypted and there are no push notifications yet (the apps poll). |
+
 ## Mocked or demo
 
 - **e-RaktKosh** is not connected. Blood banks are 15 fictional Bengaluru entries with mock stock; every phone number is labelled "Demo number".

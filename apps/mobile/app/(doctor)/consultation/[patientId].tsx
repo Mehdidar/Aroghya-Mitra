@@ -1,12 +1,11 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { allAcknowledged, applyAction, checkPrescription, pregnancyFromRecord } from '@am/records';
-import { DEMO_FACILITY, DEMO_PROFILES, type Consultation, type Prescription } from '@am/shared';
+import { applyAction } from '@am/records';
+import { DEMO_FACILITY, type Consultation, type Prescription } from '@am/shared';
 import type { ConsultationNoteDraft } from '@server/copilot/notesSchema';
-import { activeMedicines } from '@server/copilot/summary';
 
 import { Chip } from '@/features/doctor/components/Chip';
 import { MedicineEditor } from '@/features/doctor/components/MedicineEditor';
@@ -15,6 +14,7 @@ import { WarningsPanel } from '@/features/doctor/components/WarningsPanel';
 import { composeNotes, emptyNoteFields, fieldsFromDraft, followUpDate, medicinesFromDraft, type NoteFields } from '@/features/doctor/consultationNote';
 import { draftToItem, emptyMedicine, newId, remindersFor, type MedicineDraft } from '@/features/doctor/prescriptions';
 import { useDoctorId, usePatientRecord } from '@/features/doctor/useDoctorData';
+import { usePrescriptionSafety } from '@/features/doctor/usePrescriptionSafety';
 import { useRecords } from '@/features/shared/data/recordsStore';
 import { useTheme } from '@/features/shared/theme';
 import { Card, EmptyState, Heading, IconButton, Pill, PrimaryButton, Screen, SecondaryButton, SectionHeader, Text, TextField } from '@/features/shared/ui';
@@ -34,7 +34,8 @@ export default function ConsultationScreen() {
   const { t: tc } = useTranslation('copilot');
   const theme = useTheme();
   const doctorId = useDoctorId();
-  const { patient, referrals, prescriptions, consultations } = usePatientRecord(patientId);
+  const rec = usePatientRecord(patientId);
+  const { patient, referrals } = rec;
   const addConsultation = useRecords((s) => s.addConsultation);
   const addPrescription = useRecords((s) => s.addPrescription);
   const updateReferral = useRecords((s) => s.updateReferral);
@@ -45,25 +46,11 @@ export default function ConsultationScreen() {
   const [followUp, setFollowUp] = useState('');
   const [meds, setMeds] = useState<MedicineDraft[]>([emptyMedicine()]);
   const [fromDictation, setFromDictation] = useState(false);
-  const [pregnantOverride, setPregnantOverride] = useState<boolean | null>(null);
-  const [acked, setAcked] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const referral = referralId ? referrals.find((r) => r.id === referralId) : undefined;
-  const names = useMemo(() => new Map(DEMO_PROFILES.map((p) => [p.id, p.fullName])), []);
-  const current = useMemo(() => activeMedicines(prescriptions, new Date(), names), [prescriptions, names]);
-  const pregnancyFromRec = useMemo(
-    () => pregnancyFromRecord(patient?.chronicConditions ?? [], [...referrals.map((r) => r.reason), ...consultations.flatMap((c) => [c.diagnosis ?? '', c.notes ?? ''])]),
-    [patient, referrals, consultations],
-  );
-  const pregnant = pregnantOverride ?? pregnancyFromRec.pregnant;
-  const filled = meds.filter((m) => m.name.trim());
-  const warnings = useMemo(
-    () => checkPrescription({ items: filled, allergies: patient?.allergies ?? [], pregnancy: { pregnant, weeks: pregnant ? pregnancyFromRec.weeks : null }, currentMedicines: current.map((m) => m.name) }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(filled.map((m) => m.name)), patient, pregnant, pregnancyFromRec.weeks, current],
-  );
+  const { current, pregnant, pregnancyWeeks, togglePregnant, filled, warnings, acked, toggleAck, allReviewed } = usePrescriptionSafety(rec, meds);
 
   if (!patient) {
     return (
@@ -95,7 +82,7 @@ export default function ConsultationScreen() {
     if (followUp && !/^\d{4}-\d{2}-\d{2}$/.test(followUp)) return setError(t('consultation.errorDate'));
     const items = filled.map(draftToItem);
     if (items.some((it) => !it.timesOfDay?.length)) return setError(t('consultation.errorSlots'));
-    if (!allAcknowledged(warnings, acked)) return setError(tc('warn.mustAck'));
+    if (!allReviewed) return setError(tc('warn.mustAck'));
     setSaving(true);
     const now = new Date();
     let prescription: Prescription | null = null;
@@ -205,9 +192,9 @@ export default function ConsultationScreen() {
         ) : null}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2], alignItems: 'center' }}>
           <Chip
-            label={pregnant ? (pregnancyFromRec.weeks ? tc('summary.pregnantWeeks', { n: pregnancyFromRec.weeks }) : tc('summary.pregnant')) : tc('rx.notPregnant')}
+            label={pregnant ? (pregnancyWeeks ? tc('summary.pregnantWeeks', { n: pregnancyWeeks }) : tc('summary.pregnant')) : tc('rx.notPregnant')}
             selected={pregnant}
-            onPress={() => setPregnantOverride(!pregnant)}
+            onPress={togglePregnant}
             accessibilityLabel={tc('rx.pregnantToggle')}
             testID="rx-pregnant"
           />
@@ -215,7 +202,7 @@ export default function ConsultationScreen() {
         {meds.map((m, i) => (
           <MedicineEditor key={i} index={i} value={m} onChange={(p) => setMed(i, p)} onRemove={meds.length > 1 ? () => setMeds((x) => x.filter((_, j) => j !== i)) : undefined} />
         ))}
-        <WarningsPanel warnings={warnings} acknowledged={acked} onToggle={(id) => setAcked((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; })} />
+        <WarningsPanel warnings={warnings} acknowledged={acked} onToggle={toggleAck} />
       </View>
       <Text variant="caption" tone="tertiary">
         {tc('form.approveNote')}

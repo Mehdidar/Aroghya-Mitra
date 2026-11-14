@@ -12,8 +12,8 @@ built for a Bengaluru PHC demo. One Expo app serves four roles:
 | Role | Who | Main jobs in the app |
 |---|---|---|
 | Patient | e.g. a pregnant woman on BP tablets, often low literacy | Voice/chat health assistant, prescription photo reader, food (nutrition) scan, medicine reminders, QR health card, nearby care map, blood banks, step counter |
-| ASHA worker | Village community health worker | Household caseload, home visits (vitals, symptoms, voice notes, photos), offline-first, automatic risk alerts, referrals to the PHC doctor |
-| Doctor | PHC medical officer | Referral inbox from ASHAs, scan a patient's QR to open history, consultations and prescriptions that reach the patient's reminders |
+| ASHA worker | Village community health worker | Household caseload, home visits (vitals, symptoms, voice notes, photos), offline-first, automatic risk alerts, referrals to the PHC doctor, messages and visit requests from her patients, scan a patient's QR card |
+| Doctor | PHC medical officer | Referral inbox from ASHAs, scan a patient's QR to open history, consultations and prescriptions (also a quick prescribe without a consultation) that reach the patient's reminders |
 | Admin | PHC admin | Staff, ASHA assignments, blood stock, analytics (shares the doctor shell) |
 
 Languages: English, Hindi, Kannada, Tamil, Telugu, Urdu (right-to-left), Kashmiri
@@ -65,13 +65,17 @@ Routes (all under one router, auth via Supabase JWT or demo headers):
 | `POST /records/push` | Phone writes with per-row rules (patients: own dose logs/vitals/scanned prescriptions/reports/consent; doctors: prescriptions and consultations in their own name for patients they may open) |
 | `GET /me` | Who is signed in; registers a first-time patient |
 | `POST /asha/sync`, `/asha/photos` | ASHA offline sync; the server re-runs the risk rules and its verdict overrides the phone's |
+| `GET /asha/connect/mine`, `POST /asha/connect/find` | Patient's ASHA; "find my ASHA" by village (assigned at once when an active ASHA covers it, else waits for the PHC admin) |
+| `GET /asha/assignments`, `POST /asha/assign`, `PUT /asha/areas` | Admin assignment board (doctor read-only): suggestions by village then caseload, move/remove with a reason, villages per ASHA. Every change is an `asha_assignment_events` row and moves the field record so the new ASHA's phone gets the patient and the old one drops it (`released` in the `/asha/sync` reply) |
+| `GET/POST /asha/messages`, `/asha/messages/read`, `/asha/messages/:id/status` | Patient ⇄ own ASHA messages, visit and call-back requests (status only moves forward). Patient text goes through the red-flag detector: urgent + 108/112 in the reply |
+| `POST /asha/scan`, `/asha/scan/add` | ASHA scans a patient's QR card (same signed token, consent and access log as the doctor's scan) → visit summary (symptoms 30 days, vitals, alerts, medicines); may add an unassigned patient she just scanned |
 | `GET /blood-banks` | Official directory rows when imported, else 404 (app uses labelled demo banks) |
 | `GET /places/nearby` | OSM hospitals/clinics/pharmacies (Nominatim, then Overpass), cached 6 h |
 
 Storage: `server/records/supabaseRepository.ts` when `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` are set, else in-memory demo data. Server code must run on both Node (type stripping: no constructor parameter properties, no enums, explicit `.ts` imports) and Deno.
 
 ### Database (supabase/migrations)
-`1000_base.sql` (facilities, profiles, patients, vitals, prescriptions, dose_logs, referrals, consultations, access_logs + RLS), `3001_asha.sql` (asha_visits, risk_alerts), `3002_asha_sync_store.sql`, `4001/4002` (consents, QR grants/redemptions, health reports, blood banks/stock, policies), `4003` (report storage bucket). Migrations are re-runnable. RLS tests: `supabase/tests/4001_p4_rls.test.sql`.
+`1000_base.sql` (facilities, profiles, patients, vitals, prescriptions, dose_logs, referrals, consultations, access_logs + RLS), `3001_asha.sql` (asha_visits, risk_alerts), `3002_asha_sync_store.sql`, `4001/4002` (consents, QR grants/redemptions, health reports, blood banks/stock, policies), `4003` (report storage bucket), `5001` (lab results), `5101` (preventive care), `5201` (appointments), `5301` (ASHA connect: service areas, assignment events, connect requests, messages). Migrations are re-runnable. RLS tests: `supabase/tests/4001_p4_rls.test.sql`.
 
 ## Rules that must not be broken
 1. No secrets in the app. Keys (Sarvam, Gemini, Supabase service role, QR secret, food-model key) live only in the repo-root `.env` and as server secrets. Nothing secret in any `EXPO_PUBLIC_*` variable. Only the Supabase URL and publishable key may be public.

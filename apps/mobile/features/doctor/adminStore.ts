@@ -1,7 +1,8 @@
 /**
  * Admin tools state: staff approvals and the facility's blood-bank stock,
- * persisted on the device. Patient→ASHA assignments live on the patient
- * row in the records store (upsertPatient).
+ * persisted on the device. Patient→ASHA assignments are not kept here: they
+ * live on the server (GET /asha/assignments, POST /asha/assign, PUT /asha/areas)
+ * and the admin edits them on the assignment board (admin/AssignmentBoard.tsx).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';

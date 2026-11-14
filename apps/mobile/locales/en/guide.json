@@ -29,6 +29,11 @@
     "doctorPatient": "Patient record. It shows the patient's details, alerts, recent vital signs, prescriptions and referrals, and a button to start a new consultation.",
     "ashaHome": "ASHA home. At the top, patients who need attention today. Below are your households, alerts and referrals, and the sync button to send your visits.",
     "prevention": "My preventive care. At the top are warnings that need attention, then what is overdue, due now, ongoing and coming up, and what is already done. Each card says why it matters and which national guideline it comes from. Tap Remind me to get a reminder on your phone. This is a screening aid, not a diagnosis. For an emergency, press the red 108 button.",
-    "appointments": "Appointments. At the top is the button to book a visit with the PHC doctor. Below it are your upcoming appointments, each with buttons to change the time or cancel. Further down are your past visits and consultations."
+    "appointments": "Appointments. At the top is the button to book a visit with the PHC doctor. Below it are your upcoming appointments, each with buttons to change the time or cancel. Further down are your past visits and consultations.",
+    "myAsha": "My ASHA. Your village health worker. If you have an ASHA, her card shows her name, the villages she covers and her last home visit, with a Call button when her number is on record. Below are two buttons: Please visit me, and Please call me back. Then your messages with her, quick messages, and a box to write your own. If you do not have an ASHA yet, type your village to find her; if no ASHA covers it, the PHC will assign one. Messages are not an emergency line: for an emergency, press the red 108 button.",
+    "ashaMessages": "Messages. Your patients' messages and visit or call-back requests. Urgent ones come first and are marked in red. Tap a patient to open the conversation.",
+    "ashaThread": "Conversation with one patient. Write your reply at the bottom. For a visit request, tap Accept and pick the date you will go, or mark it done after the visit.",
+    "ashaScan": "Scan a patient's QR health card to see who they are, their recent symptoms, readings, alerts and medicines. A patient who has no ASHA can be added to your list.",
+    "prescribe": "Quick prescription. Add each medicine with its dose, how often and for how many days. Warnings about medicine interactions, allergies and pregnancy appear before you save. Saved medicines go to the patient's reminders."
   }
 }

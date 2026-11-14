@@ -7,6 +7,9 @@ import type { Lang } from '../../features/asha/types';
 import { useLanguage } from '../../features/shared/i18n/useLanguage';
 import { fontFamily, useTheme } from '../../features/shared/theme';
 
+/** The ASHA home is the first screen of this section (the sign-in guard would otherwise pick any (asha) screen, e.g. /asha/scan). */
+export const unstable_settings = { initialRouteName: 'asha/index' };
+
 /** P3's AshaProvider reads its saved language from this key when it loads (store/AshaContext.tsx). */
 const ASHA_LANG_KEY = 'asha.lang';
 

@@ -10,8 +10,10 @@
  * works but nothing signed that way should be trusted elsewhere.
  *
  * Offline-first demo: the patient app shows `AM1.demo.<patientId>` when it
- * cannot reach the server; scanning that payload resolves the seeded patient
- * directly (role, consent and access log still apply, no grant is created).
+ * cannot reach the server; on a DEMO server (no QR_TOKEN_SECRET) scanning that
+ * payload resolves the seeded patient directly (role, consent and access log
+ * still apply, no grant is created). A server with a real secret refuses it,
+ * since the payload is unsigned and could be typed by anyone.
  */
 import { json, type Route } from '../http/router.ts';
 import { readEnv } from '../speech/config.ts';
@@ -60,6 +62,9 @@ export function routes(opts: { repo?: RecordsRepository; now?: () => Date; secre
         const deny = (reason: ScanDenial, status = 403) => json({ ok: false, reason, message: SCAN_DENIAL_MESSAGES[reason] }, status);
 
         if (payload.startsWith(DEMO_PAYLOAD_PREFIX)) {
+          // The offline demo card is unsigned: anyone could type it. Only a demo server (no real
+          // QR_TOKEN_SECRET) accepts it; a real server asks for the patient's live, signed card.
+          if (!secret().demo) return deny('expired');
           const patientId = payload.slice(DEMO_PAYLOAD_PREFIX.length);
           const patient = await repo().getPatient(patientId);
           if (!patient) return deny('no_patient', 404);

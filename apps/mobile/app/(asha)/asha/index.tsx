@@ -3,6 +3,9 @@ import React, { useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PatientRow } from '../../../features/asha/components/PatientRow';
+import type { PlanItem } from '../../../features/asha/connect/inbox';
+import { ActionRow, formatWhen, urgentSigns } from '../../../features/asha/connect/ui';
+import { useAshaInbox } from '../../../features/asha/connect/useAshaInbox';
 import { Chip, ChipScroll } from '../../../features/asha/components/ui';
 import { followUpsDue, formatDate, latestVisitByPatient } from '../../../features/asha/logic/clinical';
 import { SEVERITY_RANK } from '../../../features/asha/logic/rules';
@@ -18,6 +21,7 @@ import {
   Pill,
   PrimaryButton,
   SearchBar,
+  SecondaryButton,
   SectionHeader,
   Text,
   type IconName,
@@ -49,6 +53,7 @@ export default function AshaHome() {
   const due = useMemo(() => new Set(followUpsDue(visits).map((v) => v.patientId)), [visits]);
   const openAlerts = useMemo(() => store.currentAlerts().filter((a) => !a.acknowledged), [db.alerts, db.visits, store]);
   const openReferrals = Object.values(db.referrals).filter((r) => r.status !== 'closed').length;
+  const inbox = useAshaInbox();
 
   const patients = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -112,10 +117,20 @@ export default function AshaHome() {
 
         <SyncPill status={sync} pending={db.outbox.length} t={t} onPress={syncNow} />
 
-        <View style={{ flexDirection: 'row', alignItems: 'stretch', gap: theme.space[3] }}>
+        {/* 2 x 2: four tiles in one row would break words at 150% text. */}
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'stretch', gap: theme.space[3] }}>
           <StatTile n={highRisk} label={t('home.highRisk')} icon="warning-outline" danger onPress={() => router.push('/asha/alerts')} testID="tile-high-risk" />
           <StatTile n={due.size} label={t('home.dueToday')} icon="calendar-outline" onPress={() => setFilter('due')} testID="tile-due" />
           <StatTile n={openReferrals} label={t('home.referrals')} icon="paper-plane-outline" onPress={() => router.push('/asha/referrals')} testID="tile-referrals" />
+          <StatTile
+            n={inbox.unread}
+            label={t('home.messages')}
+            a11yLabel={t('home.messagesA11y', { n: inbox.unread })}
+            icon="chatbubbles-outline"
+            danger={inbox.urgent.length > 0}
+            onPress={() => router.push('/asha/messages')}
+            testID="tile-messages"
+          />
         </View>
       </View>
 
@@ -162,6 +177,16 @@ export default function AshaHome() {
             <Icon name="chevron-forward" size={theme.sizes.icon.sm} color={theme.colors.status.danger.icon} flipInRTL />
           </Pressable>
         ) : null}
+
+        <SecondaryButton
+          label={t('home.scan')}
+          icon="qr-code-outline"
+          accessibilityHint={t('home.scanA11y')}
+          onPress={() => router.push('/asha/scan')}
+          testID="asha-scan-button"
+        />
+
+        <TodayPlan items={inbox.plan} t={t} />
 
         <SearchBar placeholder={t('home.search')} value={query} onChangeText={setQuery} testID="asha-search" />
 
@@ -219,16 +244,32 @@ export default function AshaHome() {
   );
 }
 
-function StatTile({ n, label, icon, onPress, danger, testID }: { n: number; label: string; icon: IconName; onPress: () => void; danger?: boolean; testID?: string }) {
+function StatTile({
+  n,
+  label,
+  a11yLabel,
+  icon,
+  onPress,
+  danger,
+  testID,
+}: {
+  n: number;
+  label: string;
+  a11yLabel?: string;
+  icon: IconName;
+  onPress: () => void;
+  danger?: boolean;
+  testID?: string;
+}) {
   const theme = useTheme();
   const alarm = danger && n > 0;
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${label}: ${n}`}
+      accessibilityLabel={a11yLabel ?? `${label}: ${n}`}
       onPress={onPress}
       testID={testID}
-      style={({ pressed }) => ({ flex: 1, transform: [{ scale: pressed ? theme.motion.pressScale : 1 }] })}
+      style={({ pressed }) => ({ flexGrow: 1, flexBasis: '40%', transform: [{ scale: pressed ? theme.motion.pressScale : 1 }] })}
     >
       <Glass radius="xl" style={{ flexGrow: 1, padding: theme.space[3], gap: theme.space[1], minHeight: theme.sizes.tileMin }}>
         <Icon name={icon} size={theme.sizes.icon.sm} color={alarm ? theme.colors.status.danger.icon : theme.accent.accentIcon} />
@@ -241,6 +282,94 @@ function StatTile({ n, label, icon, onPress, danger, testID }: { n: number; labe
         </Text>
       </Glass>
     </Pressable>
+  );
+}
+
+const PLAN_MAX = 6;
+
+/** Today's plan: emergency messages, open requests, visits she accepted for today, follow-ups due. Each row opens the thread or patient. */
+function TodayPlan({ items, t }: { items: PlanItem[]; t: T }) {
+  const theme = useTheme();
+  const { db } = useAsha();
+  const nameOf = (thread: { patient?: { name: string } }) => thread.patient?.name ?? t('msg.unknownPatient');
+  const openThread = (patientId: string) => router.push(`/asha/thread/${encodeURIComponent(patientId)}`);
+  const rows = items
+    .map((it) => {
+      switch (it.kind) {
+        case 'urgent': {
+          const signs = urgentSigns(it.thread.urgent, t);
+          return (
+            <ActionRow
+              key={it.key}
+              icon="warning"
+              tone="danger"
+              title={t('plan.urgent', { name: nameOf(it.thread) })}
+              subtitle={[signs ? t('msg.urgentReason', { signs }) : null, it.thread.urgent?.body].filter(Boolean).join(' · ')}
+              onPress={() => openThread(it.thread.patientId)}
+              testID={`plan-urgent-${it.thread.patientId}`}
+            />
+          );
+        }
+        case 'request': {
+          const visit = it.message.kind === 'visit_request';
+          return (
+            <ActionRow
+              key={it.key}
+              icon={visit ? 'home-outline' : 'call-outline'}
+              tone="warning"
+              title={
+                visit
+                  ? t('plan.visitRequest', { name: nameOf(it.thread), when: t(`msg.when.${it.message.visitWhen ?? 'this_week'}`) })
+                  : t('plan.callRequest', { name: nameOf(it.thread) })
+              }
+              subtitle={[it.message.body, formatWhen(it.message.createdAt)].filter(Boolean).join(' · ')}
+              onPress={() => openThread(it.thread.patientId)}
+              testID={`plan-request-${it.message.id}`}
+            />
+          );
+        }
+        case 'scheduled':
+          return (
+            <ActionRow
+              key={it.key}
+              icon="walk-outline"
+              tone="info"
+              title={
+                it.late
+                  ? t('plan.scheduledLate', { name: nameOf(it.thread), date: formatDate(it.message.scheduledFor!) })
+                  : t('plan.scheduled', { name: nameOf(it.thread) })
+              }
+              subtitle={it.message.body || undefined}
+              onPress={() => openThread(it.thread.patientId)}
+              testID={`plan-scheduled-${it.message.id}`}
+            />
+          );
+        case 'followUp': {
+          const p = db.patients[it.patientId];
+          if (!p) return null;
+          return (
+            <ActionRow
+              key={it.key}
+              icon="calendar-outline"
+              tone="accent"
+              title={t('plan.followUp', { name: p.name })}
+              subtitle={it.visit.followUpOn ? t('patient.followUp', { date: formatDate(it.visit.followUpOn) }) : undefined}
+              onPress={() => router.push(`/asha/patient/${p.id}`)}
+              testID={`plan-followup-${p.id}`}
+            />
+          );
+        }
+      }
+    })
+    .filter(Boolean);
+  return (
+    <View style={{ gap: theme.space[3] }} testID="asha-today-plan">
+      <SectionHeader title={t('plan.title')} actionLabel={t('plan.more')} onAction={() => router.push('/asha/messages')} />
+      {rows.length ? rows.slice(0, PLAN_MAX) : <Text tone="secondary">{t('plan.empty')}</Text>}
+      {rows.length > PLAN_MAX ? (
+        <SecondaryButton label={`${t('plan.more')} (+${rows.length - PLAN_MAX})`} icon="chatbubbles-outline" onPress={() => router.push('/asha/messages')} />
+      ) : null}
+    </View>
   );
 }
 

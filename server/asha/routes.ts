@@ -17,13 +17,16 @@ import type { RecordsRepository } from '../records/repository.ts';
 import { DbSyncStore, SupabasePhotoStore, type PhotoStore } from './dbStore.ts';
 import { FileStore, SyncError, isSafePhotoName, photoName, sync, type SyncRequest, type SyncResponse, type SyncStore, type VerifiedAlert } from './sync.ts';
 import type { AshaBatch } from './toRecords.ts';
+import { getConnectRepository, releasedFor, routes as connectRoutes } from '../ashaConnect/routes.ts';
+import type { AshaConnectRepository } from '../ashaConnect/repository.ts';
 
 /** What one sync adds to the health records: the server's alerts win for every visit it re-checked. */
 export function batchFor(req: SyncRequest, res: SyncResponse): AshaBatch {
   const rechecked = new Set((req.visits ?? []).map((v) => v.id));
   const phoneOnly: VerifiedAlert[] = (req.alerts ?? []).filter((a) => !a.visitId || !rechecked.has(a.visitId)).map((a) => ({ ...a, verifiedBy: 'phone' }));
+  const rejected = new Set(res.rejectedPatientIds ?? []);
   return {
-    patients: (req.patients ?? []) as AshaBatch['patients'],
+    patients: (req.patients ?? []).filter((p) => !rejected.has(p.id)) as AshaBatch['patients'],
     visits: (req.visits ?? []) as AshaBatch['visits'],
     alerts: [...res.verifiedAlerts, ...phoneOnly],
     referrals: req.referrals ?? [],
@@ -64,6 +67,7 @@ export function routes(
   photoDir = join(DATA_DIR, 'photos'),
   records: () => RecordsRepository | null = getDemoRepository,
   photosArg?: PhotoStore,
+  connectArg?: AshaConnectRepository,
 ): Route[] {
   const defaults = storeArg && photosArg ? null : defaultStores(photoDir);
   let store: Readyable = storeArg ?? defaults!.store;
@@ -78,7 +82,14 @@ export function routes(
     }
   };
   const photos: PhotoStore = photosArg ?? (storeArg ? new FilePhotoStore(photoDir) : defaults!.photos);
+  const connect = () => connectArg ?? getConnectRepository();
+  /** ASHA connect (assignment, messages, QR scan) moves field records in this same store. */
+  const field = async () => {
+    await readyStore();
+    return { store: store as SyncStore, flush: async () => void (await store.flush?.()) };
+  };
   return [
+    ...connectRoutes({ repo: connectArg, records: () => records() ?? getDemoRepository()!, field }),
     {
       method: 'POST',
       path: '/asha/sync',
@@ -103,7 +114,10 @@ export function routes(
               },
             );
           }
-          return json({ ...res, records: recordsStatus });
+          // Patients the PHC moved to another ASHA: her phone drops them (their history stays on the server).
+          const r = records();
+          const released = r ? await releasedFor(caller.id, (payload as SyncRequest).since, r, connect()).catch(() => []) : [];
+          return json({ ...res, released, records: recordsStatus });
         } catch (e) {
           if (e instanceof SyncError) return json({ error: e.message }, e.status);
           throw e;

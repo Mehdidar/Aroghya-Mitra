@@ -3,7 +3,9 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Linking, View } from 'react-native';
 import { AlertCard } from '../../../../features/asha/components/AlertCard';
-import { patientAgeLabel } from '../../../../features/asha/components/PatientRow';
+import { patientMetaLine } from '../../../../features/asha/components/PatientRow';
+import { useAshaInbox } from '../../../../features/asha/connect/useAshaInbox';
+import { toDbId } from '@am/shared';
 import { Button, Card, Muted, RiskBadge, Row, Screen, useAshaColors } from '../../../../features/asha/components/ui';
 import { eddFromLmp, formatDate, gestationWeeks, isPregnant } from '../../../../features/asha/logic/clinical';
 import { urgencyFor } from '../../../../features/asha/logic/rules';
@@ -19,6 +21,8 @@ export default function PatientDetail() {
   const theme = useTheme();
   const colors = useAshaColors();
   const patient = db.patients[id];
+  const inbox = useAshaInbox();
+  const thread = useMemo(() => (patient ? inbox.threads.find((th) => th.key === toDbId(patient.id)) : undefined), [inbox.threads, patient]);
   const visits = useMemo(() => (patient ? store.visitsFor(patient.id) : []), [db.visits, patient, store]);
   const alerts = useMemo(() => (patient ? store.currentAlerts(patient.id) : []), [db.alerts, db.visits, patient, store]);
   const referrals = useMemo(() => (patient ? store.referralsFor(patient.id) : []), [db.referrals, patient, store]);
@@ -65,9 +69,10 @@ export default function PatientDetail() {
           </View>
         </Row>
         <Muted>
-          {patient.sex} · {patientAgeLabel(patient, lang)} · {patient.village}
+          {patientMetaLine(patient, lang)}
           {patient.address ? ` · ${patient.address}` : ''}
         </Muted>
+        {patient.needsDetails ? <StatusNote icon="create-outline" label={t('patient.needsDetails')} tone="warning" /> : null}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.space[2] }}>
           {patient.categories.map((c) => (
             <Pill key={c} label={t(`cat.${c}`)} tone="accent" />
@@ -86,8 +91,21 @@ export default function PatientDetail() {
           </Muted>
         ) : null}
         <Button title={i18n.t('prevent:ashaTitle')} icon="shield-checkmark-outline" variant="secondary" onPress={() => router.push(`/asha/prevention/${patient.id}`)} testID="open-prevention" />
+        <Button
+          title={thread?.unread ? `${t('patient.message')} · ${t('msg.unread', { n: thread.unread })}` : t('patient.message')}
+          icon="chatbubbles-outline"
+          variant="secondary"
+          onPress={() => router.push(`/asha/thread/${encodeURIComponent(thread?.patientId ?? patient.id)}`)}
+          testID="patient-message"
+        />
         {patient.phone ? (
-          <Button title={`${t('patient.call')} ${patient.phone}`} icon="call-outline" variant="secondary" onPress={() => Linking.openURL(`tel:${patient.phone}`)} />
+          <Button
+            title={`${t('patient.call')} ${patient.phone}`}
+            icon="call-outline"
+            variant="secondary"
+            onPress={() => void Linking.openURL(`tel:${patient.phone}`).catch(() => undefined)}
+            testID="patient-call"
+          />
         ) : null}
       </Card>
 
@@ -118,9 +136,9 @@ export default function PatientDetail() {
 }
 
 /** Info-tinted status line in the shared Pill style, but wrapping: the long referral label never overflows at large text. */
-function StatusNote({ icon, label }: { icon: IconName; label: string }) {
+function StatusNote({ icon, label, tone = 'info' }: { icon: IconName; label: string; tone?: 'info' | 'warning' }) {
   const theme = useTheme();
-  const s = theme.colors.status.info;
+  const s = theme.colors.status[tone];
   return (
     <View
       accessible

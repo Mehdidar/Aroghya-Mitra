@@ -46,6 +46,8 @@ export interface SyncResponse {
   /** Alerts the server computed for the pushed visits (verifiedBy 'server'). */
   verifiedAlerts: VerifiedAlert[];
   accepted: Record<Collection, number>;
+  /** Patients the phone sent that now belong to another ASHA: not saved. */
+  rejectedPatientIds?: string[];
 }
 
 export class SyncError extends Error {
@@ -152,14 +154,21 @@ export function sync(payload: unknown, caller: Caller, store: SyncStore): SyncRe
     throw new SyncError(403, 'only the ASHA worker who owns this caseload (or an admin) may sync it');
   }
   const receivedAt = nowIso();
+  // Assignment is the PHC's decision (server/ashaConnect): a phone may not take back, or keep editing,
+  // a patient who now belongs to another ASHA. Its visits are still accepted (she did visit).
+  const current = store.load<StoredPatient>('patients');
+  const ownPatients = (req.patients ?? []).filter((p) => {
+    const owner = p?.id ? current[p.id]?.record.assignedAshaId : undefined;
+    return caller.role === 'admin' || owner === undefined || owner === req.ashaId;
+  });
   const accepted = {
-    patients: upsert(store, 'patients', req.patients, receivedAt),
+    patients: upsert(store, 'patients', ownPatients, receivedAt),
     visits: upsert(store, 'visits', req.visits, receivedAt),
     // Phone alerts are stored (verifiedBy 'phone') and then overridden per visit below.
     alerts: upsert(store, 'alerts', (req.alerts ?? []).map((a) => ({ ...a, verifiedBy: 'phone' as const })), receivedAt),
     referrals: upsert(store, 'referrals', req.referrals, receivedAt),
   };
-  const verifiedAlerts = reverify(store, req, receivedAt);
+  const verifiedAlerts = reverify(store, { ...req, patients: ownPatients }, receivedAt);
   return {
     serverTime: receivedAt,
     patients: changedSince<StoredPatient>(store, 'patients', req.ashaId, req.since),
@@ -167,6 +176,7 @@ export function sync(payload: unknown, caller: Caller, store: SyncStore): SyncRe
     referrals: changedSince<Referral>(store, 'referrals', req.ashaId, req.since),
     verifiedAlerts,
     accepted,
+    rejectedPatientIds: (req.patients ?? []).filter((p) => !ownPatients.includes(p)).map((p) => p.id),
   };
 }
 

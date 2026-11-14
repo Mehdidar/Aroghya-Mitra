@@ -8,8 +8,17 @@ import type { Lang, Patient, Visit } from '../types';
 import { t } from '../data/i18n';
 import { Card, RiskBadge, useAshaColors } from './ui';
 
+/** True when the date of birth is missing or unreadable (a patient who signed up on their own phone). */
+export const dobUnknown = (p: Patient) => !p.dob || Number.isNaN(Date.parse(p.dob));
+
 export function patientAgeLabel(p: Patient, lang: Lang, at = new Date()): string {
+  if (dobUnknown(p)) return t('patient.ageUnknown', lang);
   return isNewborn(p, at) ? t('patient.ageDays', lang, { n: ageDays(p.dob, at) }) : t('patient.age', lang, { n: ageYears(p.dob, at) });
+}
+
+/** "F · 25 y · Rampur"; an unrecorded sex is left out (the age part then says what is missing). */
+export function patientMetaLine(p: Patient, lang: Lang, at = new Date()): string {
+  return [p.sex === 'U' ? null : p.sex, patientAgeLabel(p, lang, at), p.village || null].filter(Boolean).join(' · ');
 }
 
 export const PatientRow = memo(function PatientRow({ patient, lastVisit, lang }: { patient: Patient; lastVisit?: Visit; lang: Lang }) {
@@ -19,7 +28,8 @@ export const PatientRow = memo(function PatientRow({ patient, lastVisit, lang }:
   const tags = patient.categories.filter((c) => c !== 'general').map((c) => t(`cat.${c}`, lang));
   if (isPregnant(patient)) tags.push(t('patient.ga', lang, { n: gestationWeeks(patient.pregnancy!.lmp) }));
   const age = patientAgeLabel(patient, lang);
-  const a11y = [patient.name, risk !== 'none' ? t(`risk.${risk}`, lang) : null, age, patient.village, ...tags].filter(Boolean).join(', ');
+  const details = patient.needsDetails ? t('patient.needsDetailsShort', lang) : null;
+  const a11y = [patient.name, risk !== 'none' ? t(`risk.${risk}`, lang) : null, age, patient.village, details, ...tags].filter(Boolean).join(', ');
   return (
     // Shared list-row card (radius lg, like the doctor's patient list); the start bar repeats the
     // risk level, which the pill states in words.
@@ -39,8 +49,13 @@ export const PatientRow = memo(function PatientRow({ patient, lastVisit, lang }:
           {/* Under the name (not beside it) so a long name and the pill never squeeze each other at large text. */}
           {risk !== 'none' ? <RiskBadge level={risk} label={t(`risk.${risk}`, lang)} style={{ marginVertical: 2 }} /> : null}
           <Text variant="bodySmall" tone="secondary" numberOfLines={2}>
-            {patient.sex} · {age} · {patient.village}
+            {patientMetaLine(patient, lang)}
           </Text>
+          {details ? (
+            <Text variant="caption" weight="semibold" color={theme.colors.status.warning.fg} numberOfLines={2}>
+              {details}
+            </Text>
+          ) : null}
           {tags.length ? (
             <Text variant="caption" weight="semibold" tone="accent" numberOfLines={2}>
               {tags.join(' · ')}

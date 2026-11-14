@@ -1,3 +1,4 @@
+import { toDbId } from '@am/shared';
 import { latestVisitByPatient } from '../logic/clinical';
 import { evaluateVisit, maxRisk, urgencyFor } from '../logic/rules';
 import type { ID, ISODate, Lang, Patient, Referral, ReferralUrgency, RiskAlert, Visit } from '../types';
@@ -286,6 +287,43 @@ export class AshaStore {
       referrals[r.id] = r;
     }
     await this.commit({ ...this.db, patients, visits, referrals });
+  }
+
+  /**
+   * Drops patients the PHC moved to another ASHA (POST /asha/sync `released`), with their visits,
+   * alerts, referrals and queued outbox items. Their history stays on the server. Ids are matched
+   * with toDbId, since the server may name a phone record by its UUID form. Returns the local
+   * patient ids removed.
+   */
+  async release(ids: readonly ID[]): Promise<ID[]> {
+    if (!ids.length) return [];
+    const wanted = new Set(ids.map(toDbId));
+    const gone = (patientId: ID) => wanted.has(toDbId(patientId));
+    const removed = Object.keys(this.db.patients).filter(gone);
+    const keep = <T extends { patientId: ID }>(table: Record<ID, T>, dropped: Set<string>, kind: OutboxKind) => {
+      const out: Record<ID, T> = {};
+      for (const [id, row] of Object.entries(table)) {
+        if (gone(row.patientId)) dropped.add(`${kind}:${id}`);
+        else out[id] = row;
+      }
+      return out;
+    };
+    const dropped = new Set<string>(removed.map((id) => `patient:${id}`));
+    const visits = keep(this.db.visits, dropped, 'visit');
+    const alerts = keep(this.db.alerts, dropped, 'alert');
+    const referrals = keep(this.db.referrals, dropped, 'referral');
+    if (!dropped.size) return [];
+    const patients = { ...this.db.patients };
+    for (const id of removed) delete patients[id];
+    await this.commit({
+      ...this.db,
+      patients,
+      visits,
+      alerts,
+      referrals,
+      outbox: this.db.outbox.filter((o) => !dropped.has(`${o.kind}:${o.id}`)),
+    });
+    return removed;
   }
 
   /** Bulk insert used for demo seeding; does not queue anything for sync. */

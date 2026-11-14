@@ -97,7 +97,8 @@ export interface Patient {
 export interface AshaPatient {
   id: ID;
   name: string;
-  sex: 'F' | 'M';
+  /** 'U' = not recorded yet (a patient who signed up on their own phone); the ASHA fills it in at the first visit. */
+  sex: 'F' | 'M' | 'U';
   /** Date of birth. Age in years, or age in days for newborns, is derived from it. */
   dob: ISODate;
   phone?: string;
@@ -118,6 +119,8 @@ export interface AshaPatient {
   home?: GeoPoint;
   /** Highest severity among open alerts. Cached locally, recomputed on every saved visit. */
   riskLevel?: RiskLevel;
+  /** Set when the record came from the patient's own sign-up and still lacks sex / date of birth. */
+  needsDetails?: boolean;
 }
 
 // --------------------------------------------------------------------- vitals

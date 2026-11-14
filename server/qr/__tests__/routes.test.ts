@@ -25,9 +25,9 @@ const withDemoAuth = async (fn: () => Promise<void>) => {
   }
 };
 
-function setup() {
+function setup(demo = false) {
   const repo = new MemoryRecordsRepository(demoMemoryData());
-  const handler = createRouter(routes({ repo, secret: () => ({ secret: SECRET, demo: false }) }));
+  const handler = createRouter(routes({ repo, secret: () => ({ secret: SECRET, demo }) }));
   const post = (path: string, body: unknown, role: string, user?: string) =>
     handler(new Request(`http://x${path}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-demo-role': role, ...(user ? { 'x-demo-user': user } : {}) }, body: JSON.stringify(body) }));
   return { repo, handler, post };
@@ -80,9 +80,18 @@ describe('POST /qr/scan', () => {
       assert.equal(((await again.json()) as { reason: string }).reason, 'token_already_used');
     }));
 
-  it('accepts the offline demo payload', () =>
+  it('a server with a real QR secret refuses the unsigned demo payload', () =>
     withDemoAuth(async () => {
-      const { post, repo } = setup();
+      const { post, repo } = setup(false);
+      const res = await post('/qr/scan', { payload: `${DEMO_PAYLOAD_PREFIX}${DEMO_IDS.patientRecord}` }, 'doctor', DEMO_IDS.doctor);
+      assert.equal(res.status, 403);
+      assert.equal(((await res.json()) as { reason: string }).reason, 'expired');
+      assert.equal(repo.data.accessLogs.length, 0, 'nothing opened');
+    }));
+
+  it('a demo server accepts the offline demo payload', () =>
+    withDemoAuth(async () => {
+      const { post, repo } = setup(true);
       const res = await post('/qr/scan', { payload: `${DEMO_PAYLOAD_PREFIX}${DEMO_IDS.patientRecord}` }, 'doctor', DEMO_IDS.doctor);
       assert.equal(res.status, 200);
       const b = (await res.json()) as { ok: boolean; demo: boolean; history: { statCards: unknown[] } };

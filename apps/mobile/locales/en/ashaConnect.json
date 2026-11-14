@@ -1,0 +1,93 @@
+{
+  "title": "My ASHA",
+  "homeTile": "My ASHA",
+  "subtitle": "Your village health worker. Send her a message, or ask her to visit you or call you back.",
+  "emergencyNote": "For an emergency call 108, do not wait for a reply.",
+  "back": "Back",
+  "card": {
+    "role": "ASHA worker",
+    "covers": "Villages: {{areas}}",
+    "noAreas": "Villages not recorded yet",
+    "lastVisit": "Last home visit: {{date}}",
+    "noVisit": "No visit recorded yet",
+    "call": "Call {{name}}",
+    "noPhone": "Her phone number is not on record. Send a message or ask her to call you back."
+  },
+  "actions": {
+    "visit": "Please visit me",
+    "callback": "Please call me back",
+    "sendA11y": "Send message to {{name}}",
+    "retry": "Try again",
+    "showEarlier": "Show earlier messages"
+  },
+  "composer": {
+    "label": "Message",
+    "placeholder": "Write to {{name}}…"
+  },
+  "quick": {
+    "title": "Quick messages",
+    "medicines": "I need my medicines",
+    "newProblem": "I have a new problem",
+    "nextVisit": "When is your next visit?"
+  },
+  "thread": {
+    "title": "Messages",
+    "empty": "No messages yet. Write to her or tap a quick message.",
+    "you": "You",
+    "urgent": "Marked urgent"
+  },
+  "request": {
+    "visitTitle": "Home visit request",
+    "callTitle": "Call back request",
+    "asked": "You asked for: {{when}}",
+    "when": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "this_week": "This week"
+    },
+    "open": "Waiting for {{name}} to reply",
+    "visitAccepted": "{{name}} will visit on {{date}}",
+    "visitAcceptedNoDate": "{{name}} will visit you",
+    "callAccepted": "{{name}} will call you",
+    "done": "Done",
+    "declined": "Declined"
+  },
+  "visit": {
+    "title": "Ask {{name}} to visit you",
+    "whenLabel": "When do you need the visit?",
+    "chooseWhen": "Choose when you need the visit",
+    "reasonLabel": "Reason (optional)",
+    "reasonPlaceholder": "For example: BP check, swollen feet",
+    "send": "Send request",
+    "cancel": "Cancel"
+  },
+  "sent": {
+    "message": "Message sent to {{name}}",
+    "visit": "Visit request sent to {{name}}",
+    "callback": "Call back request sent to {{name}}"
+  },
+  "find": {
+    "title": "Find my ASHA",
+    "body": "An ASHA is the health worker for your village. Type your village or area and we will connect you to her.",
+    "label": "Village or area",
+    "placeholder": "For example: Hebbal",
+    "submit": "Find my ASHA",
+    "update": "Update village",
+    "changeArea": "Wrong village? Change it here",
+    "found": "We found your ASHA: {{name}}",
+    "waitingTitle": "Request sent to {{phc}}",
+    "waitingBody": "No ASHA is listed for {{area}} yet. The PHC will assign an ASHA to you.",
+    "waitingSince": "Requested on {{date}}"
+  },
+  "state": {
+    "offline": "You are offline. Check your internet and try again.",
+    "offlineSaved": "You are offline. Showing what was saved on this phone.",
+    "notSent": "Not sent. {{reason}}",
+    "noPatient": "We could not find your health record. Please ask at the PHC.",
+    "noAsha": "You do not have an ASHA yet.",
+    "areaRequired": "Please type your village or area.",
+    "empty": "Please write a message first.",
+    "inactive": "Your account is not active. Please ask at the PHC.",
+    "error": "Something went wrong. Please try again."
+  }
+}
